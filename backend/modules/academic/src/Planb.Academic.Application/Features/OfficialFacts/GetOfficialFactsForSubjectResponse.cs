@@ -10,6 +10,8 @@ public sealed record GetOfficialFactsForSubjectResponse(IReadOnlyList<OfficialFa
 /// </summary>
 public sealed record OfficialFactResponseItem(
     Guid Id,
+    /// <summary>El sujeto de la afirmación. Presente aunque el caller ya lo conozca (pidió un solo subjectId): así la forma es la misma cuando trae varios sujetos juntos (sin subjectId en la query).</summary>
+    Guid SubjectId,
     string Field,
     string? Value,
     string? Unit,

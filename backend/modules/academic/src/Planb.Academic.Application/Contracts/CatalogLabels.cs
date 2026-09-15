@@ -30,4 +30,4 @@ public sealed record CatalogLabels(
 /// El nombre de una materia y su código. Van juntos porque toda pantalla que muestra uno muestra
 /// el otro: el código es lo que el alumno reconoce del plan y el nombre lo que lee.
 /// </summary>
-public sealed record SubjectLabel(string Name, string Code);
+public sealed record SubjectLabel(string Name, string? Code);

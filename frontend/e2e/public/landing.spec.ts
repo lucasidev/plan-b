@@ -25,19 +25,19 @@ test.describe('La entrada (US-221)', () => {
     const topbar = page.getByRole('banner');
     await expect(topbar.getByRole('link', { name: 'Ingresar', exact: true })).toBeVisible();
     await expect(topbar.getByRole('link', { name: 'Crear cuenta', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: /ir a mi inicio/i })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /ir a mis aportes/i })).toHaveCount(0);
   });
 
-  test('Lucía logueada ve la misma entrada, con el topbar "Ir a mi inicio"', async ({ page }) => {
+  test('Lucía logueada ve la misma entrada, con el topbar "Ir a mis aportes"', async ({ page }) => {
     await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText(/una anécdota/i);
-    await expect(page.getByRole('link', { name: /ir a mi inicio/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /ir a mis aportes/i })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Ingresar', exact: true })).toHaveCount(0);
   });
 

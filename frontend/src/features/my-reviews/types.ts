@@ -8,7 +8,7 @@ export type MyReview = {
   id: string;
   subjectId: string;
   subjectName: string;
-  subjectCode: string;
+  subjectCode: string | null;
   termId: string;
   termLabel: string;
   chairId: string | null;

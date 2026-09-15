@@ -1,14 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
-import type { SubjectFacts } from '../types';
+import { describe, expect, it } from 'vitest';
+import type { Subject } from '@/features/browse-catalog';
+import type { SubjectChair, SubjectFacts } from '../types';
 import { SubjectFactsSheet } from './subject-facts-sheet';
-
-// La ficha monta CatalogTopbar, que monta el buscador global: necesita router y QueryClient. Mismo
-// criterio que chair-facts-sheet.test.tsx.
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
-}));
 
 function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
   return {
@@ -16,12 +10,15 @@ function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
     subjectCode: '211',
     subjectName: 'Análisis Matemático II',
     yearInPlan: 2,
+    careerPlanId: 'plan-1',
+    careerId: 'career-1',
+    careerName: 'Ingeniería en Sistemas',
+    universityName: 'UNT',
     isPublished: true,
     totalVoices: 111,
     publishingChairs: 3,
     chairsBelowFloor: 0,
     span: { fromYear: 2023, toYear: 2026 },
-    attempts: null,
     completion: null,
     enablesCount: 4,
     spread: [],
@@ -32,25 +29,36 @@ function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
   };
 }
 
+function chair(over: Partial<SubjectChair> = {}): SubjectChair {
+  return {
+    chairId: 'c1',
+    chairName: 'Pérez',
+    reviewCount: 42,
+    isPublished: true,
+    reviewsMissingToPublish: 0,
+    lastReviewedAt: null,
+    leadTeacherName: null,
+    headline: null,
+    ...over,
+  };
+}
+
 function renderSheet(f: SubjectFacts) {
-  render(
-    <QueryClientProvider client={new QueryClient()}>
-      <SubjectFactsSheet facts={f} />
-    </QueryClientProvider>,
-  );
+  render(<SubjectFactsSheet facts={f} />);
 }
 
 describe('SubjectFactsSheet', () => {
   /**
    * SC-007, estado "vacía" (US-136 aplicado a la ficha de materia): sin ninguna cátedra cargada,
    * la ficha dice que no hay nada publicado y por qué (no hay cátedras, no que la materia esté
-   * rota).
+   * rota), y la línea de sustento dice "sin reseñas" en vez de un cero.
    */
   it('estado "vacía": sin cátedras cargadas, dice que no hay nada publicado', () => {
     renderSheet(facts({ isPublished: false, totalVoices: 0, publishingChairs: 0, chairs: [] }));
 
     expect(screen.getByText('Todavía no hay nada publicado de esta materia.')).toBeInTheDocument();
     expect(screen.getByText('No tiene cátedras cargadas todavía.')).toBeInTheDocument();
+    expect(screen.getByText('Todavía sin reseñas.')).toBeInTheDocument();
   });
 
   /**
@@ -65,14 +73,13 @@ describe('SubjectFactsSheet', () => {
         publishingChairs: 0,
         chairsBelowFloor: 1,
         chairs: [
-          {
+          chair({
             chairId: 'chair-paz',
             chairName: 'Paz',
             reviewCount: 3,
             isPublished: false,
             reviewsMissingToPublish: 7,
-            lastReviewedAt: null,
-          },
+          }),
         ],
       }),
     );
@@ -94,71 +101,75 @@ describe('SubjectFactsSheet', () => {
   });
 
   /**
-   * US-131 (cada dato deriva de voces contables) y US-138 E1: la cuarta cátedra bajo el piso se
-   * lista aparte, con su propia cuenta y cuánto le falta, y no suma a los números de la materia.
+   * Con una sola cátedra reseñada y sin spread no hay con qué comparar, así que la línea de
+   * sustento no promete un contraste que la ficha no tiene: termina en el rango de años, sin
+   * "Depende de cuál te toque."
    */
-  it('US-138 E1: la cátedra bajo el piso se lista aparte y no suma a los números de la materia', () => {
+  it('con una sola cátedra reseñada, la línea de sustento no dice "depende de cuál te toque"', () => {
     renderSheet(
       facts({
-        totalVoices: 111,
-        publishingChairs: 3,
-        chairsBelowFloor: 1,
-        chairs: [
+        spread: [],
+        chairs: [chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 15 })],
+      }),
+    );
+
+    expect(screen.getByText('15 reseñas en 1 cátedra, de 2023 a 2026.')).toBeInTheDocument();
+    expect(screen.queryByText(/depende de cuál te toque/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Con spread publicado sí hay con qué contrastar, aunque una sola cátedra haya juntado reseñas:
+   * la diferencia entre cátedras ya está probada, no hace falta esperar a la segunda.
+   */
+  it('con spread publicado, la línea de sustento dice "depende de cuál te toque" con una sola cátedra', () => {
+    renderSheet(
+      facts({
+        spread: [
           {
-            chairId: 'c1',
-            chairName: 'Pérez',
-            reviewCount: 50,
-            isPublished: true,
-            reviewsMissingToPublish: 0,
-            lastReviewedAt: null,
+            itemCode: 'CHAIR_CLASSES_HELD',
+            itemText: '¿Se dictaron las clases?',
+            negativeLabel: 'Faltaron muchas',
+            byChair: [{ chairId: 'c1', chairName: 'Pérez', percent: 56, total: 16 }],
           },
-          {
+        ],
+        chairs: [chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 15 })],
+      }),
+    );
+
+    expect(screen.getByText(/depende de cuál te toque/i)).toBeInTheDocument();
+  });
+
+  /**
+   * US-131 (cada dato deriva de voces contables): la línea de sustento dice cuántas reseñas y en
+   * cuántas cátedras, sobre TODAS las cátedras (no solo las que publican), y la cátedra bajo el
+   * piso se lista igual, sin "faltan N" ni "voces".
+   */
+  it('la línea de sustento cuenta reseñas y cátedras sobre todas, y la que falta al piso no dice "faltan"', () => {
+    renderSheet(
+      facts({
+        chairs: [
+          chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 50 }),
+          chair({
             chairId: 'c4',
             chairName: 'Paz',
             reviewCount: 3,
             isPublished: false,
             reviewsMissingToPublish: 7,
-            lastReviewedAt: null,
-          },
+          }),
         ],
       }),
     );
 
-    // US-131: la identidad dice sobre cuántas voces y cátedras se calcula la materia.
-    expect(screen.getByText(/111 voces en 3 cátedras/i)).toBeInTheDocument();
-
-    const pazRow = screen.getByRole('link', { name: /paz/i });
-    expect(pazRow).toHaveTextContent('3 reseñas · faltan 7');
-    expect(pazRow).not.toHaveTextContent('voces');
-  });
-
-  /**
-   * SC-007: "sus cátedras" dice, de cada una, sus voces y hace cuánto es la última. Sin esto, una
-   * cátedra que dejó de sumar voces se lee igual que una que sigue activa.
-   */
-  it('SC-007: cada cátedra publicada dice hace cuánto es su última voz', () => {
-    renderSheet(
-      facts({
-        chairs: [
-          {
-            chairId: 'c1',
-            chairName: 'Pérez',
-            reviewCount: 42,
-            isPublished: true,
-            reviewsMissingToPublish: 0,
-            lastReviewedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-          },
-        ],
-      }),
-    );
-
-    const perezRow = screen.getByRole('link', { name: /pérez/i });
-    expect(perezRow).toHaveTextContent('42 voces · última hace 2 meses');
+    expect(screen.getByText(/53 reseñas en 2 cátedras, de 2023 a 2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 reseñas, todavía sin conclusiones\./i)).toBeInTheDocument();
+    expect(screen.queryByText(/faltan 7/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/\bvoces\b/i)).not.toBeInTheDocument();
   });
 
   /**
    * US-154 (de cada 10 que la cursan, cuántas llegan) y ficha SC-007 (cuánto habilita): los dos
-   * números derivan de las cursadas reseñadas y del plan de la carrera, cada uno con su fuente.
+   * números derivan de las cursadas reseñadas y del plan de la carrera, uno en la tarjeta de
+   * finalización (con su fuente al lado) y el otro en la tira de stats de la cabecera.
    */
   it('US-154: la tasa de finalización y cuánto habilita, cada una con su fuente', () => {
     renderSheet(
@@ -169,40 +180,79 @@ describe('SubjectFactsSheet', () => {
     );
 
     expect(screen.getByText('6 de 10')).toBeInTheDocument();
-    expect(screen.getByText(/sobre 120 cursadas reseñadas/i)).toBeInTheDocument();
-    expect(screen.getByText('9 materias')).toBeInTheDocument();
-    expect(screen.getByText(/según el plan de la carrera/i)).toBeInTheDocument();
+    expect(screen.getByText(/62 de 120 cursadas reseñadas/i)).toBeInTheDocument();
+    expect(screen.getByText('9')).toBeInTheDocument();
+    expect(screen.getByText('materias habilita')).toBeInTheDocument();
   });
 
   /**
-   * Ficha SC-007, bloque "los números que resumen la materia": los intentos se publican como la
-   * moda con su cola dicha aparte, nunca como el promedio que el boceto pedía (la última opción es
-   * abierta, así que promediarla subestima siempre).
+   * Eyebrow "Materia · Nº año del plan {año}" (US-129): el año del plan es un pedido aparte del de
+   * la ficha, así que si ese pedido falla, el eyebrow se queda sin "del plan {año}" en vez de
+   * inventar un año o tirar abajo la ficha entera.
    */
-  it('los intentos se publican como moda y cola aparte, nunca como promedio', () => {
+  it('el eyebrow dice el año del plan cuando llega, y lo omite si no', () => {
+    const { container, rerender } = render(<SubjectFactsSheet facts={facts()} planYear={2018} />);
+    const eyebrow = () => container.querySelector('.pb-eyebrow');
+    expect(eyebrow()?.textContent).toMatch(/materia · 2º año del plan 2018 ·/i);
+
+    rerender(<SubjectFactsSheet facts={facts()} />);
+    expect(eyebrow()?.textContent).toMatch(/materia · 2º año ·/i);
+    expect(eyebrow()?.textContent).not.toMatch(/del plan/i);
+  });
+
+  /**
+   * SC-007, "¿es la materia o es una cátedra?" (la propuesta aprobada sobre la ficha de materia):
+   * una frase donde las cátedras difieren lista la moda negativa de cada una con su "de N".
+   */
+  it('spread publicado: cada cátedra que difiere lista su moda con su bar y su "de N"', () => {
     renderSheet(
       facts({
-        attempts: {
-          code: 'ATTEMPTS',
-          text: 'Cuántas veces la cursó antes de aprobarla',
-          modeLabel: 'Una vez',
-          modePercent: 62,
-          total: 100,
-          options: [
-            { label: 'Una vez', percent: 62, isNegative: false },
-            { label: 'Dos veces', percent: 28, isNegative: false },
-            { label: 'Tres o más', percent: 10, isNegative: false },
-          ],
-          openEnded: { label: 'Tres o más', percent: 10, isNegative: false },
-        },
+        spread: [
+          {
+            itemCode: 'CHAIR_CLASSES_HELD',
+            itemText: '¿Se dictaron las clases?',
+            negativeLabel: 'Faltaron muchas',
+            byChair: [
+              { chairId: 'c1', chairName: 'Pérez', percent: 56, total: 16 },
+              { chairId: 'c2', chairName: 'González', percent: 19, total: 12 },
+            ],
+          },
+        ],
       }),
     );
 
-    expect(screen.getByText(/una vez, el 62 %/i)).toBeInTheDocument();
-    expect(screen.getByText(/10 de cada 100/i)).toBeInTheDocument();
-    expect(screen.getByText(/marcaron «tres o más»/i)).toBeInTheDocument();
-    expect(screen.queryByText(/\bpromedio\b/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/2,1/)).not.toBeInTheDocument();
+    expect(screen.getByText('¿Es la materia o es una cátedra?')).toBeInTheDocument();
+    expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
+    expect(screen.getByText('Depende de la cátedra: «faltaron muchas»')).toBeInTheDocument();
+    expect(screen.getByText('Pérez')).toBeInTheDocument();
+    expect(screen.getByText('56 % de 16')).toBeInTheDocument();
+    expect(screen.getByText('González')).toBeInTheDocument();
+    expect(screen.getByText('19 % de 12')).toBeInTheDocument();
+  });
+
+  /** Lo que todas las cátedras marcan parejo se publica aparte, como un rasgo de la materia. */
+  it('shared publicado: la frase pareja se lee como un rasgo de la materia, con su rango', () => {
+    renderSheet(
+      facts({
+        shared: [
+          {
+            itemCode: 'STUDENT_COULD_ASK',
+            itemText: '¿Podías preguntar sin quedar mal?',
+            negativeLabel: 'No',
+            lowestPercent: 61,
+            highestPercent: 74,
+            chairCount: 3,
+          },
+        ],
+      }),
+    );
+
+    expect(screen.getByText('Lo que sí es de la materia')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /¿podías preguntar sin quedar mal\? «no» lo marcan entre el 61 % y el 74 % en las 3 cátedras\./i,
+      ),
+    ).toBeInTheDocument();
   });
 
   /**
@@ -226,9 +276,54 @@ describe('SubjectFactsSheet', () => {
       }),
     );
 
-    expect(screen.getByText('Con qué se llevó')).toBeInTheDocument();
+    expect(screen.getByText('Co-cursada · sale solo de las reseñas')).toBeInTheDocument();
     expect(screen.getByText(/23 la llevaron junto con esta/i)).toBeInTheDocument();
     expect(screen.getByText(/6 dejaron alguna de las dos/i)).toBeInTheDocument();
+  });
+
+  /** Contrato: `subjectCode` de un par de co-cursada es opcional (una materia puede no tener código). */
+  describe('co-cursada con y sin código', () => {
+    it('con código, la fila antepone "código · " antes del link', () => {
+      renderSheet(
+        facts({
+          takenWith: [
+            {
+              subjectId: 'subject-2',
+              subjectName: 'Álgebra I',
+              subjectCode: '111',
+              togetherCount: 23,
+              droppedCount: 6,
+              isPublished: true,
+              missingToPublish: 0,
+            },
+          ],
+        }),
+      );
+
+      const link = screen.getByRole('link', { name: 'Álgebra I' });
+      expect(link.parentElement?.textContent).toBe('111 · Álgebra I');
+    });
+
+    it('sin código, la fila muestra solo el link, sin separador colgando', () => {
+      renderSheet(
+        facts({
+          takenWith: [
+            {
+              subjectId: 'subject-9',
+              subjectName: 'Química General',
+              subjectCode: null,
+              togetherCount: 12,
+              droppedCount: 2,
+              isPublished: true,
+              missingToPublish: 0,
+            },
+          ],
+        }),
+      );
+
+      const link = screen.getByRole('link', { name: 'Química General' });
+      expect(link.parentElement?.textContent).toBe('Química General');
+    });
   });
 
   /**
@@ -263,37 +358,212 @@ describe('SubjectFactsSheet', () => {
   });
 
   /**
+   * SC-007, "sus cátedras": con headline, la fila arma "La cátedra {nombre} {frase}: lo dice el
+   * {percent} % de sus {respondents} reseñas.", con el docente a cargo y la última reseña.
+   */
+  it('ChairRow con headline: la conclusión cita la frase, el docente y la última reseña', () => {
+    renderSheet(
+      facts({
+        chairs: [
+          chair({
+            chairId: 'c1',
+            chairName: 'Pérez',
+            reviewCount: 42,
+            leadTeacherName: 'Martín Pérez',
+            lastReviewedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+            headline: {
+              itemCode: 'CHAIR_CLASSES_HELD',
+              optionValue: 1,
+              percent: 88,
+              respondents: 42,
+            },
+          }),
+        ],
+      }),
+    );
+
+    expect(
+      screen.getByText(
+        'La cátedra Pérez dictó casi todas sus clases: lo dice el 88 % de sus 42 reseñas.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/a cargo de Martín Pérez · última reseña hace 2 meses/i),
+    ).toBeInTheDocument();
+  });
+
+  /**
+   * US-138 E1: sin headline (bajo el piso, o publicada sin respuestas de conducta), la fila dice
+   * cuántas reseñas junta y que todavía no hay conclusión, nunca "publica" ni "piso".
+   */
+  it('US-138 E1: ChairRow sin headline dice cuántas reseñas junta y que todavía no hay conclusión', () => {
+    renderSheet(
+      facts({
+        chairs: [chair({ chairId: 'c2', chairName: 'Paz', reviewCount: 3, isPublished: false })],
+      }),
+    );
+
+    expect(screen.getByText('3 reseñas, todavía sin conclusiones.')).toBeInTheDocument();
+    expect(screen.queryByText(/publica|piso/i)).not.toBeInTheDocument();
+  });
+
+  /** El denominador de la conclusión pluraliza: "1 reseña" y no "1 reseñas". */
+  it('la conclusión pluraliza el denominador: "1 reseña" cuando respondents es 1', () => {
+    renderSheet(
+      facts({
+        chairs: [
+          chair({
+            chairId: 'c5',
+            chairName: 'Ibáñez',
+            reviewCount: 10,
+            headline: {
+              itemCode: 'CHAIR_ANSWERS_OUTSIDE_CLASS',
+              optionValue: 1,
+              percent: 100,
+              respondents: 1,
+            },
+          }),
+        ],
+      }),
+    );
+
+    expect(screen.getByText(/de sus 1 reseña\.$/)).toBeInTheDocument();
+  });
+
+  /** Sin docente a cargo, la fila dice solo la fecha de la última reseña. */
+  it('ChairRow sin docente: la fila dice solo la fecha, sin "a cargo de"', () => {
+    renderSheet(
+      facts({
+        chairs: [
+          chair({
+            chairId: 'c3',
+            chairName: 'Ruiz',
+            reviewCount: 15,
+            leadTeacherName: null,
+            lastReviewedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          }),
+        ],
+      }),
+    );
+
+    expect(screen.getByText(/^última reseña hace 1 mes$/i)).toBeInTheDocument();
+    expect(screen.queryByText(/a cargo de/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Las cátedras sin ninguna reseña se pliegan en una sola línea, en vez de listar veinte filas
+   * idénticas de "sin reseñas todavía".
+   */
+  it('las cátedras sin ninguna reseña se pliegan en una sola línea al final', () => {
+    renderSheet(
+      facts({
+        chairs: [
+          chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 50 }),
+          chair({ chairId: 'c2', chairName: 'Sin Voces 1', reviewCount: 0, isPublished: false }),
+          chair({ chairId: 'c3', chairName: 'Sin Voces 2', reviewCount: 0, isPublished: false }),
+          chair({ chairId: 'c4', chairName: 'Sin Voces 3', reviewCount: 0, isPublished: false }),
+        ],
+      }),
+    );
+
+    expect(screen.getByRole('link', { name: /pérez/i })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /sin voces/i })).not.toBeInTheDocument();
+    expect(screen.getByText('3 cátedras más')).toBeInTheDocument();
+    expect(screen.getByText('sin reseñas todavía')).toBeInTheDocument();
+  });
+
+  it('el plegado usa el singular cuando es una sola cátedra sin reseñas', () => {
+    renderSheet(
+      facts({
+        chairs: [
+          chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 50 }),
+          chair({ chairId: 'c2', chairName: 'Sin Voces', reviewCount: 0, isPublished: false }),
+        ],
+      }),
+    );
+
+    expect(screen.getByText('1 cátedra más')).toBeInTheDocument();
+  });
+
+  /**
    * Ficha SC-007, "lo que no muestra nunca": ninguna cátedra se remarca como "mejor" entre las que
    * se comparan; solo se ordenan por voces.
    */
   it('ninguna cátedra se remarca como "mejor" entre las que se comparan', () => {
     const { container } = render(
-      <QueryClientProvider client={new QueryClient()}>
-        <SubjectFactsSheet
-          facts={facts({
-            chairs: [
-              {
-                chairId: 'c1',
-                chairName: 'Pérez',
-                reviewCount: 80,
-                isPublished: true,
-                reviewsMissingToPublish: 0,
-                lastReviewedAt: null,
-              },
-              {
-                chairId: 'c2',
-                chairName: 'Ruiz',
-                reviewCount: 31,
-                isPublished: true,
-                reviewsMissingToPublish: 0,
-                lastReviewedAt: null,
-              },
-            ],
-          })}
-        />
-      </QueryClientProvider>,
+      <SubjectFactsSheet
+        facts={facts({
+          chairs: [
+            chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 80 }),
+            chair({ chairId: 'c2', chairName: 'Ruiz', reviewCount: 31 }),
+          ],
+        })}
+      />,
     );
 
     expect(container.textContent).not.toMatch(/mejor|recomendad|top|★/i);
+  });
+});
+
+/** Contrato: `code` de una materia del plan (aside "Las otras materias de Nº año") es opcional. */
+describe('SubjectFactsSheet: "Las otras materias de Nº año" con y sin código', () => {
+  const siblingSubjects: Subject[] = [
+    {
+      id: 'subject-1',
+      careerPlanId: 'plan-1',
+      code: '211',
+      name: 'Análisis Matemático II',
+      yearInPlan: 2,
+      termInYear: 1,
+      termKind: 'FourMonth',
+    },
+    {
+      id: 'subject-9',
+      careerPlanId: 'plan-1',
+      code: null,
+      name: 'Química General',
+      yearInPlan: 2,
+      termInYear: 1,
+      termKind: 'FourMonth',
+    },
+  ];
+
+  function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
+    return {
+      subjectId: 'subject-1',
+      subjectCode: '211',
+      subjectName: 'Análisis Matemático II',
+      yearInPlan: 2,
+      careerPlanId: 'plan-1',
+      careerId: 'career-1',
+      careerName: 'Ingeniería en Sistemas',
+      universityName: 'UNT',
+      isPublished: true,
+      totalVoices: 0,
+      publishingChairs: 0,
+      chairsBelowFloor: 0,
+      span: null,
+      completion: null,
+      enablesCount: 0,
+      spread: [],
+      shared: [],
+      takenWith: [],
+      chairs: [],
+      ...over,
+    };
+  }
+
+  it('con código, la fila trae el código como badge aparte del nombre', () => {
+    render(<SubjectFactsSheet facts={facts()} planSubjects={siblingSubjects} />);
+
+    const link = screen.getByRole('link', { name: /análisis matemático ii/i });
+    expect(link.querySelector('.pb-meta')?.textContent).toBe('211');
+  });
+
+  it('sin código, la fila muestra solo el nombre, sin badge vacío', () => {
+    render(<SubjectFactsSheet facts={facts()} planSubjects={siblingSubjects} />);
+
+    const link = screen.getByRole('link', { name: 'Química General' });
+    expect(link.querySelector('.pb-meta')).toBeNull();
   });
 });

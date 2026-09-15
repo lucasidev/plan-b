@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
+import { subjectLabel } from '@/lib/subject-label';
 
 /**
  * Las cátedras que un docente integra, con link a la ficha de cada una (US-132).
@@ -15,7 +16,7 @@ export interface TeacherChair {
   chairName: string;
   subjectId: string;
   subjectName: string;
-  subjectCode: string;
+  subjectCode: string | null;
   role: string;
   isCurrent: boolean;
 }
@@ -68,8 +69,10 @@ export function TeacherChairs({ chairs }: { chairs: TeacherChair[] }) {
 
 function ChairRow({ chair, last }: { chair: TeacherChair; last: boolean }) {
   return (
-    <Link
+    <FallbackLink
       href={`/chairs/${chair.chairId}`}
+      // Sin prefetch: ver el porqué en subject-grid.tsx.
+      prefetch={false}
       className={`flex items-baseline justify-between gap-3 px-4 py-3 ${
         last ? '' : 'border-b border-line'
       }`}
@@ -79,12 +82,12 @@ function ChairRow({ chair, last }: { chair: TeacherChair; last: boolean }) {
           Cátedra {chair.chairName}
         </span>
         <span className="block truncate text-[12.5px] text-ink-3">
-          {chair.subjectCode} · {chair.subjectName}
+          {subjectLabel(chair.subjectCode, chair.subjectName)}
         </span>
       </span>
       <span className="shrink-0 font-mono text-[11px] text-ink-3">
         {ROLE_LABEL[chair.role] ?? chair.role}
       </span>
-    </Link>
+    </FallbackLink>
   );
 }

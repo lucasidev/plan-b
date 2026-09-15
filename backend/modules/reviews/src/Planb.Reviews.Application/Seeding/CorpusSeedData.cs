@@ -12,8 +12,8 @@ namespace Planb.Reviews.Application.Seeding;
 /// </para>
 ///
 /// <code>
-///   Cátedra Pérez     14 voces  publica
-///     ¿Se dictaron las clases?          7 faltaron muchas · 4 faltaron algunas · 3 casi todas
+///   Cátedra Pérez     16 voces  publica
+///     ¿Se dictaron las clases?          9 faltaron muchas · 4 faltaron algunas · 3 casi todas
 ///     ¿Contestaba en clase?             8 casi nunca      · 4 a veces          · 2 siempre
 ///     ¿Salías entendiendo?              7 casi nunca      · 5 a veces          · 2 casi siempre
 ///
@@ -48,7 +48,7 @@ namespace Planb.Reviews.Application.Seeding;
 ///
 /// <code>
 ///   211 Fundamentos de Control de Calidad (sin tocar, la citan cuatro registros de revisión)
-///     Pérez     14 voces  publica, sin fama por convergencia
+///     Pérez     16 voces  publica, sin fama por convergencia
 ///     González  12 voces  publica, hermana de Pérez (Wilson separa CHAIR_CLASSES_HELD)
 ///     Ruiz       6 voces  bajo el piso, le faltan 4
 ///
@@ -81,6 +81,68 @@ namespace Planb.Reviews.Application.Seeding;
 ///   personas sembradas verified+active), la misma cátedra: la garantía de anonimato entre dos
 ///   cuentas reales y no solo entre sintéticas. Bajo el piso (2 de 10), así que la ficha pública
 ///   todavía no muestra nada de esto: el mecanismo no depende de si publica.
+/// </code>
+///
+/// <para>
+/// Veinte cátedras en las cinco carreras nuevas de R7 (<c>AcademicSeedData.Subjects</c>), cada
+/// una respondiendo el instrumento entero salvo
+/// <c>CHAIR_SYLLABUS_UPFRONT</c> (esa serie se corta en 122 y responderla acá mezclaría tramos).
+/// Cuatro perfiles de cátedra (A ordenada y cercana, B exigente pero clara, C ausente y
+/// desordenada, D buena en clase y difícil de consultar), uno o dos por materia. Solo Rojas
+/// converge en tres frases del lado malo (fama); ninguna otra cátedra de esta tanda llega a tres.
+/// </para>
+///
+/// <code>
+///   UNT · P06 Programación
+///     Sosa      16 reseñas  perfil A, publica, hermana de Medina
+///     Medina    14 reseñas  perfil C sin fama, publica, hermana de Sosa
+///                (Wilson separa CHAIR_CLASSES_HELD entre las dos)
+///   UNT · P08 Algoritmos y Estructuras de Datos
+///     Ríos      13 reseñas  perfil B, publica
+///   UNT · Cálculo I
+///     Moyano     7 reseñas  perfil B, bajo el piso, le faltan 3
+///
+///   UTN-FRT · Algoritmos y Estructuras de Datos
+///     Castro    15 reseñas  perfil A, publica
+///   UTN-FRT · Paradigmas de Programación
+///     Rojas     12 reseñas  perfil C con fama (CHAIR_CLASSES_HELD, CHAIR_ANSWERS_OUTSIDE_CLASS y
+///                CHAIR_EXAM_DATE_NOTICE convergen), publica
+///   UTN-FRT · Sistemas Operativos
+///     Salazar   13 reseñas  perfil D, publica
+///   UTN-FRT · Análisis Matemático I
+///     Peralta    8 reseñas  perfil B, bajo el piso, le faltan 2
+///
+///   UNSE · Marco Jurídico de la Educación Argentina
+///     Navarro   12 reseñas  perfil A, publica
+///   UNSE · Tecnologías de Gestión
+///     Quiroga   11 reseñas  perfil B, publica
+///   UNSE · La Gestión Administrativa de la Unidad Educativa
+///     Toledo    10 reseñas  perfil D, publica justo en el piso
+///   UNSE · Introducción a la Pedagogía
+///     Escobar    6 reseñas  perfil A, bajo el piso, le faltan 4
+///
+///   UNSTA, Automatización y Robótica · Programación básica 1
+///     Villalba  14 reseñas  perfil B, publica
+///   UNSTA, Automatización y Robótica · Electrotecnia
+///     Figueroa  11 reseñas  perfil D, publica
+///   UNSTA, Automatización y Robótica · Álgebra
+///     Guzmán    12 reseñas  perfil A, publica
+///   UNSTA, Automatización y Robótica · Robótica 1
+///     Torres     5 reseñas  perfil B, bajo el piso, le faltan 5
+///
+///   UNSTA, Ingeniería en Informática · Programación I
+///     Carrizo   18 reseñas  perfil A, publica
+///   UNSTA, Ingeniería en Informática · Matemática I
+///     Gómez     12 reseñas  perfil B, publica
+///   UNSTA, Ingeniería en Informática · Programación II
+///     Díaz      13 reseñas  perfil D, publica
+///   UNSTA, Ingeniería en Informática · Bases de Datos
+///     Núñez      9 reseñas  perfil A, bajo el piso, le falta 1
+///
+///   Par Programación I (Carrizo) + Matemática I (Gómez), UNSTA 2025-1c: 10 cuentas en común,
+///   publica.
+///   Par Marco Jurídico (Navarro) + La Gestión Administrativa (Toledo), UNSE 2025-1c: 10 cuentas
+///   en común, publica.
 /// </code>
 ///
 /// <para>
@@ -131,17 +193,92 @@ public static class CorpusSeedData
     private static readonly Guid ChairGodoy = Guid.Parse("00000008-0000-4000-a000-000000000011");
     private static readonly Guid ChairJuarez = Guid.Parse("00000008-0000-4000-a000-000000000012");
 
+    // R7 (cobertura del seed): once cátedras más, una o dos por cada una de las cinco carreras
+    // nuevas de AcademicSeedData.Subjects. Sosa y Medina son las dos hermanas de UNT (misma
+    // materia, P06 Programación): "Las hermanas" se ve así fuera de la UNSTA.
+    private static readonly Guid SubjectUntP06Programacion = Guid.Parse("00000004-0000-4000-a000-000000000106");
+    private static readonly Guid SubjectUntP08AlgoritmosYEstructurasDeDatos = Guid.Parse("00000004-0000-4000-a000-000000000108");
+    private static readonly Guid SubjectUtnAlgoritmosYEstructurasDeDatos = Guid.Parse("00000004-0000-4000-a000-000000000205");
+    private static readonly Guid SubjectUtnParadigmasDeProgramacion = Guid.Parse("00000004-0000-4000-a000-00000000020d");
+    private static readonly Guid SubjectUnseMarcoJuridico = Guid.Parse("00000004-0000-4000-a000-000000000500");
+    private static readonly Guid SubjectUnseTecnologiasDeGestion = Guid.Parse("00000004-0000-4000-a000-000000000507");
+    private static readonly Guid SubjectAyrProgramacionBasica1 = Guid.Parse("00000004-0000-4000-a000-000000000303");
+    private static readonly Guid SubjectAyrElectrotecnia = Guid.Parse("00000004-0000-4000-a000-000000000302");
+    private static readonly Guid SubjectIngInformaticaProgramacion1 = Guid.Parse("00000004-0000-4000-a000-000000000408");
+    private static readonly Guid SubjectIngInformaticaMatematica1 = Guid.Parse("00000004-0000-4000-a000-000000000400");
+
+    // Las nueve materias que suman una cátedra más a cada una de las cinco carreras de R7
+    // (AcademicSeedData.Subjects).
+    private static readonly Guid SubjectUntCalculoI = Guid.Parse("00000004-0000-4000-a000-000000000100");
+    private static readonly Guid SubjectUtnSistemasOperativos = Guid.Parse("00000004-0000-4000-a000-00000000020e");
+    private static readonly Guid SubjectUtnAnalisisMatematicoI = Guid.Parse("00000004-0000-4000-a000-000000000200");
+    private static readonly Guid SubjectUnseGestionAdministrativa = Guid.Parse("00000004-0000-4000-a000-000000000502");
+    private static readonly Guid SubjectUnsePedagogia = Guid.Parse("00000004-0000-4000-a000-000000000509");
+    private static readonly Guid SubjectAyrAlgebra = Guid.Parse("00000004-0000-4000-a000-000000000301");
+    private static readonly Guid SubjectAyrRobotica1 = Guid.Parse("00000004-0000-4000-a000-000000000310");
+    private static readonly Guid SubjectIngInformaticaProgramacion2 = Guid.Parse("00000004-0000-4000-a000-00000000040b");
+    private static readonly Guid SubjectIngInformaticaBasesDeDatos = Guid.Parse("00000004-0000-4000-a000-000000000416");
+
+    private static readonly Guid ChairSosa = Guid.Parse("00000008-0000-4000-a000-000000000019");
+    private static readonly Guid ChairMedina = Guid.Parse("00000008-0000-4000-a000-00000000001a");
+    private static readonly Guid ChairRios = Guid.Parse("00000008-0000-4000-a000-00000000001b");
+    private static readonly Guid ChairCastro = Guid.Parse("00000008-0000-4000-a000-00000000001c");
+    private static readonly Guid ChairRojas = Guid.Parse("00000008-0000-4000-a000-00000000001d");
+    private static readonly Guid ChairNavarro = Guid.Parse("00000008-0000-4000-a000-00000000001e");
+    private static readonly Guid ChairQuiroga = Guid.Parse("00000008-0000-4000-a000-00000000001f");
+    private static readonly Guid ChairVillalba = Guid.Parse("00000008-0000-4000-a000-000000000020");
+    private static readonly Guid ChairFigueroa = Guid.Parse("00000008-0000-4000-a000-000000000021");
+    private static readonly Guid ChairCarrizo = Guid.Parse("00000008-0000-4000-a000-000000000022");
+    private static readonly Guid ChairGomez = Guid.Parse("00000008-0000-4000-a000-000000000023");
+
+    // Las nueve cátedras nuevas (AcademicSeedData.Chairs, mismo orden).
+    private static readonly Guid ChairMoyano = Guid.Parse("00000008-0000-4000-a000-000000000024");
+    private static readonly Guid ChairSalazar = Guid.Parse("00000008-0000-4000-a000-000000000025");
+    private static readonly Guid ChairPeralta = Guid.Parse("00000008-0000-4000-a000-000000000026");
+    private static readonly Guid ChairToledo = Guid.Parse("00000008-0000-4000-a000-000000000027");
+    private static readonly Guid ChairEscobar = Guid.Parse("00000008-0000-4000-a000-000000000028");
+    private static readonly Guid ChairGuzman = Guid.Parse("00000008-0000-4000-a000-000000000029");
+    private static readonly Guid ChairTorres = Guid.Parse("00000008-0000-4000-a000-00000000002a");
+    private static readonly Guid ChairDiaz = Guid.Parse("00000008-0000-4000-a000-00000000002b");
+    private static readonly Guid ChairNunez = Guid.Parse("00000008-0000-4000-a000-00000000002c");
+
+    // Un período sembrado de la universidad de cada cátedra (AcademicSeedData.AcademicTerms, el más
+    // viejo de cada bloque): UNSTA reusa Term2024C1 de arriba.
+    private static readonly Guid TermUnt2024C1 = Guid.Parse("00000005-0000-4000-a000-000000000007");
+    private static readonly Guid TermUtnFrt2024C1 = Guid.Parse("00000005-0000-4000-a000-00000000000d");
+    private static readonly Guid TermUnse2024C1 = Guid.Parse("00000005-0000-4000-a000-000000000019");
+
+    // Más períodos de cada universidad, para repartir las reseñas nuevas entre 2024-1c y 2026-1c
+    // (2026-2c queda afuera: está en curso). UNSTA reusa Term2024C2 y Term2025C1 de LuciaReviews.
+    private static readonly Guid Term2025C2 = Guid.Parse("00000005-0000-4000-a000-000000000004");
+    private static readonly Guid Term2026C1 = Guid.Parse("00000005-0000-4000-a000-000000000005");
+    private static readonly Guid TermUnt2024C2 = Guid.Parse("00000005-0000-4000-a000-000000000008");
+    private static readonly Guid TermUnt2025C1 = Guid.Parse("00000005-0000-4000-a000-000000000009");
+    private static readonly Guid TermUnt2025C2 = Guid.Parse("00000005-0000-4000-a000-00000000000a");
+    private static readonly Guid TermUnt2026C1 = Guid.Parse("00000005-0000-4000-a000-00000000000b");
+    private static readonly Guid TermUtnFrt2025C1 = Guid.Parse("00000005-0000-4000-a000-00000000000f");
+    private static readonly Guid TermUtnFrt2025C2 = Guid.Parse("00000005-0000-4000-a000-000000000010");
+    private static readonly Guid TermUtnFrt2026C1 = Guid.Parse("00000005-0000-4000-a000-000000000011");
+    private static readonly Guid TermUnse2024C2 = Guid.Parse("00000005-0000-4000-a000-00000000001a");
+    private static readonly Guid TermUnse2025C1 = Guid.Parse("00000005-0000-4000-a000-00000000001b");
+    private static readonly Guid TermUnse2026C1 = Guid.Parse("00000005-0000-4000-a000-00000000001d");
+
     // Las frases que el corpus contesta. Entre 211 y lo nuevo suman nueve de las catorce, para que
     // las fichas tengan de qué hablar más allá de "cómo terminó" y "cómo te fue en clase".
+    private static readonly ItemId Modality = new(Guid.Parse("00000010-0000-4000-a000-000000000001"));
     private static readonly ItemId Outcome = new(Guid.Parse("00000010-0000-4000-a000-000000000002"));
+    private static readonly ItemId Attempts = new(Guid.Parse("00000010-0000-4000-a000-000000000003"));
     private static readonly ItemId AnswersInClass = new(Guid.Parse("00000010-0000-4000-a000-000000000004"));
     private static readonly ItemId ClassesHeld = new(Guid.Parse("00000010-0000-4000-a000-000000000005"));
+    private static readonly ItemId PracticeMatchesTheory = new(Guid.Parse("00000010-0000-4000-a000-000000000006"));
+    private static readonly ItemId AnswersOutsideClass = new(Guid.Parse("00000010-0000-4000-a000-000000000007"));
     private static readonly ItemId ExamDateNotice = new(Guid.Parse("00000010-0000-4000-a000-000000000008"));
     private static readonly ItemId SyllabusUpfront = new(Guid.Parse("00000010-0000-4000-a000-000000000009"));
-    private static readonly ItemId AnswersOutsideClass = new(Guid.Parse("00000010-0000-4000-a000-000000000007"));
+    private static readonly ItemId OffSyllabusExams = new(Guid.Parse("00000010-0000-4000-a000-00000000000a"));
     private static readonly ItemId UnderstoodInClass = new(Guid.Parse("00000010-0000-4000-a000-00000000000b"));
     private static readonly ItemId MaterialEnough = new(Guid.Parse("00000010-0000-4000-a000-00000000000c"));
     private static readonly ItemId KeptPace = new(Guid.Parse("00000010-0000-4000-a000-00000000000d"));
+    private static readonly ItemId CouldAsk = new(Guid.Parse("00000010-0000-4000-a000-00000000000e"));
 
     /// <summary>
     /// El código de la frase que reemplaza a <see cref="SyllabusUpfront"/>: corta la
@@ -252,7 +389,7 @@ public static class CorpusSeedData
 
         // ---------- 121: justo en el piso, ni una reseña de más ----------
         var domStart = reviews.Count;
-        AddChairWithItems(reviews, 119, Subject121, ChairDominguez, voices: 10,
+        AddChairWithItems(reviews, 119, Subject121, Term2024C1, ChairDominguez, voices: 10,
             (Outcome, [(1, 6), (2, 2), (3, 1), (4, 1)]),
             (ExamDateNotice, [(1, 4), (2, 3), (3, 2), (4, 1)]),
             (MaterialEnough, [(1, 5), (2, 3), (3, 2)]));
@@ -263,7 +400,7 @@ public static class CorpusSeedData
         // El tramo de después del corte lo siembra CorpusSeeder con PostSeriesCutReviews, recién
         // cuando existe el Id de la frase sucesora. ----------
         var araozStart = reviews.Count;
-        AddChairWithItems(reviews, 129, Subject122, ChairAraoz, voices: 7,
+        AddChairWithItems(reviews, 129, Subject122, Term2024C1, ChairAraoz, voices: 7,
             (Outcome, [(1, 5), (2, 1), (3, 1)]),
             (KeptPace, [(1, 4), (2, 2), (3, 1)]),
             (SyllabusUpfront, [(1, 3), (2, 2), (3, 2)]));
@@ -271,7 +408,7 @@ public static class CorpusSeedData
 
         // ---------- 123: a una del piso, le falta 1 ----------
         var bravoStart = reviews.Count;
-        AddChairWithItems(reviews, 142, Subject123, ChairBravo, voices: 9,
+        AddChairWithItems(reviews, 142, Subject123, Term2024C1, ChairBravo, voices: 9,
             (Outcome, [(1, 5), (2, 2), (3, 1), (4, 1)]),
             (AnswersOutsideClass, [(1, 4), (2, 3), (3, 2)]));
         SetFreeText(reviews, bravoStart,
@@ -302,6 +439,339 @@ public static class CorpusSeedData
             reviews.Add(new SeededReview(
                 ReviewIdAt(reviews.Count + 1), i, Subject113, Term2024C1, ChairId: null,
                 [(Outcome, 1)]));
+        }
+
+        // Dos voces más de Pérez, en cuentas nuevas (33 y 34, libres de todo par de co-cursada) y
+        // al final de la lista para no correr el ReviewId de ninguna fila anterior. Saltear vale
+        // (ADR-0082): solo contestan la frase que mueve el contraste y cómo terminó la cursada, sin
+        // llegar a aprobada ni regular. Es lo que separa CHAIR_CLASSES_HELD de sus hermanas (Wilson
+        // deja de solaparlas) sin tocar ninguna otra frase de Pérez ni el resto del corpus.
+        reviews.Add(new SeededReview(
+            ReviewIdAt(reviews.Count + 1), 33, Subject211, Term2024C1, ChairPerez,
+            [(ClassesHeld, 3), (Outcome, 3)]));
+        reviews.Add(new SeededReview(
+            ReviewIdAt(reviews.Count + 1), 34, Subject211, Term2024C1, ChairPerez,
+            [(ClassesHeld, 3), (Outcome, 4)]));
+
+        // ---------- Veinte cátedras en las cinco carreras nuevas de R7, cuentas 300+ (libres de
+        // todo lo de arriba). Cada reseña contesta el instrumento entero salvo
+        // CHAIR_SYLLABUS_UPFRONT (esa serie se corta más arriba, para 122; responderla acá
+        // mezclaría tramos en estas fichas). ----------
+
+        // UNT: Sosa publica (perfil A), Medina no llega (perfil C, sin fama), Ríos publica justo
+        // en el piso (perfil B); Cálculo I no llega (perfil B).
+        AddChairWithItems(reviews, 300, SubjectUntP06Programacion, TermUnt2024C2, ChairSosa, voices: 16,
+            (Modality, [(1, 14), (3, 2)]),
+            (Outcome, [(1, 9), (2, 3), (3, 2), (4, 2)]),
+            (Attempts, [(1, 14), (2, 2)]),
+            (AnswersInClass, [(1, 13), (2, 2), (3, 1), (4, 0)]),
+            (ClassesHeld, [(1, 12), (2, 3), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 11), (2, 4), (3, 1)]),
+            (AnswersOutsideClass, [(1, 10), (2, 5), (3, 1)]),
+            (ExamDateNotice, [(1, 10), (2, 3), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 11), (2, 4), (3, 1)]),
+            (UnderstoodInClass, [(1, 10), (2, 5), (3, 1)]),
+            (MaterialEnough, [(1, 9), (2, 5), (3, 2)]),
+            (KeptPace, [(1, 8), (2, 6), (3, 2)]),
+            (CouldAsk, [(1, 12), (2, 3), (3, 1)]));
+        AddChairWithItems(reviews, 316, SubjectUntP06Programacion, TermUnt2025C2, ChairMedina, voices: 14,
+            (Modality, [(1, 11), (3, 3)]),
+            (Outcome, [(1, 3), (2, 3), (3, 5), (4, 3)]),
+            (Attempts, [(1, 10), (2, 4)]),
+            (AnswersInClass, [(1, 2), (2, 6), (3, 5), (4, 1)]),
+            (ClassesHeld, [(1, 1), (2, 4), (3, 9)]),
+            (PracticeMatchesTheory, [(1, 3), (2, 6), (3, 5)]),
+            (AnswersOutsideClass, [(1, 3), (2, 6), (3, 5)]),
+            (ExamDateNotice, [(1, 2), (2, 2), (3, 2), (4, 8)]),
+            (OffSyllabusExams, [(1, 3), (2, 6), (3, 5)]),
+            (UnderstoodInClass, [(1, 2), (2, 7), (3, 5)]),
+            (MaterialEnough, [(1, 3), (2, 7), (3, 4)]),
+            (KeptPace, [(1, 3), (2, 5), (3, 6)]),
+            (CouldAsk, [(1, 3), (2, 7), (3, 4)]));
+        AddChairWithItems(reviews, 330, SubjectUntP08AlgoritmosYEstructurasDeDatos, TermUnt2025C1, ChairRios, voices: 13,
+            (Modality, [(1, 11), (3, 2)]),
+            (Outcome, [(1, 5), (2, 4), (3, 3), (4, 1)]),
+            (Attempts, [(1, 11), (2, 2)]),
+            (AnswersInClass, [(1, 2), (2, 7), (3, 3), (4, 1)]),
+            (ClassesHeld, [(1, 6), (2, 4), (3, 3)]),
+            (PracticeMatchesTheory, [(1, 2), (2, 9), (3, 2)]),
+            (AnswersOutsideClass, [(1, 2), (2, 7), (3, 4)]),
+            (ExamDateNotice, [(1, 2), (2, 7), (3, 3), (4, 1)]),
+            (OffSyllabusExams, [(1, 4), (2, 6), (3, 3)]),
+            (UnderstoodInClass, [(1, 2), (2, 8), (3, 3)]),
+            (MaterialEnough, [(1, 2), (2, 8), (3, 3)]),
+            (KeptPace, [(1, 2), (2, 8), (3, 3)]),
+            (CouldAsk, [(1, 3), (2, 7), (3, 3)]));
+        AddChairWithItems(reviews, 343, SubjectUntCalculoI, TermUnt2026C1, ChairMoyano, voices: 7,
+            (Modality, [(1, 6), (3, 1)]),
+            (Outcome, [(1, 3), (2, 1), (3, 2), (4, 1)]),
+            (Attempts, [(1, 6), (2, 1)]),
+            (AnswersInClass, [(1, 1), (2, 3), (3, 2), (4, 1)]),
+            (ClassesHeld, [(1, 4), (2, 2), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 1), (2, 5), (3, 1)]),
+            (AnswersOutsideClass, [(1, 1), (2, 4), (3, 2)]),
+            (ExamDateNotice, [(1, 1), (2, 3), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 2), (2, 3), (3, 2)]),
+            (UnderstoodInClass, [(1, 1), (2, 4), (3, 2)]),
+            (MaterialEnough, [(1, 1), (2, 5), (3, 1)]),
+            (KeptPace, [(1, 1), (2, 4), (3, 2)]),
+            (CouldAsk, [(1, 2), (2, 4), (3, 1)]));
+
+        // UTN-FRT: Castro publica (perfil A), Rojas publica con fama (perfil C: CHAIR_CLASSES_HELD,
+        // CHAIR_ANSWERS_OUTSIDE_CLASS y CHAIR_EXAM_DATE_NOTICE convergen); Sistemas Operativos
+        // publica (perfil D) y Análisis Matemático I no llega (perfil B).
+        AddChairWithItems(reviews, 350, SubjectUtnAlgoritmosYEstructurasDeDatos, TermUtnFrt2024C1, ChairCastro, voices: 15,
+            (Modality, [(1, 13), (3, 2)]),
+            (Outcome, [(1, 9), (2, 3), (3, 2), (4, 1)]),
+            (Attempts, [(1, 13), (2, 2)]),
+            (AnswersInClass, [(1, 12), (2, 2), (3, 1), (4, 0)]),
+            (ClassesHeld, [(1, 11), (2, 3), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 10), (2, 4), (3, 1)]),
+            (AnswersOutsideClass, [(1, 9), (2, 5), (3, 1)]),
+            (ExamDateNotice, [(1, 9), (2, 3), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 10), (2, 4), (3, 1)]),
+            (UnderstoodInClass, [(1, 9), (2, 5), (3, 1)]),
+            (MaterialEnough, [(1, 8), (2, 5), (3, 2)]),
+            (KeptPace, [(1, 7), (2, 6), (3, 2)]),
+            (CouldAsk, [(1, 11), (2, 3), (3, 1)]));
+        AddChairWithItems(reviews, 365, SubjectUtnParadigmasDeProgramacion, TermUtnFrt2025C2, ChairRojas, voices: 12,
+            (Modality, [(1, 10), (3, 2)]),
+            (Outcome, [(1, 3), (2, 2), (3, 4), (4, 3)]),
+            (Attempts, [(1, 8), (2, 4)]),
+            (AnswersInClass, [(1, 2), (2, 5), (3, 4), (4, 1)]),
+            (ClassesHeld, [(1, 1), (2, 3), (3, 8)]),
+            (PracticeMatchesTheory, [(1, 3), (2, 5), (3, 4)]),
+            (AnswersOutsideClass, [(1, 2), (2, 3), (3, 7)]),
+            (ExamDateNotice, [(1, 1), (2, 2), (3, 2), (4, 7)]),
+            (OffSyllabusExams, [(1, 3), (2, 5), (3, 4)]),
+            (UnderstoodInClass, [(1, 1), (2, 6), (3, 5)]),
+            (MaterialEnough, [(1, 2), (2, 6), (3, 4)]),
+            (KeptPace, [(1, 3), (2, 4), (3, 5)]),
+            (CouldAsk, [(1, 2), (2, 6), (3, 4)]));
+        AddChairWithItems(reviews, 377, SubjectUtnSistemasOperativos, TermUtnFrt2025C1, ChairSalazar, voices: 13,
+            (Modality, [(1, 11), (3, 2)]),
+            (Outcome, [(1, 7), (2, 3), (3, 2), (4, 1)]),
+            (Attempts, [(1, 11), (2, 2)]),
+            (AnswersInClass, [(1, 7), (2, 4), (3, 1), (4, 1)]),
+            (ClassesHeld, [(1, 9), (2, 3), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 7), (2, 4), (3, 2)]),
+            (AnswersOutsideClass, [(1, 2), (2, 4), (3, 7)]),
+            (ExamDateNotice, [(1, 3), (2, 6), (3, 3), (4, 1)]),
+            (OffSyllabusExams, [(1, 10), (2, 2), (3, 1)]),
+            (UnderstoodInClass, [(1, 6), (2, 5), (3, 2)]),
+            (MaterialEnough, [(1, 4), (2, 7), (3, 2)]),
+            (KeptPace, [(1, 4), (2, 6), (3, 3)]),
+            (CouldAsk, [(1, 7), (2, 4), (3, 2)]));
+        AddChairWithItems(reviews, 390, SubjectUtnAnalisisMatematicoI, TermUtnFrt2026C1, ChairPeralta, voices: 8,
+            (Modality, [(1, 7), (3, 1)]),
+            (Outcome, [(1, 3), (2, 2), (3, 2), (4, 1)]),
+            (Attempts, [(1, 7), (2, 1)]),
+            (AnswersInClass, [(1, 1), (2, 4), (3, 2), (4, 1)]),
+            (ClassesHeld, [(1, 4), (2, 3), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 1), (2, 6), (3, 1)]),
+            (AnswersOutsideClass, [(1, 2), (2, 4), (3, 2)]),
+            (ExamDateNotice, [(1, 1), (2, 4), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 2), (2, 4), (3, 2)]),
+            (UnderstoodInClass, [(1, 1), (2, 5), (3, 2)]),
+            (MaterialEnough, [(1, 1), (2, 5), (3, 2)]),
+            (KeptPace, [(1, 1), (2, 5), (3, 2)]),
+            (CouldAsk, [(1, 2), (2, 4), (3, 2)]));
+
+        // UNSE: Navarro publica (perfil A), Quiroga publica (perfil B); La Gestión Administrativa
+        // publica justo en el piso (perfil D) y Introducción a la Pedagogía no llega (perfil A).
+        AddChairWithItems(reviews, 398, SubjectUnseMarcoJuridico, TermUnse2025C1, ChairNavarro, voices: 12,
+            (Modality, [(1, 11), (3, 1)]),
+            (Outcome, [(1, 7), (2, 3), (3, 1), (4, 1)]),
+            (Attempts, [(1, 11), (2, 1)]),
+            (AnswersInClass, [(1, 10), (2, 2), (3, 0), (4, 0)]),
+            (ClassesHeld, [(1, 9), (2, 2), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 8), (2, 3), (3, 1)]),
+            (AnswersOutsideClass, [(1, 7), (2, 4), (3, 1)]),
+            (ExamDateNotice, [(1, 7), (2, 2), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 8), (2, 3), (3, 1)]),
+            (UnderstoodInClass, [(1, 7), (2, 4), (3, 1)]),
+            (MaterialEnough, [(1, 7), (2, 4), (3, 1)]),
+            (KeptPace, [(1, 6), (2, 5), (3, 1)]),
+            (CouldAsk, [(1, 9), (2, 2), (3, 1)]));
+        AddChairWithItems(reviews, 410, SubjectUnseTecnologiasDeGestion, TermUnse2024C2, ChairQuiroga, voices: 11,
+            (Modality, [(1, 9), (3, 2)]),
+            (Outcome, [(1, 4), (2, 3), (3, 3), (4, 1)]),
+            (Attempts, [(1, 9), (2, 2)]),
+            (AnswersInClass, [(1, 1), (2, 6), (3, 3), (4, 1)]),
+            (ClassesHeld, [(1, 5), (2, 4), (3, 2)]),
+            (PracticeMatchesTheory, [(1, 2), (2, 8), (3, 1)]),
+            (AnswersOutsideClass, [(1, 2), (2, 6), (3, 3)]),
+            (ExamDateNotice, [(1, 1), (2, 6), (3, 3), (4, 1)]),
+            (OffSyllabusExams, [(1, 3), (2, 5), (3, 3)]),
+            (UnderstoodInClass, [(1, 2), (2, 7), (3, 2)]),
+            (MaterialEnough, [(1, 2), (2, 7), (3, 2)]),
+            (KeptPace, [(1, 2), (2, 7), (3, 2)]),
+            (CouldAsk, [(1, 3), (2, 6), (3, 2)]));
+        AddChairWithItems(reviews, 421, SubjectUnseGestionAdministrativa, TermUnse2024C1, ChairToledo, voices: 10,
+            (Modality, [(1, 9), (3, 1)]),
+            (Outcome, [(1, 5), (2, 3), (3, 1), (4, 1)]),
+            (Attempts, [(1, 9), (2, 1)]),
+            (AnswersInClass, [(1, 5), (2, 3), (3, 1), (4, 1)]),
+            (ClassesHeld, [(1, 7), (2, 2), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 5), (2, 3), (3, 2)]),
+            (AnswersOutsideClass, [(1, 2), (2, 3), (3, 5)]),
+            (ExamDateNotice, [(1, 2), (2, 5), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 8), (2, 1), (3, 1)]),
+            (UnderstoodInClass, [(1, 5), (2, 4), (3, 1)]),
+            (MaterialEnough, [(1, 3), (2, 5), (3, 2)]),
+            (KeptPace, [(1, 3), (2, 5), (3, 2)]),
+            (CouldAsk, [(1, 6), (2, 3), (3, 1)]));
+        AddChairWithItems(reviews, 431, SubjectUnsePedagogia, TermUnse2026C1, ChairEscobar, voices: 6,
+            (Modality, [(1, 5), (3, 1)]),
+            (Outcome, [(1, 3), (2, 1), (3, 1), (4, 1)]),
+            (Attempts, [(1, 5), (2, 1)]),
+            (AnswersInClass, [(1, 6), (2, 0), (3, 0), (4, 0)]),
+            (ClassesHeld, [(1, 4), (2, 2), (3, 0)]),
+            (PracticeMatchesTheory, [(1, 4), (2, 2), (3, 0)]),
+            (AnswersOutsideClass, [(1, 4), (2, 2), (3, 0)]),
+            (ExamDateNotice, [(1, 4), (2, 1), (3, 1), (4, 0)]),
+            (OffSyllabusExams, [(1, 4), (2, 2), (3, 0)]),
+            (UnderstoodInClass, [(1, 4), (2, 2), (3, 0)]),
+            (MaterialEnough, [(1, 3), (2, 2), (3, 1)]),
+            (KeptPace, [(1, 3), (2, 2), (3, 1)]),
+            (CouldAsk, [(1, 5), (2, 1), (3, 0)]));
+
+        // UNSTA, Tecnicatura en Automatización y Robótica: Villalba publica (perfil B), Figueroa
+        // publica (perfil D); Álgebra publica (perfil A) y Robótica 1 no llega (perfil B).
+        AddChairWithItems(reviews, 437, SubjectAyrProgramacionBasica1, Term2024C1, ChairVillalba, voices: 14,
+            (Modality, [(1, 12), (3, 2)]),
+            (Outcome, [(1, 5), (2, 4), (3, 4), (4, 1)]),
+            (Attempts, [(1, 12), (2, 2)]),
+            (AnswersInClass, [(1, 2), (2, 7), (3, 3), (4, 2)]),
+            (ClassesHeld, [(1, 6), (2, 5), (3, 3)]),
+            (PracticeMatchesTheory, [(1, 2), (2, 10), (3, 2)]),
+            (AnswersOutsideClass, [(1, 3), (2, 7), (3, 4)]),
+            (ExamDateNotice, [(1, 2), (2, 7), (3, 3), (4, 2)]),
+            (OffSyllabusExams, [(1, 4), (2, 7), (3, 3)]),
+            (UnderstoodInClass, [(1, 3), (2, 8), (3, 3)]),
+            (MaterialEnough, [(1, 2), (2, 9), (3, 3)]),
+            (KeptPace, [(1, 3), (2, 8), (3, 3)]),
+            (CouldAsk, [(1, 3), (2, 8), (3, 3)]));
+        AddChairWithItems(reviews, 451, SubjectAyrElectrotecnia, Term2025C2, ChairFigueroa, voices: 11,
+            (Modality, [(1, 10), (3, 1)]),
+            (Outcome, [(1, 5), (2, 3), (3, 2), (4, 1)]),
+            (Attempts, [(1, 9), (2, 2)]),
+            (AnswersInClass, [(1, 6), (2, 3), (3, 1), (4, 1)]),
+            (ClassesHeld, [(1, 7), (2, 3), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 5), (2, 4), (3, 2)]),
+            (AnswersOutsideClass, [(1, 2), (2, 3), (3, 6)]),
+            (ExamDateNotice, [(1, 2), (2, 5), (3, 2), (4, 2)]),
+            (OffSyllabusExams, [(1, 9), (2, 1), (3, 1)]),
+            (UnderstoodInClass, [(1, 6), (2, 4), (3, 1)]),
+            (MaterialEnough, [(1, 3), (2, 6), (3, 2)]),
+            (KeptPace, [(1, 3), (2, 6), (3, 2)]),
+            (CouldAsk, [(1, 7), (2, 3), (3, 1)]));
+        AddChairWithItems(reviews, 462, SubjectAyrAlgebra, Term2026C1, ChairGuzman, voices: 12,
+            (Modality, [(1, 11), (3, 1)]),
+            (Outcome, [(1, 7), (2, 3), (3, 1), (4, 1)]),
+            (Attempts, [(1, 11), (2, 1)]),
+            (AnswersInClass, [(1, 10), (2, 2), (3, 0), (4, 0)]),
+            (ClassesHeld, [(1, 9), (2, 2), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 8), (2, 3), (3, 1)]),
+            (AnswersOutsideClass, [(1, 7), (2, 4), (3, 1)]),
+            (ExamDateNotice, [(1, 7), (2, 2), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 8), (2, 3), (3, 1)]),
+            (UnderstoodInClass, [(1, 7), (2, 4), (3, 1)]),
+            (MaterialEnough, [(1, 7), (2, 4), (3, 1)]),
+            (KeptPace, [(1, 6), (2, 5), (3, 1)]),
+            (CouldAsk, [(1, 9), (2, 2), (3, 1)]));
+        AddChairWithItems(reviews, 474, SubjectAyrRobotica1, Term2024C2, ChairTorres, voices: 5,
+            (Modality, [(1, 4), (3, 1)]),
+            (Outcome, [(1, 3), (2, 1), (3, 1), (4, 0)]),
+            (Attempts, [(1, 4), (2, 1)]),
+            (AnswersInClass, [(1, 1), (2, 3), (3, 1), (4, 0)]),
+            (ClassesHeld, [(1, 3), (2, 1), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 0), (2, 4), (3, 1)]),
+            (AnswersOutsideClass, [(1, 1), (2, 3), (3, 1)]),
+            (ExamDateNotice, [(1, 1), (2, 3), (3, 1), (4, 0)]),
+            (OffSyllabusExams, [(1, 1), (2, 3), (3, 1)]),
+            (UnderstoodInClass, [(1, 1), (2, 3), (3, 1)]),
+            (MaterialEnough, [(1, 1), (2, 3), (3, 1)]),
+            (KeptPace, [(1, 1), (2, 3), (3, 1)]),
+            (CouldAsk, [(1, 1), (2, 3), (3, 1)]));
+
+        // UNSTA, Ingeniería en Informática: Carrizo publica (perfil A), Gómez publica (perfil B);
+        // Programación II publica (perfil D) y Bases de Datos no llega, a una reseña del piso
+        // (perfil A).
+        AddChairWithItems(reviews, 479, SubjectIngInformaticaProgramacion1, Term2025C1, ChairCarrizo, voices: 18,
+            (Modality, [(1, 16), (3, 2)]),
+            (Outcome, [(1, 11), (2, 3), (3, 2), (4, 2)]),
+            (Attempts, [(1, 16), (2, 2)]),
+            (AnswersInClass, [(1, 14), (2, 3), (3, 1), (4, 0)]),
+            (ClassesHeld, [(1, 13), (2, 4), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 12), (2, 5), (3, 1)]),
+            (AnswersOutsideClass, [(1, 11), (2, 6), (3, 1)]),
+            (ExamDateNotice, [(1, 11), (2, 4), (3, 2), (4, 1)]),
+            (OffSyllabusExams, [(1, 13), (2, 4), (3, 1)]),
+            (UnderstoodInClass, [(1, 11), (2, 6), (3, 1)]),
+            (MaterialEnough, [(1, 10), (2, 6), (3, 2)]),
+            (KeptPace, [(1, 9), (2, 7), (3, 2)]),
+            (CouldAsk, [(1, 13), (2, 4), (3, 1)]));
+        AddChairWithItems(reviews, 497, SubjectIngInformaticaMatematica1, Term2024C2, ChairGomez, voices: 12,
+            (Modality, [(1, 10), (3, 2)]),
+            (Outcome, [(1, 5), (2, 3), (3, 3), (4, 1)]),
+            (Attempts, [(1, 10), (2, 2)]),
+            (AnswersInClass, [(1, 2), (2, 6), (3, 3), (4, 1)]),
+            (ClassesHeld, [(1, 6), (2, 4), (3, 2)]),
+            (PracticeMatchesTheory, [(1, 2), (2, 8), (3, 2)]),
+            (AnswersOutsideClass, [(1, 2), (2, 6), (3, 4)]),
+            (ExamDateNotice, [(1, 2), (2, 6), (3, 3), (4, 1)]),
+            (OffSyllabusExams, [(1, 3), (2, 6), (3, 3)]),
+            (UnderstoodInClass, [(1, 2), (2, 7), (3, 3)]),
+            (MaterialEnough, [(1, 1), (2, 8), (3, 3)]),
+            (KeptPace, [(1, 2), (2, 7), (3, 3)]),
+            (CouldAsk, [(1, 3), (2, 6), (3, 3)]));
+        AddChairWithItems(reviews, 509, SubjectIngInformaticaProgramacion2, Term2025C2, ChairDiaz, voices: 13,
+            (Modality, [(1, 11), (3, 2)]),
+            (Outcome, [(1, 7), (2, 3), (3, 2), (4, 1)]),
+            (Attempts, [(1, 11), (2, 2)]),
+            (AnswersInClass, [(1, 7), (2, 4), (3, 1), (4, 1)]),
+            (ClassesHeld, [(1, 9), (2, 3), (3, 1)]),
+            (PracticeMatchesTheory, [(1, 7), (2, 4), (3, 2)]),
+            (AnswersOutsideClass, [(1, 2), (2, 4), (3, 7)]),
+            (ExamDateNotice, [(1, 3), (2, 6), (3, 3), (4, 1)]),
+            (OffSyllabusExams, [(1, 10), (2, 2), (3, 1)]),
+            (UnderstoodInClass, [(1, 6), (2, 5), (3, 2)]),
+            (MaterialEnough, [(1, 4), (2, 7), (3, 2)]),
+            (KeptPace, [(1, 4), (2, 6), (3, 3)]),
+            (CouldAsk, [(1, 7), (2, 4), (3, 2)]));
+        AddChairWithItems(reviews, 522, SubjectIngInformaticaBasesDeDatos, Term2026C1, ChairNunez, voices: 9,
+            (Modality, [(1, 8), (3, 1)]),
+            (Outcome, [(1, 5), (2, 2), (3, 1), (4, 1)]),
+            (Attempts, [(1, 8), (2, 1)]),
+            (AnswersInClass, [(1, 8), (2, 0), (3, 1), (4, 0)]),
+            (ClassesHeld, [(1, 6), (2, 3), (3, 0)]),
+            (PracticeMatchesTheory, [(1, 6), (2, 2), (3, 1)]),
+            (AnswersOutsideClass, [(1, 5), (2, 3), (3, 1)]),
+            (ExamDateNotice, [(1, 5), (2, 2), (3, 1), (4, 1)]),
+            (OffSyllabusExams, [(1, 6), (2, 2), (3, 1)]),
+            (UnderstoodInClass, [(1, 5), (2, 3), (3, 1)]),
+            (MaterialEnough, [(1, 5), (2, 3), (3, 1)]),
+            (KeptPace, [(1, 5), (2, 3), (3, 1)]),
+            (CouldAsk, [(1, 7), (2, 2), (3, 0)]));
+
+        // Co-cursada nueva: Programación I (Carrizo) + Matemática I (Gómez), UNSTA 2025-1c, con
+        // las primeras diez cuentas de Carrizo (ChairId null: el par no se atribuye a ninguna
+        // cátedra, mismo criterio que 211+111 y 102+103).
+        for (var i = 479; i <= 488; i++)
+        {
+            reviews.Add(new SeededReview(
+                ReviewIdAt(reviews.Count + 1), i, SubjectIngInformaticaMatematica1, Term2025C1, ChairId: null,
+                [(Outcome, 1), (UnderstoodInClass, (short)(i % 3 + 1))]));
+        }
+
+        // Co-cursada nueva: Marco Jurídico (Navarro) + La Gestión Administrativa (Toledo), UNSE
+        // 2025-1c, con las primeras diez cuentas de Navarro.
+        for (var i = 398; i <= 407; i++)
+        {
+            reviews.Add(new SeededReview(
+                ReviewIdAt(reviews.Count + 1), i, SubjectUnseGestionAdministrativa, TermUnse2025C1, ChairId: null,
+                [(Outcome, 1), (UnderstoodInClass, (short)(i % 3 + 1))]));
         }
 
         return reviews;
@@ -432,14 +902,17 @@ public static class CorpusSeedData
     }
 
     /// <summary>
-    /// Como <see cref="AddChair"/> pero con un juego de frases arbitrario en vez de las cuatro fijas:
-    /// lo usan los estados nuevos del corpus que responden otras frases para sumar variedad (al
-    /// menos ocho de las catorce del cuestionario entre todo el corpus).
+    /// Como <see cref="AddChair"/> pero con un juego de frases arbitrario en vez de las cuatro fijas
+    /// y un <paramref name="termId"/> explícito (no siempre <see cref="Term2024C1"/>, que es de
+    /// UNSTA): lo usan los estados nuevos del corpus que responden otras frases para sumar
+    /// variedad (al menos ocho de las catorce del cuestionario entre todo el corpus) y las cátedras
+    /// de otras universidades (R7).
     /// </summary>
     private static void AddChairWithItems(
         List<SeededReview> reviews,
         int firstAccount,
         Guid subjectId,
+        Guid termId,
         Guid chairId,
         int voices,
         params (ItemId ItemId, (short Value, int Count)[] Distribution)[] items)
@@ -452,7 +925,7 @@ public static class CorpusSeedData
         {
             var answers = expanded.Select(e => (e.ItemId, e.Values[i])).ToList();
             reviews.Add(new SeededReview(
-                ReviewIdAt(reviews.Count + 1), firstAccount + i, subjectId, Term2024C1, chairId, answers));
+                ReviewIdAt(reviews.Count + 1), firstAccount + i, subjectId, termId, chairId, answers));
         }
     }
 

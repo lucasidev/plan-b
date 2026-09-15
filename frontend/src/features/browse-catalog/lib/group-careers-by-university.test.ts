@@ -1,14 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { CareerCoverage, University } from '../types';
-import {
-  groupCareersByUniversity,
-  summarizeUniversitiesCoverage,
-} from './group-careers-by-university';
+import { summarizeUniversitiesCoverage } from './group-careers-by-university';
 
 /**
- * US-222 (browse-catalog/stories/US-222-browse-what-there-is-to-study/scenarios.md), E3 y N1: el
- * orden es alfabético, nunca por voces ni por cobertura. Los tests fuerzan un input desordenado
- * por voces/cobertura a propósito, para que un ordenamiento accidental por esos campos caiga.
+ * US-222 (browse-catalog/stories/US-222-browse-what-there-is-to-study/scenarios.md): cuántas
+ * carreras tiene cada institución y cuántas de esas tienen algo para leer, para la lente de
+ * Universidades. El orden alfabético por institución, para la lente de Carreras, lo prueba
+ * `group-careers-by-canonical.test.ts` (E3, N1).
  */
 
 function career(overrides: Partial<CareerCoverage>): CareerCoverage {
@@ -23,88 +21,35 @@ function career(overrides: Partial<CareerCoverage>): CareerCoverage {
     hasReviewsBelowFloor: false,
     totalSubjects: 0,
     coveredSubjects: 0,
+    canonicalGroupName: null,
     ...overrides,
   };
 }
-
-describe('groupCareersByUniversity', () => {
-  it('agrupa las carreras por su universityId', () => {
-    const careers = [
-      career({ careerId: 'a', universityId: 'unt', universityName: 'UNT' }),
-      career({ careerId: 'b', universityId: 'utn', universityName: 'UTN' }),
-      career({ careerId: 'c', universityId: 'unt', universityName: 'UNT' }),
-    ];
-
-    const groups = groupCareersByUniversity(careers);
-
-    expect(groups).toHaveLength(2);
-    expect(groups.find((g) => g.universityId === 'unt')?.careers.map((c) => c.careerId)).toEqual([
-      'a',
-      'c',
-    ]);
-  });
-
-  /**
-   * US-222 E3/N1: UNT (412 voces, mayor cobertura) va antes que UTN (96 voces, menor cobertura)
-   * por orden alfabético de institución, no porque tenga más voces ni más cobertura. El input
-   * viene con UTN primero para que un `.sort` que mire `voiceCount` en vez del nombre se note.
-   */
-  it('E3/N1: ordena las instituciones alfabético, no por voces ni por cobertura', () => {
-    const careers = [
-      career({
-        careerId: 'ing-utn',
-        universityId: 'utn',
-        universityName: 'UTN',
-        voiceCount: 96,
-        totalSubjects: 44,
-        coveredSubjects: 20,
-      }),
-      career({
-        careerId: 'ing-unt',
-        universityId: 'unt',
-        universityName: 'UNT',
-        voiceCount: 412,
-        totalSubjects: 51,
-        coveredSubjects: 23,
-      }),
-    ];
-
-    const groups = groupCareersByUniversity(careers);
-
-    expect(groups.map((g) => g.universityName)).toEqual(['UNT', 'UTN']);
-  });
-
-  it('ordena las carreras de cada institución alfabético, no por voces', () => {
-    const careers = [
-      career({ careerId: 'z', careerName: 'Zoología', voiceCount: 500 }),
-      career({ careerId: 'a', careerName: 'Agronomía', voiceCount: 1 }),
-    ];
-
-    const [group] = groupCareersByUniversity(careers);
-
-    expect(group.careers.map((c) => c.careerName)).toEqual(['Agronomía', 'Zoología']);
-  });
-
-  it('una lista vacía no rompe: sin grupos', () => {
-    expect(groupCareersByUniversity([])).toEqual([]);
-  });
-});
 
 describe('summarizeUniversitiesCoverage', () => {
   const unsta: University = { id: 'unsta', name: 'UNSTA', slug: 'unsta' };
   const utn: University = { id: 'utn', name: 'UTN', slug: 'utn' };
 
-  it('cuenta las carreras de cada institución y cuántas tienen algo para leer', () => {
+  /**
+   * El bug que este test fija (ADR-0096): un dato oficial solo, sin ninguna reseña, no cuenta
+   * como "con reseñas". Solo cuentan las voces publicadas o las reseñas cargándose bajo el piso.
+   */
+  it('cuenta las carreras de cada institución y cuántas tienen reseñas, no solo datos oficiales', () => {
     const careers = [
       career({ universityId: 'unsta', hasOfficialData: true, voiceCount: 0 }),
-      career({ universityId: 'unsta', hasOfficialData: false, voiceCount: 0 }),
+      career({
+        universityId: 'unsta',
+        hasOfficialData: false,
+        voiceCount: 0,
+        hasReviewsBelowFloor: true,
+      }),
       career({ universityId: 'unsta', hasOfficialData: false, voiceCount: 5 }),
     ];
 
     const [result] = summarizeUniversitiesCoverage([unsta], careers);
 
     expect(result.careerCount).toBe(3);
-    expect(result.careersWithSomethingToRead).toBe(2);
+    expect(result.careersWithReviews).toBe(2);
   });
 
   /**
@@ -120,6 +65,6 @@ describe('summarizeUniversitiesCoverage', () => {
     const utnResult = result.find((r) => r.id === 'utn');
     expect(utnResult).toBeDefined();
     expect(utnResult?.careerCount).toBe(0);
-    expect(utnResult?.careersWithSomethingToRead).toBe(0);
+    expect(utnResult?.careersWithReviews).toBe(0);
   });
 });

@@ -1,9 +1,10 @@
-import { Geist, IBM_Plex_Mono, Instrument_Serif } from 'next/font/google';
+import { Geist, IBM_Plex_Mono, Newsreader } from 'next/font/google';
 
 /**
- * Font stacks for plan-b. The mockup uses:
+ * Font stacks for plan-b. The mockup (planb-catalogo-adentro.html) uses:
  *   - Geist for display + UI (one family doing two duties)
- *   - Instrument Serif italic for the <em> emphasis inside h-display
+ *   - Newsreader for headings, big numbers and quotes (design-system.md:
+ *     "reemplaza a Instrument Serif")
  *   - IBM Plex Mono for metadata, eyebrows, code-ish bits
  *
  * Each one exposes a CSS variable consumed by globals.css through the
@@ -25,8 +26,8 @@ export const fontUi = Geist({
   display: 'swap',
 });
 
-export const fontSerif = Instrument_Serif({
-  weight: '400',
+export const fontSerif = Newsreader({
+  weight: ['400', '500', '600'],
   style: ['normal', 'italic'],
   subsets: ['latin'],
   variable: '--next-font-serif',

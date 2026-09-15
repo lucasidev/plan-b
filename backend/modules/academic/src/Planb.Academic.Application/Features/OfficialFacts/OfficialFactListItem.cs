@@ -11,6 +11,8 @@ namespace Planb.Academic.Application.Features.OfficialFacts;
 public sealed record OfficialFactListItem : IRelievedClaim
 {
     public Guid Id { get; init; }
+    /// <summary>El sujeto de la afirmación. Constante dentro de un <see cref="IOfficialFactReader.ListBySubjectAsync"/>; distingue filas de sujetos distintos cuando vienen de <see cref="IOfficialFactReader.ListBySubjectTypeAsync"/>.</summary>
+    public Guid SubjectId { get; init; }
     public string Field { get; init; } = string.Empty;
     public string? Value { get; init; }
     public string? Unit { get; init; }

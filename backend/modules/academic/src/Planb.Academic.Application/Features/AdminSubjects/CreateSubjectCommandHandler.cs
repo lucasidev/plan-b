@@ -8,9 +8,9 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Academic.Application.Features.AdminSubjects;
 
 /// <summary>
-/// Handler del POST /api/academic/career-plans/{planId}/subjects (admin). El code es único por
-/// plan (UNIQUE(career_plan_id, code) intra-schema), así que se chequea contra el repo antes de
-/// crear el aggregate.
+/// Handler del POST /api/academic/career-plans/{planId}/subjects (admin). El code es opcional y
+/// único por plan cuando se provee (UNIQUE(career_plan_id, code) intra-schema), así que se chequea
+/// contra el repo antes de crear el aggregate, solo cuando el caller lo manda.
 /// </summary>
 public static class CreateSubjectCommandHandler
 {
@@ -31,8 +31,9 @@ public static class CreateSubjectCommandHandler
 
         var careerPlanId = new CareerPlanId(command.CareerPlanId);
 
-        var trimmedCode = command.Code.Trim();
-        if (await subjects.ExistsByCodeAsync(careerPlanId, trimmedCode, excludeId: null, ct))
+        var trimmedCode = command.Code?.Trim();
+        if (!string.IsNullOrWhiteSpace(trimmedCode)
+            && await subjects.ExistsByCodeAsync(careerPlanId, trimmedCode, excludeId: null, ct))
         {
             return SubjectErrors.CodeAlreadyExists;
         }

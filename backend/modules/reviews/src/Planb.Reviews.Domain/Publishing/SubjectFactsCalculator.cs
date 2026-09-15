@@ -31,13 +31,18 @@ public static class SubjectFactsCalculator
         ArgumentNullException.ThrowIfNull(chairs);
 
         var listings = chairs
-            .Select(c => new ChairListing(
-                c.ChairId,
-                c.ChairName,
-                c.ReviewCount,
-                c.ReviewCount >= PublishingRules.ChairMinimumReviews,
-                Math.Max(0, PublishingRules.ChairMinimumReviews - c.ReviewCount),
-                c.LastReviewedAt))
+            .Select(c =>
+            {
+                var isPublished = c.ReviewCount >= PublishingRules.ChairMinimumReviews;
+                return new ChairListing(
+                    c.ChairId,
+                    c.ChairName,
+                    c.ReviewCount,
+                    isPublished,
+                    Math.Max(0, PublishingRules.ChairMinimumReviews - c.ReviewCount),
+                    c.LastReviewedAt,
+                    isPublished ? SubjectChairHeadlineCalculator.Calculate(c.Tallies) : null);
+            })
             // Por cantidad de voces y nunca por sus números: ordenarlas por resultado sería un
             // ranking, y acá no hay ranking. La que más aportó va primero, y nada más.
             .OrderByDescending(c => c.ReviewCount)
@@ -55,7 +60,6 @@ public static class SubjectFactsCalculator
                 TotalVoices: 0,
                 PublishingChairs: 0,
                 ChairsBelowFloor: listings.Count(c => !c.IsPublished),
-                Attempts: null,
                 Completion: null,
                 Spread: [],
                 Shared: [],
@@ -67,72 +71,10 @@ public static class SubjectFactsCalculator
             TotalVoices: publishing.Sum(c => c.ReviewCount),
             PublishingChairs: publishing.Count,
             ChairsBelowFloor: listings.Count(c => !c.IsPublished),
-            Attempts: Aggregate(publishing, PublishingRules.AttemptsItemCode),
             Completion: CompletionOf(publishing),
             Spread: BuildSpread(publishing),
             Shared: BuildShared(publishing),
             Chairs: listings);
-    }
-
-    /// <summary>
-    /// Suma una frase sobre todas las cátedras que publican y devuelve su distribución. El
-    /// denominador son las respuestas a esa frase, no las reseñas: lo salteado no cuenta.
-    /// </summary>
-    private static ItemDistribution? Aggregate(
-        IReadOnlyList<ChairContribution> chairs, string itemCode)
-    {
-        var tallies = chairs
-            .SelectMany(c => c.Tallies)
-            .Where(t => string.Equals(t.ItemCode, itemCode, StringComparison.Ordinal))
-            .ToList();
-
-        if (tallies.Count == 0)
-        {
-            return null;
-        }
-
-        // Se suman opción por opción, respetando el orden en que se ofrecieron al responder.
-        var options = tallies
-            .SelectMany(t => t.Options)
-            .GroupBy(o => o.Value)
-            .Select(g => new
-            {
-                Value = g.Key,
-                Order = g.Min(o => o.Order),
-                g.First().Label,
-                g.First().Valence,
-                Count = g.Sum(o => o.Count),
-            })
-            .OrderBy(o => o.Order)
-            .ToList();
-
-        var total = options.Sum(o => o.Count);
-        if (total == 0)
-        {
-            return null;
-        }
-
-        var mode = options.OrderByDescending(o => o.Count).ThenBy(o => o.Order).First();
-
-        // La opción abierta viaja aparte para que la ficha pueda decirla sola. Hoy solo la frase de
-        // intentos tiene una; el día que haya una segunda, esto pide un flag en el catálogo en vez
-        // de una constante por frase.
-        var openEnded = string.Equals(itemCode, PublishingRules.AttemptsItemCode, StringComparison.Ordinal)
-            ? options.FirstOrDefault(o => o.Value == PublishingRules.AttemptsOpenEndedValue)
-            : null;
-
-        return new ItemDistribution(
-            itemCode,
-            mode.Label,
-            Percent(mode.Count, total),
-            total,
-            options
-                .Select(o => new PublishedOption(o.Label, Percent(o.Count, total), o.Valence))
-                .ToList(),
-            openEnded is null
-                ? null
-                : new PublishedOption(
-                    openEnded.Label, Percent(openEnded.Count, total), openEnded.Valence));
     }
 
     /// <summary>

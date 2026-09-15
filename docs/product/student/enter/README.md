@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), Posición tomada). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a reseñar, corregir un dato o responder, con el motivo a la vista y con la vuelta a donde estaba. Además viven acá las dos pantallas que son chasis y no un paso de ningún recorrido: Error, que sostiene a todas las demás cuando algo falla, e Inicio, donde se aterriza después de cruzar el umbral. Ninguna le pertenece a otra épica en particular.
+Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), Posición tomada). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a reseñar, corregir un dato o responder, con el motivo a la vista y con la vuelta a donde estaba. Además vive acá la pantalla que es chasis y no un paso de ningún recorrido: Error, que sostiene a todas las demás cuando algo falla y no le pertenece a otra épica en particular. Después de cruzar el umbral se aterriza en [Mis aportes](../undo/screens/SC-018-my-contributions/README.md); Inicio, que hacía eso, se retiró el 2026-09-14.
 
 Sostiene garantías de otras épicas ([Que no me molesten](../../guarantees/README.md): US-168 el gate en la acción, US-169 no repreguntar; y la garantía de recuperar la contraseña, que antes era O5-3) y sirve a los que producen.
 

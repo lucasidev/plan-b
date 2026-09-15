@@ -16,9 +16,10 @@ namespace Planb.Academic.Domain.Subjects;
 /// </para>
 ///
 /// <para>
-/// El invariante <see cref="TermKind"/>/<see cref="TermInYear"/> es app-level: si la materia es
-/// <see cref="Planb.Academic.Domain.TermKind.FullYear"/>, <c>TermInYear</c> debe ser null. Para
-/// cualquier otra cadencia, <c>TermInYear</c> es obligatorio (1-N según la cadencia).
+/// El invariante <see cref="TermKind"/>/<see cref="TermInYear"/> es app-level: sin cadencia no hay
+/// cuatrimestre, y si la materia es <see cref="Planb.Academic.Domain.TermKind.FullYear"/> tampoco
+/// (<c>TermInYear</c> debe ser null en los dos casos). Para cualquier otra cadencia, <c>TermInYear</c>
+/// es obligatorio (1-N según la cadencia).
 /// </para>
 ///
 /// <para>
@@ -36,13 +37,26 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     public const int MaxNameLength = 200;
 
     public CareerPlanId CareerPlanId { get; private set; }
-    public string Code { get; private set; } = null!;
+
+    /// <summary>
+    /// Código institucional (ej. "MAT101"). Opcional: la fuente oficial del plan no siempre lo
+    /// publica. Único por plan cuando se provee (UNIQUE(career_plan_id, code); Postgres no hace
+    /// chocar los NULL, así que varias materias sin código conviven sin colisionar).
+    /// </summary>
+    public string? Code { get; private set; }
+
     public string Name { get; private set; } = null!;
     public int YearInPlan { get; private set; }
     public int? TermInYear { get; private set; }
-    public TermKind TermKind { get; private set; }
-    public int WeeklyHours { get; private set; }
-    public int TotalHours { get; private set; }
+
+    /// <summary>
+    /// Cadencia de cursada. Opcional: sin ella no hay <see cref="TermInYear"/> (ver invariante en
+    /// <see cref="Validate"/>).
+    /// </summary>
+    public TermKind? TermKind { get; private set; }
+
+    public int? WeeklyHours { get; private set; }
+    public int? TotalHours { get; private set; }
     public string? Description { get; private set; }
     /// <summary>
     /// True cuando la materia la creó el backoffice. False cuando se materializó al confirmar
@@ -70,20 +84,20 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     /// </summary>
     public static Result<Subject> Create(
         CareerPlanId careerPlanId,
-        string code,
+        string? code,
         string name,
         int yearInPlan,
         int? termInYear,
-        TermKind termKind,
-        int weeklyHours,
-        int totalHours,
+        TermKind? termKind,
+        int? weeklyHours,
+        int? totalHours,
         string? description,
         IDateTimeProvider clock,
         bool isOfficial = true)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        var validation = Validate(code, name, yearInPlan, termInYear, termKind, weeklyHours, totalHours);
+        var validation = Validate(name, yearInPlan, termInYear, termKind, weeklyHours, totalHours);
         if (validation.IsFailure)
         {
             return validation.Error;
@@ -94,7 +108,7 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
         {
             Id = SubjectId.New(),
             CareerPlanId = careerPlanId,
-            Code = code.Trim(),
+            Code = NormalizeOptional(code),
             Name = name.Trim(),
             YearInPlan = yearInPlan,
             TermInYear = termInYear,
@@ -115,25 +129,25 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     /// ya cargadas (que asumen mismo plan); para eso está la migración asistida de plan (US-084).
     /// </summary>
     public Result Update(
-        string code,
+        string? code,
         string name,
         int yearInPlan,
         int? termInYear,
-        TermKind termKind,
-        int weeklyHours,
-        int totalHours,
+        TermKind? termKind,
+        int? weeklyHours,
+        int? totalHours,
         string? description,
         IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        var validation = Validate(code, name, yearInPlan, termInYear, termKind, weeklyHours, totalHours);
+        var validation = Validate(name, yearInPlan, termInYear, termKind, weeklyHours, totalHours);
         if (validation.IsFailure)
         {
             return validation.Error;
         }
 
-        Code = code.Trim();
+        Code = NormalizeOptional(code);
         Name = name.Trim();
         YearInPlan = yearInPlan;
         TermInYear = termInYear;
@@ -194,13 +208,13 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     public static Subject Hydrate(
         SubjectId id,
         CareerPlanId careerPlanId,
-        string code,
+        string? code,
         string name,
         int yearInPlan,
         int? termInYear,
-        TermKind termKind,
-        int weeklyHours,
-        int totalHours,
+        TermKind? termKind,
+        int? weeklyHours,
+        int? totalHours,
         string? description,
         bool isOfficial,
         bool isActive,
@@ -225,23 +239,19 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
         };
 
     /// <summary>
-    /// Reglas compartidas por <see cref="Create"/> y <see cref="Update"/>. Los rangos son límites
-    /// defensivos, no reglas académicas finas.
+    /// Reglas compartidas por <see cref="Create"/> y <see cref="Update"/>. Solo el nombre y el año
+    /// son obligatorios: la fuente oficial de un plan no siempre publica código, cadencia, cuatrimestre
+    /// ni carga horaria (feat: a subject records only what its source publishes). Cuando un dato
+    /// opcional está presente, sus rangos son límites defensivos, no reglas académicas finas.
     /// </summary>
     private static Result Validate(
-        string code,
         string name,
         int yearInPlan,
         int? termInYear,
-        TermKind termKind,
-        int weeklyHours,
-        int totalHours)
+        TermKind? termKind,
+        int? weeklyHours,
+        int? totalHours)
     {
-        if (string.IsNullOrWhiteSpace(code))
-        {
-            return SubjectErrors.CodeRequired;
-        }
-
         if (string.IsNullOrWhiteSpace(name))
         {
             return SubjectErrors.NameRequired;
@@ -254,9 +264,13 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
             return SubjectErrors.YearInPlanOutOfRange;
         }
 
-        // Invariante anual vs no-anual: el data-model lo declara como CHECK. Lo enforcamos acá
-        // para que el Result<> tenga el motivo claro.
-        if (termKind == TermKind.FullYear)
+        // Invariante cadencia vs cuatrimestre: el data-model lo declara como CHECK. Sin cadencia no
+        // hay cuatrimestre; anual tampoco lo lleva; cualquier otra cadencia lo exige. Lo enforcamos
+        // acá para que el Result<> tenga el motivo claro.
+        // Fully-qualified: TermKind (el enum) y TermKind (la property) ya no comparten tipo exacto
+        // ahora que la property es nullable, así que el atajo "mismo nombre, mismo tipo" del
+        // lenguaje para desambiguar deja de aplicar (CS0120 si se referencia sin calificar).
+        if (termKind is null or Planb.Academic.Domain.TermKind.FullYear)
         {
             if (termInYear is not null)
             {
@@ -287,11 +301,19 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
             return SubjectErrors.WeeklyHoursOutOfRange;
         }
 
-        // La carga total sí tiene que ser positiva (una materia sin horas no existe) y nunca menor
-        // que la semanal.
-        if (totalHours < weeklyHours || totalHours <= 0)
+        // La carga total, cuando está, tiene que ser positiva (una materia sin horas no existe) y,
+        // si también hay semanal, nunca menor que ella.
+        if (totalHours is { } total)
         {
-            return SubjectErrors.TotalHoursOutOfRange;
+            if (total <= 0)
+            {
+                return SubjectErrors.TotalHoursOutOfRange;
+            }
+
+            if (weeklyHours is { } weekly && total < weekly)
+            {
+                return SubjectErrors.TotalHoursOutOfRange;
+            }
         }
 
         return Result.Success();

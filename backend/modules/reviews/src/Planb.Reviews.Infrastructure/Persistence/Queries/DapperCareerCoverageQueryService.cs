@@ -60,31 +60,6 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
                 cancellationToken: ct));
     }
 
-    public async Task<IReadOnlyList<Guid>> GetCoveredSubjectIdsAsync(
-        Guid careerPlanId, int minimumReviews, CancellationToken ct = default)
-    {
-        // Mismo cruce que GetCoverageAsync (chairs activos con >= MinimumReviews reseñas), acotado
-        // a las materias de ESE plan en vez de a los planes activos de una carrera entera.
-        const string sql = @"
-            SELECT DISTINCT ch.subject_id
-            FROM academic.chairs ch
-            JOIN academic.subjects s ON s.id = ch.subject_id
-            JOIN reviews.reviews cr ON cr.chair_id = ch.id
-            WHERE ch.is_active = true
-              AND s.is_active = true
-              AND s.career_plan_id = @CareerPlanId
-            GROUP BY ch.id, ch.subject_id
-            HAVING count(*) >= @MinimumReviews;";
-
-        using var db = _connections.Create();
-        var subjectIds = await db.QueryAsync<Guid>(
-            new CommandDefinition(
-                sql,
-                new { CareerPlanId = careerPlanId, MinimumReviews = minimumReviews },
-                cancellationToken: ct));
-        return subjectIds.ToList();
-    }
-
     public async Task<IReadOnlyDictionary<Guid, CareerCoverageBatch>> GetCoverageBatchAsync(
         IReadOnlyCollection<Guid> careerIds, int minimumReviews, CancellationToken ct = default)
     {
@@ -142,6 +117,41 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
             r => r.CareerId,
             r => new CareerCoverageBatch(
                 r.TotalSubjects, r.CoveredSubjects, r.VoiceCount, r.HasReviewsBelowFloor));
+    }
+
+    public async Task<IReadOnlyList<PlanSubjectCoverageView>> GetSubjectCoverageAsync(
+        Guid careerPlanId, int minimumReviews, CancellationToken ct = default)
+    {
+        // Mismo cruce que GetCoverageAsync (chairs activos con sus reseñas), acotado a las materias
+        // de ESE plan y sin el HAVING: acá interesa el conteo detrás de la decisión, no solo quién
+        // la cruzó. El INNER JOIN a reviews.reviews ya excluye una cátedra sin ninguna reseña antes
+        // del GROUP BY, así que una materia sin ninguna cátedra reseñada no llega a tener fila.
+        const string sql = @"
+            WITH chair_tallies AS (
+                SELECT ch.subject_id, ch.id AS chair_id, count(*) AS review_count
+                FROM academic.chairs ch
+                JOIN academic.subjects s ON s.id = ch.subject_id
+                JOIN reviews.reviews cr ON cr.chair_id = ch.id
+                WHERE ch.is_active = true
+                  AND s.is_active = true
+                  AND s.career_plan_id = @CareerPlanId
+                GROUP BY ch.id, ch.subject_id
+            )
+            SELECT
+                subject_id                              AS SubjectId,
+                sum(review_count)::int                   AS ReviewCount,
+                count(*)::int                            AS ChairCount,
+                bool_or(review_count >= @MinimumReviews) AS IsCovered
+            FROM chair_tallies
+            GROUP BY subject_id;";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<PlanSubjectCoverageView>(
+            new CommandDefinition(
+                sql,
+                new { CareerPlanId = careerPlanId, MinimumReviews = minimumReviews },
+                cancellationToken: ct));
+        return rows.ToList();
     }
 
     private sealed record CareerCoverageBatchRow(

@@ -17,6 +17,8 @@ export type Career = {
   slug: string;
   /** US-088: carreras cargadas por alumnos (crowdsourced) tienen isOfficial=false. */
   isOfficial: boolean;
+  /** La facultad o sede que dicta la oferta; null si la carrera no tiene una asignada. */
+  academicUnitName: string | null;
 };
 
 /**
@@ -46,11 +48,24 @@ export type CareerPlanSummary = {
 export type Subject = {
   id: string;
   careerPlanId: string;
-  code: string;
+  code: string | null;
   name: string;
   yearInPlan: number;
   termInYear: number | null;
-  termKind: string;
+  termKind: string | null;
+};
+
+/**
+ * Cuánto junta una materia del plan (US-134, SC-018): cuántas cátedras y reseñas tiene detrás, y
+ * si alguna ya cruzó el piso. Espeja `PlanSubjectCoverageView` de
+ * `GET /api/reviews/career-plans/{id}/subject-coverage`. Una materia sin ninguna reseña con
+ * cátedra no tiene entrada: se lee "sin reseñas".
+ */
+export type SubjectCoverage = {
+  subjectId: string;
+  reviewCount: number;
+  chairCount: number;
+  isCovered: boolean;
 };
 
 /**
@@ -71,10 +86,12 @@ export type CareerCoverage = {
   hasReviewsBelowFloor: boolean;
   totalSubjects: number;
   coveredSubjects: number;
+  /** Nombre del grupo de carrera canónica (US-195) si esta oferta está agrupada con otras; null si no. */
+  canonicalGroupName: string | null;
 };
 
-/** Una universidad con cuántas carreras tiene y cuántas de esas tienen algo para leer (US-222). */
+/** Una universidad con cuántas carreras tiene y cuántas de esas tienen reseñas, ver `hasReviews` (US-222, ADR-0096). */
 export type UniversityWithCoverage = University & {
   careerCount: number;
-  careersWithSomethingToRead: number;
+  careersWithReviews: number;
 };

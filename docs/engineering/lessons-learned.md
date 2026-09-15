@@ -12,6 +12,62 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-15 · El click en una fila del catálogo se perdía en CI como el del shell
+
+**Síntoma**: con el catálogo adentro de planb (#536), `soft-navigation.spec.ts:36` falló en el proyecto de celular de CI: el click en la primera fila de "En una sola institución" (`/careers`) no navegó y la URL siguió en `/careers` hasta que venció el `expect`. Contra el build local no falló.
+
+**Causa raíz**: la traza de la corrida 35024385479 muestra la firma de la entrada del 2026-09-14: el click a los 287 ms, un prefetch de fondo de `/universities` a los 326 ms, el RSC real de la ficha de la carrera respondiendo 200 a los 367 ms, el chunk de la página a los 444 ms, y la URL sin cambiar. El respaldo de esa entrada cubría solo los links del shell; las filas del catálogo usaban `next/link` directo.
+
+**Fix**: `ShellLink` pasa a llamarse `FallbackLink` (`frontend/src/components/layout/fallback-link.tsx`) y lo usan también los links del catálogo (migas, Explorar, las fichas, Dónde estudiarla) y los de Mis aportes. Autenticación, backoffice, landing y páginas de error siguen con `next/link`, donde no hay evidencia de la falla. Un test de `single-institution-career-list` falla si esa fila vuelve a `next/link`.
+
+**Prevención**: un link interno nuevo de planb usa `FallbackLink`. Si CI falla con "la URL no cambió" y el build local no lo reproduce, bajar la traza de la corrida antes de tocar código.
+
+---
+
+## 2026-09-15 · Correr los proyectos de E2E por separado escondió un test que dependía del orden de CI
+
+**Síntoma**: `soft-navigation.spec.ts:92` pasó en todas las tandas locales y falló en el proyecto de celular de CI con un locator que resolvía a dos links ("strict mode violation").
+
+**Causa raíz**: en CI los proyectos `parallel`, `serial` y `mobile` corren en ese orden sobre la misma base, y los specs anteriores publican reseñas en la materia 211; con reseñas, la ficha de la UNSTA lista la Tecnicatura también en "Por dónde empezar". Las tandas locales corrían cada proyecto con `--no-deps` sobre una base recién creada, sin esas reseñas.
+
+**Fix**: el test busca el link dentro de "Facultades y carreras".
+
+**Prevención**:
+
+- Antes de pushear, correr los E2E con las dependencias de proyectos de `playwright.config.ts` (sin `--no-deps`): reproduce el orden y los datos de CI.
+- Un locator de E2E se acota a su sección cuando la pantalla puede repetir el mismo link.
+
+---
+
+## 2026-09-15 · La navegación entre dos fichas de planb se colgaba en producción sin ningún error
+
+**Síntoma**: con el catálogo adentro del shell de planb (#536), dos transiciones por click fallaban de forma intermitente solo contra el build (`bun scripts/run-e2e.ts --build`): de la ficha de cátedra a Método por "¿Cómo calculamos esto?" (`method.spec.ts`) y de Dónde estudiarla a la ficha de la carrera (`soft-navigation.spec.ts`). En la traza, el click dispara el fetch RSC del destino, que responde 200, bajan sus chunks y la URL no cambia en los 10 s del `expect`. En `next dev` no pasó nunca.
+
+**Causa raíz**: las dos transiciones van entre rutas `force-dynamic` de `(planb)` sin `loading.tsx` en ninguna de las dos puntas. La matriz de transiciones por click, con diez repeticiones cada una, lo separa: fallan solo esas dos (4 de 20 y 4 de 10) y pasan todas las que tienen un `loading.tsx` en alguna punta o van a una página estática. El mecanismo adentro de Next no quedó establecido; la evidencia es la matriz. Dos hipótesis cayeron con corridas repetidas: las páginas estáticas del slot `@crumbs` (con `force-dynamic` falló igual) y la precarga de un link vecino (con `prefetch={false}` en ese link y en siete más fallaron 8 de 30 corridas, y las trazas ya no tenían ninguna precarga).
+
+**Fix**: `loading.tsx` en cada ruta dinámica de `(planb)` que no lo tenía (`chairs/[id]`, `subjects/[id]`, `careers/[id]`, `careers/[id]/where-to-study`, `method` y `teachers/[id]`), todos con `PageFrameSkeleton`. Con eso, `method.spec.ts` y `soft-navigation.spec.ts` dieron 180 de 180 en diez repeticiones contra el build.
+
+**Prevención**:
+
+- Toda ruta dinámica nueva de `(planb)` lleva su `loading.tsx`.
+- Un cambio de routing, layouts, slots o loading boundaries se mide con `--build --repeat-each=10`: con una falla de 1 en 3 una corrida sola pasa por suerte, y dos arreglos de esta misma investigación pasaron así una vez antes de caer.
+- "La URL no cambió" tiene más de una causa: antes de apagar precargas por la entrada del 2026-09-14, mirar si las dos puntas de la navegación tienen loading boundary.
+- `soft-navigation.spec.ts` queda como test permanente de las transiciones entre tipos de ruta de `(planb)`.
+
+---
+
+## 2026-09-15 · Navegar hacia una ruta con página propia en el slot rompía el router en producción
+
+**Síntoma**: con las migas del topbar en el parallel route `@crumbs` de `(planb)`, el click en una universidad de Explorar dejaba "Application error" (`TypeError: e is not iterable`) contra el build. Typecheck, la suite unitaria, la revisión y las navegaciones en `next dev` habían pasado.
+
+**Causa raíz**: navegar sin recargar desde una ruta que resuelve el slot con `default.tsx` hacia una que tiene página propia en el slot. Una matriz de siete transiciones por click contra el build aisló el caso, después de dos hipótesis falsas (la precarga de los `Link` y los `loading.tsx`).
+
+**Fix**: cada ruta de `(planb)` tiene su página en `@crumbs`: las fichas resuelven sus migas con datos y el resto dibuja `GenericCrumbs`. `@crumbs/_lib/slot-pages.test.ts` falla si una ruta nueva no tiene su página en el slot.
+
+**Prevención**: una ruta nueva de `(planb)` lleva su página en `@crumbs` (el test de paridad lo exige), y la navegación entre tipos de slot se verifica contra el build, no contra `next dev`.
+
+---
+
 ## 2026-09-14 · El click de un link del shell se perdía igual que el push/refresh de un formulario
 
 **Síntoma**: tres E2E (`settings.spec.ts`, `help.spec.ts`, `write-review.spec.ts`) flakeaban de forma intermitente en CI con la firma de la entrada del 2026-09-09, ahora en el click de un `<Link>` del shell en vez del `router.push`/`refresh` posterior a guardar un formulario (issue #525, con #510 adentro, dos avistajes previos en `help.spec.ts`; antecedente en `admin/chairs.spec.ts`, #477): después de entrar, el click en un link del sidebar o el topbar no navegaba nunca y `expect(page).toHaveURL(...)` vencía sus 30s. En `main` fallaron 2 de 3 corridas el 2026-09-14.

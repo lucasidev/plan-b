@@ -3,10 +3,12 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useActionState, useEffect, useId, useRef, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
+import { subjectLabel } from '@/lib/subject-label';
 import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import { addPrerequisiteAction, removePrerequisiteAction } from '../actions';
 import { prerequisiteQueries } from '../api';
+import { compareByCodeThenName } from '../lib/compare-by-code';
 import {
   type AdminSubjectRow,
   initialManagePrerequisiteState,
@@ -129,7 +131,7 @@ function AddPrerequisiteForm({
           <option value="">Elegí una materia</option>
           {subjects.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.code} · {s.name}
+              {s.code ? `${s.code} · ${s.name}` : s.name}
             </option>
           ))}
         </select>
@@ -150,7 +152,7 @@ function AddPrerequisiteForm({
           <option value="">Elegí la materia correlativa</option>
           {candidateRequired.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.code} · {s.name}
+              {s.code ? `${s.code} · ${s.name}` : s.name}
             </option>
           ))}
         </select>
@@ -240,8 +242,12 @@ function PrerequisiteChip({
   const [error, setError] = useState<string | null>(null);
   const subject = subjectsById.get(edge.subjectId);
   const required = subjectsById.get(edge.requiredSubjectId);
-  const subjectLabel = subject?.code ?? edge.subjectId;
-  const requiredLabel = required?.code ?? edge.requiredSubjectId;
+  // Sin código, mostrar el id es ilegible: el nombre (con el código si lo tiene) es lo que el
+  // admin reconoce. El id solo queda como último recurso si la materia no está en el mapa.
+  const subjectDisplay = subject ? subjectLabel(subject.code, subject.name) : edge.subjectId;
+  const requiredDisplay = required
+    ? subjectLabel(required.code, required.name)
+    : edge.requiredSubjectId;
 
   function runRemove() {
     setError(null);
@@ -261,15 +267,15 @@ function PrerequisiteChip({
     <li className="flex flex-col gap-1 rounded-md bg-bg-elev px-2.5 py-1.5 text-[12px]">
       <div className="flex items-center justify-between gap-2">
         <span className="truncate text-ink">
-          <span className="font-mono text-ink-2">{subjectLabel}</span> requiere{' '}
-          <span className="font-mono text-ink-2">{requiredLabel}</span>
+          <span className="text-ink-2">{subjectDisplay}</span> requiere{' '}
+          <span className="text-ink-2">{requiredDisplay}</span>
         </span>
         <button
           type="button"
           onClick={runRemove}
           disabled={isPending}
           className="shrink-0 rounded px-1.5 py-0.5 text-[11px] text-ink-3 hover:bg-st-failed-bg hover:text-st-failed-fg disabled:opacity-50"
-          aria-label={`Quitar correlativa: ${subjectLabel} requiere ${requiredLabel}`}
+          aria-label={`Quitar correlativa: ${subjectDisplay} requiere ${requiredDisplay}`}
         >
           {isPending ? '...' : 'Quitar'}
         </button>
@@ -287,12 +293,13 @@ function sortEdges(
   edges: PrerequisiteEdge[],
   subjectsById: Map<string, AdminSubjectRow>,
 ): PrerequisiteEdge[] {
+  // Una materia sin código no puede quedar antes que una con código solo porque '' < cualquier
+  // string: al no encontrarla en el mapa (no debería pasar, pero el id es el último recurso) se
+  // trata igual, sin código.
+  const lookup = (id: string) => subjectsById.get(id) ?? { code: null, name: id };
   return [...edges].sort((a, b) => {
-    const codeA = subjectsById.get(a.subjectId)?.code ?? '';
-    const codeB = subjectsById.get(b.subjectId)?.code ?? '';
-    if (codeA !== codeB) return codeA.localeCompare(codeB);
-    const reqA = subjectsById.get(a.requiredSubjectId)?.code ?? '';
-    const reqB = subjectsById.get(b.requiredSubjectId)?.code ?? '';
-    return reqA.localeCompare(reqB);
+    const bySubject = compareByCodeThenName(lookup(a.subjectId), lookup(b.subjectId));
+    if (bySubject !== 0) return bySubject;
+    return compareByCodeThenName(lookup(a.requiredSubjectId), lookup(b.requiredSubjectId));
   });
 }

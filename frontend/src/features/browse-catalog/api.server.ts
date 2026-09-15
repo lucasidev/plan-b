@@ -7,6 +7,7 @@ import type {
   CareerPlan,
   CareerPlanSummary,
   Subject,
+  SubjectCoverage,
   University,
 } from './types';
 
@@ -78,19 +79,22 @@ export async function fetchSubjectsByPlanServer(careerPlanId: string): Promise<S
 }
 
 /**
- * Ids de materias del plan que ya tienen una cátedra que cruzó el piso de publicación (US-134,
- * V10): lo que `SubjectGrid` usa para marcar "Medida" sin que haya que entrar materia por materia
- * a ubicar la cobertura. Vive en reviews (no en academic): es lo que las reseñas dicen del plan.
+ * Cuántas cátedras y reseñas junta cada materia del plan, y si alguna ya cruzó el piso de
+ * publicación (US-134, SC-018): lo que `SubjectGrid` usa para mostrar "3 cátedras · 28 reseñas" o
+ * "sin reseñas" sin que haya que entrar materia por materia. Vive en reviews (no en academic): es
+ * lo que las reseñas dicen del plan. Solo trae las materias con al menos una reseña con cátedra.
  */
-export async function fetchCoveredSubjectIdsServer(careerPlanId: string): Promise<string[]> {
+export async function fetchPlanSubjectCoverageServer(
+  careerPlanId: string,
+): Promise<SubjectCoverage[]> {
   const response = await apiFetchAuthenticated(
-    `/api/reviews/career-plans/${careerPlanId}/covered-subjects`,
+    `/api/reviews/career-plans/${careerPlanId}/subject-coverage`,
     { cache: 'no-store' },
   );
   if (!response.ok) {
-    throw new Error(`Covered subjects fetch failed: ${response.status}`);
+    throw new Error(`Plan subject coverage fetch failed: ${response.status}`);
   }
-  return (await response.json()) as string[];
+  return (await response.json()) as SubjectCoverage[];
 }
 
 /**

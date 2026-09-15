@@ -24,6 +24,7 @@ internal sealed class DapperOfficialFactReader : IOfficialFactReader
         const string sql = @"
             SELECT
                 id                  AS Id,
+                subject_id          AS SubjectId,
                 field               AS Field,
                 value               AS Value,
                 unit                AS Unit,
@@ -47,6 +48,39 @@ internal sealed class DapperOfficialFactReader : IOfficialFactReader
                 sql,
                 new { SubjectType = subjectType.ToString(), SubjectId = subjectId },
                 cancellationToken: ct));
+        return rows.ToList();
+    }
+
+    public async Task<IReadOnlyList<OfficialFactListItem>> ListBySubjectTypeAsync(
+        OfficialFactSubjectType subjectType, CancellationToken ct = default)
+    {
+        // Mismo índice que ListBySubjectAsync (ix_official_facts_subject_field): subject_type es
+        // su columna líder, así que filtrar solo por ella sigue siendo un scan por índice.
+        const string sql = @"
+            SELECT
+                id                  AS Id,
+                subject_id          AS SubjectId,
+                field               AS Field,
+                value               AS Value,
+                unit                AS Unit,
+                period              AS Period,
+                source_name         AS SourceName,
+                source_url          AS SourceUrl,
+                source_document     AS SourceDocument,
+                source_retrieved_at AS SourceRetrievedAt,
+                status              AS Status,
+                derivation_rule_id  AS DerivationRuleId,
+                note                AS Note,
+                relieved_at         AS RelievedAt,
+                created_at          AS CreatedAt
+            FROM academic.official_facts
+            WHERE subject_type = @SubjectType
+            ORDER BY subject_id ASC, field ASC, relieved_at DESC;";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<OfficialFactListItem>(
+            new CommandDefinition(
+                sql, new { SubjectType = subjectType.ToString() }, cancellationToken: ct));
         return rows.ToList();
     }
 }

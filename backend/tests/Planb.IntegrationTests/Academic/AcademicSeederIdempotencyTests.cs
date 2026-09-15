@@ -175,6 +175,48 @@ public class AcademicSeederIdempotencyTests
         log.Warnings.ShouldBeEmpty();
     }
 
+    /// <summary>
+    /// El bug que R7 encontró leyendo el código: con <c>Code</c> nullable (ADR-0097), el ledger de
+    /// materias deduplicaba por (plan, code), y varias materias sin código del mismo plan
+    /// compartían esa clave. Solo la primera entraba a la base; el resto se salteaba como si ya
+    /// existiera (<see cref="AcademicSeeder"/>, <c>SeedSubjectsAsync</c>). Sin FK entre chairs y
+    /// subjects, una cátedra podía terminar apuntando a una materia que nunca se insertó, y
+    /// <c>seed-db</c> salía en verde igual.
+    /// </summary>
+    [Fact]
+    public async Task Seeding_a_plan_with_several_codeless_subjects_stores_every_one_of_them()
+    {
+        await using var handle = await AcademicDatabase.CreateMigratedAsync(
+            _fixture, FreshDb("codeless-subjects"));
+
+        await SeederOn(handle.Context, new RecordingLogger<AcademicSeeder>()).SeedAsync();
+
+        await using var fresh = AcademicDatabase.Open(handle.ConnectionString);
+
+        // Las cinco carreras de R7 (AcademicSeedData.Subjects): los conteos que declara el seed,
+        // ninguna materia salteada por compartir código nulo con otra del mismo plan.
+        var expectedSubjectCounts = new (CareerPlanId PlanId, int Count)[]
+        {
+            (new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000023")), 26), // UNT Programador Universitario
+            (new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000401")), 16), // UNSE Analista en Gestión Educativa
+            (new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000004")), 29), // UNSTA Automatización y Robótica
+            (new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000001")), 55), // UNSTA Ingeniería en Informática
+            (new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000030")), 37), // UTN-FRT Ingeniería en Sistemas de Información
+        };
+
+        foreach (var (planId, count) in expectedSubjectCounts)
+        {
+            var stored = await fresh.Subjects.AsNoTracking().CountAsync(s => s.CareerPlanId == planId);
+            stored.ShouldBe(count, $"plan {planId.Value} perdió materias sin código en el seed");
+        }
+
+        // Las cátedras nuevas de R7 apuntan a materias que existen de verdad: sin FK entre las dos
+        // tablas, el único chequeo posible es contra la base ya sembrada.
+        var subjectIds = (await fresh.Subjects.AsNoTracking().Select(s => s.Id).ToListAsync()).ToHashSet();
+        var chairSubjectIds = await fresh.Chairs.AsNoTracking().Select(c => c.SubjectId).ToListAsync();
+        chairSubjectIds.ShouldAllBe(id => subjectIds.Contains(id));
+    }
+
     private static async Task<IReadOnlyList<(string Table, int Rows)>> CountsAsync(
         string connectionString)
     {

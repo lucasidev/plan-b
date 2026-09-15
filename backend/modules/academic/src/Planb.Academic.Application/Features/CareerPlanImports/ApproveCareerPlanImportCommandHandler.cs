@@ -22,8 +22,8 @@ namespace Planb.Academic.Application.Features.CareerPlanImports;
 ///         no la crea con isOfficial=false</item>
 ///   <item>Chequea conflict de CareerPlan (mismo career, mismo año). Si existe, 409 con su id</item>
 ///   <item>Crea CareerPlan (isOfficial=false)</item>
-///   <item>Crea Subjects en bloque (isOfficial=false) con defaults de hours (4 semanal, 60 total
-///         para cuatrimestral, 120 para anual)</item>
+///   <item>Crea Subjects en bloque (isOfficial=false); código, cadencia, cuatrimestre y horas
+///         quedan null cuando el item no los trae (ADR-0097, nada se inventa)</item>
 ///   <item>MarkApproved en el aggregate</item>
 ///   <item>Publica integration event CareerPlanImported</item>
 ///   <item>SaveChanges atómico</item>
@@ -114,22 +114,21 @@ public static class ApproveCareerPlanImportCommandHandler
         var subjectsToAdd = new List<Subject>(command.Items.Count);
         foreach (var item in command.Items)
         {
-            if (!StrictEnum.TryParse<TermKind>(item.TermKind, out var termKind))
-            {
-                termKind = TermKind.FourMonth;
-            }
-
-            var (weekly, total) = DefaultHoursFor(termKind);
+            // Sin cadencia detectada, o si no parsea a un valor definido del enum, queda null: el
+            // item no la trae, no se inventa una (ADR-0097). Mismo criterio para el cuatrimestre,
+            // que además el dominio exige null cuando no hay cadencia o la cadencia es anual.
+            var termKind = StrictEnum.Parse<TermKind>(item.TermKind);
+            var termInYear = termKind is null or TermKind.FullYear ? null : item.TermInYear;
 
             var subjectResult = Subject.Create(
                 careerPlanId: careerPlan.Id,
                 code: item.Code,
                 name: item.Name,
                 yearInPlan: item.YearInPlan,
-                termInYear: termKind == TermKind.FullYear ? null : (item.TermInYear ?? 1),
+                termInYear: termInYear,
                 termKind: termKind,
-                weeklyHours: weekly,
-                totalHours: total,
+                weeklyHours: null,
+                totalHours: null,
                 description: null,
                 clock: clock,
                 isOfficial: false);
@@ -140,7 +139,9 @@ public static class ApproveCareerPlanImportCommandHandler
                 continue;
             }
 
-            if (!seenCodes.Add(subjectResult.Value.Code))
+            // Code es opcional: varias materias sin código no son duplicadas entre sí (mismo
+            // criterio que el UNIQUE de DB, que tampoco choca NULLs). Solo dedupea cuando hay code.
+            if (subjectResult.Value.Code is not null && !seenCodes.Add(subjectResult.Value.Code))
             {
                 continue;
             }
@@ -182,13 +183,4 @@ public static class ApproveCareerPlanImportCommandHandler
             CareerId: career.Id.Value,
             SubjectCount: subjectsToAdd.Count);
     }
-
-    private static (int weekly, int total) DefaultHoursFor(TermKind kind) => kind switch
-    {
-        TermKind.FullYear => (4, 120),
-        TermKind.FourMonth => (4, 60),
-        TermKind.TwoMonth => (4, 30),
-        TermKind.SixMonth => (4, 60),
-        _ => (4, 60),
-    };
 }

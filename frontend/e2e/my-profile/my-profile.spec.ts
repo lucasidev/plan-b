@@ -28,7 +28,7 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
     // Navegar directo a /my-profile en lugar de via AvatarMenu. La interacción con el dropdown
     // era flaky en CI: el menuitem se clickea antes de que el menú termine de abrir y la

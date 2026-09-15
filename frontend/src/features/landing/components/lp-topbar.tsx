@@ -3,7 +3,7 @@ import { Logo } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** True cuando hay sesión activa: cambia los CTAs anónimos por "Ir a mi inicio". */
+  /** True cuando hay sesión activa: cambia los CTAs anónimos por "Ir a mis aportes". */
   isLoggedIn: boolean;
 };
 
@@ -20,8 +20,9 @@ const NAV_LINK_CLASSES = cn(
  * `onClick preventDefault` del mock.
  *
  * `isLoggedIn` decide los CTAs: anónimo ve "Ingresar" / "Crear cuenta"; con
- * sesión ve un único "Ir a mi inicio →" hacia /home. La landing nunca
- * redirige sola a los usuarios logueados (ver US-054-f, notas de
+ * sesión ve un único "Ir a mis aportes →" hacia /reviews/mine (Inicio se retiró
+ * el 2026-09-14: Mis aportes es adonde entra una cuenta de alumno). La landing
+ * nunca redirige sola a los usuarios logueados (ver US-054-f, notas de
  * implementación): este topbar es la única adaptación por sesión.
  */
 export function LpTopbar({ isLoggedIn }: Props) {
@@ -45,7 +46,7 @@ export function LpTopbar({ isLoggedIn }: Props) {
       </nav>
       {isLoggedIn ? (
         <Link
-          href="/home"
+          href="/reviews/mine"
           prefetch
           className={cn(
             'inline-flex items-center justify-center font-medium rounded-pill shadow-card transition-colors',
@@ -54,7 +55,7 @@ export function LpTopbar({ isLoggedIn }: Props) {
           )}
           style={{ padding: '9px 16px', fontSize: 13.5 }}
         >
-          Ir a mi inicio →
+          Ir a mis aportes →
         </Link>
       ) : (
         <>

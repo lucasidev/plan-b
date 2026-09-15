@@ -197,6 +197,158 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         detail.TotalHours.ShouldBe(128);
     }
 
+    /// <summary>
+    /// Una materia solo publica lo que su fuente oficial trae: la mayoría de las universidades no
+    /// publican código, tipo de cursada ni carga horaria. Crear y editar sin esos campos tiene que
+    /// responder bien y devolverlos en null, tanto en el detalle admin como en el catálogo público.
+    /// </summary>
+    [Fact]
+    public async Task Admin_creates_and_updates_subject_without_code_term_kind_or_hours()
+    {
+        var admin = await AdminAsync();
+        var planId = await CreateCareerPlanAsync();
+
+        var create = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects",
+            new
+            {
+                code = (string?)null,
+                name = "Materia Sin Código",
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var detail = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created!.Id}");
+        detail!.Code.ShouldBeNull();
+        detail.TermKind.ShouldBeNull();
+        detail.TermInYear.ShouldBeNull();
+        detail.WeeklyHours.ShouldBeNull();
+        detail.TotalHours.ShouldBeNull();
+
+        var update = await admin.Client.PatchAsJsonAsync(
+            $"/api/academic/subjects/{created.Id}",
+            new
+            {
+                code = (string?)null,
+                name = "Materia Sin Código Editada",
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        update.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var afterUpdate = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created.Id}");
+        afterUpdate!.Name.ShouldBe("Materia Sin Código Editada");
+        afterUpdate.Code.ShouldBeNull();
+        afterUpdate.TermKind.ShouldBeNull();
+        afterUpdate.WeeklyHours.ShouldBeNull();
+        afterUpdate.TotalHours.ShouldBeNull();
+
+        var publicList = await admin.Client.GetOkAsync<List<PublicSubjectDto>>(
+            $"/api/academic/subjects?careerPlanId={planId}");
+        var publicRow = publicList!.Single(s => s.Id == created.Id);
+        publicRow.Code.ShouldBeNull();
+        publicRow.TermKind.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// Dos materias sin código en el mismo plan no chocan contra UNIQUE(career_plan_id, code):
+    /// Postgres no hace chocar los NULL entre sí (mismo criterio que <see cref="Subject"/>). El
+    /// handler tiene que reflejar eso y no llamar a <c>ExistsByCodeAsync</c> con null, o la segunda
+    /// alta fallaría con un falso 409.
+    /// </summary>
+    [Fact]
+    public async Task Two_subjects_without_code_in_the_same_plan_are_both_created()
+    {
+        var admin = await AdminAsync();
+        var planId = await CreateCareerPlanAsync();
+
+        static object SubjectWithoutCode(string name) => new
+        {
+            code = (string?)null,
+            name,
+            yearInPlan = 1,
+            termInYear = (int?)null,
+            termKind = (string?)null,
+            weeklyHours = (int?)null,
+            totalHours = (int?)null,
+            description = (string?)null,
+        };
+
+        var first = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects", SubjectWithoutCode("Primera Sin Código"));
+        first.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var firstCreated = await first.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var second = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects", SubjectWithoutCode("Segunda Sin Código"));
+        second.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var secondCreated = await second.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var list = await admin.Client.GetOkAsync<ListDto>(
+            $"/api/academic/career-plans/{planId}/subjects");
+        list!.Items.ShouldContain(s => s.Id == firstCreated!.Id);
+        list.Items.ShouldContain(s => s.Id == secondCreated!.Id);
+    }
+
+    /// <summary>
+    /// Una edición puede vaciar lo que la materia tenía, no solo cargarlo: si la fuente se corrige
+    /// (o el dato del alta era un error), código, cadencia, cuatrimestre y horas tienen que poder
+    /// volver a null.
+    /// </summary>
+    [Fact]
+    public async Task Admin_update_clears_code_term_kind_and_hours_from_a_subject_that_had_them()
+    {
+        var admin = await AdminAsync();
+        var planId = await CreateCareerPlanAsync();
+
+        var create = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var before = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created!.Id}");
+        before!.Code.ShouldNotBeNull();
+        before.TermKind.ShouldNotBeNull();
+        before.WeeklyHours.ShouldNotBeNull();
+        before.TotalHours.ShouldNotBeNull();
+
+        var update = await admin.Client.PatchAsJsonAsync(
+            $"/api/academic/subjects/{created.Id}",
+            new
+            {
+                code = (string?)null,
+                name = before.Name,
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        update.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var after = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created.Id}");
+        after!.Code.ShouldBeNull();
+        after.TermKind.ShouldBeNull();
+        after.TermInYear.ShouldBeNull();
+        after.WeeklyHours.ShouldBeNull();
+        after.TotalHours.ShouldBeNull();
+    }
+
     [Fact]
     public async Task Delete_with_dependents_returns_409_with_dependents_list()
     {
@@ -315,11 +467,11 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
     private sealed record StatusDto(Guid Id, bool IsActive);
     private sealed record ListDto(IReadOnlyList<SubjectDto> Items);
     private sealed record SubjectDto(
-        Guid Id, string Code, string Name, int YearInPlan, int? TermInYear, string TermKind,
-        int WeeklyHours, int TotalHours, string? Description, bool IsOfficial, bool IsActive);
+        Guid Id, string? Code, string Name, int YearInPlan, int? TermInYear, string? TermKind,
+        int? WeeklyHours, int? TotalHours, string? Description, bool IsOfficial, bool IsActive);
     private sealed record PublicSubjectDto(
-        Guid Id, Guid CareerPlanId, string Code, string Name, int YearInPlan, int? TermInYear,
-        string TermKind);
+        Guid Id, Guid CareerPlanId, string? Code, string Name, int YearInPlan, int? TermInYear,
+        string? TermKind);
     private sealed record DependentDto(Guid Id, string Code, string Name);
     private sealed record HasDependentsDto(string Code, IReadOnlyList<DependentDto> Dependents);
 }

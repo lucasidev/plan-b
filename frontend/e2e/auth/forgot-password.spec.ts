@@ -63,13 +63,13 @@ test.describe('forgot/reset password (US-033)', () => {
       await expect(page).toHaveURL(/\/sign-in\?reset=success/, { timeout: 15_000 });
       await expect(page.getByRole('status').filter({ hasText: /listo/i })).toBeVisible();
 
-      // 5. Sign-in con la nueva pw → /home
+      // 5. Sign-in con la nueva pw → Mis aportes
       await page.getByLabel(/tu email/i).fill(student.email);
       await page.getByLabel(/^contraseña$/i).fill(TEMP_PASSWORD);
       await page.getByRole('button', { name: /^entrar$/i }).click();
       // Timeout generoso (#436): en la suite completa con 3 workers medimos esta navegación
       // cayendo por carga con 15s; 30s le da margen sin caer en un reintento.
-      await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+      await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
     } finally {
       // La contraseña ya cambió a TEMP_PASSWORD en el paso 4: es la que hace falta para
       // re-autenticar y borrar la cuenta (self-service, ADR-0044).

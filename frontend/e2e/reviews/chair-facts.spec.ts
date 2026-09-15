@@ -126,7 +126,7 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
     await page.getByLabel(/tu email/i).fill(last.email);
     await page.getByLabel(/^contraseña$/i).fill(last.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
     await page.goto('/reviews/new');
     await page.getByRole('searchbox', { name: /materia/i }).fill(chair.subjectName);
@@ -150,7 +150,11 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
     await context.clearCookies();
     await page.goto(`/chairs/${chair.chairId}`);
 
-    await expect(page.getByText(/10 voces/i)).toBeVisible({ timeout: 30_000 });
+    // .pb-h-meta es la línea de sustento de la cabecera, y solo ella: un /10 reseñas/i suelto
+    // matchea más de un elemento (la tira de stats también junta "10" y "reseñas" cerca).
+    await expect(page.locator('.pb-h-meta')).toContainText(/10 reseñas de \d{4}/, {
+      timeout: 30_000,
+    });
     await expect(page.getByText(/con 1 más se publica/i)).toHaveCount(0);
 
     // La moda como badge, con su etiqueta literal y su porcentaje: nunca un promedio.

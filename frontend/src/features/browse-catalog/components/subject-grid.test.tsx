@@ -90,27 +90,147 @@ describe('groupSubjectsByYear', () => {
 
     expect(year1.terms).toHaveLength(2);
   });
+
+  /**
+   * Contrato: una materia puede venir sin `termKind` (además de sin `termInYear`, ya cubierto por
+   * las anuales). Va a un grupo propio dentro de su año, sin título de cuatrimestre: distinto del
+   * grupo anual (`termKind: 'FullYear'`), que sí tiene su propio título ("anual").
+   */
+  it('agrupa las materias sin tipo de cursada en un grupo propio, aparte del anual', () => {
+    const subjects = [
+      subject({ id: 'sin-cadencia', code: null, yearInPlan: 1, termInYear: null, termKind: null }),
+      subject({ id: 'anual', code: 'Z900', yearInPlan: 1, termInYear: null, termKind: 'FullYear' }),
+      subject({ id: 'c1', code: 'A100', yearInPlan: 1, termInYear: 1, termKind: 'FourMonth' }),
+    ];
+
+    const [year1] = groupSubjectsByYear(subjects);
+
+    expect(year1.terms).toHaveLength(3);
+    const withoutKind = year1.terms.find((t) => t.termKind === null);
+    expect(withoutKind?.subjects.map((s) => s.id)).toEqual(['sin-cadencia']);
+  });
+
+  /**
+   * Anual y sin cadencia comparten `termInYear: null`, así que ese campo solo no alcanza para
+   * ordenarlos entre sí. El grupo sin cadencia va último: no hay dato que lo ubique en el año,
+   * ni siquiera "corre todo el año" como el anual.
+   */
+  it('ubica el grupo sin cadencia después del anual, sin importar el orden del input', () => {
+    const subjects = [
+      subject({ id: 'sin-cadencia', code: null, yearInPlan: 1, termInYear: null, termKind: null }),
+      subject({ id: 'anual', code: 'Z900', yearInPlan: 1, termInYear: null, termKind: 'FullYear' }),
+      subject({ id: 'c1', code: 'A100', yearInPlan: 1, termInYear: 1, termKind: 'FourMonth' }),
+    ];
+
+    const [year1] = groupSubjectsByYear(subjects);
+
+    expect(year1.terms.map((t) => t.termKind)).toEqual(['FourMonth', 'FullYear', null]);
+  });
 });
 
-describe('SubjectGrid, cuáles materias tienen ficha (V10)', () => {
+describe('SubjectGrid, cuánto junta cada materia (US-134, SC-018)', () => {
   const covered = subject({ id: 'covered', code: 'A100', name: 'Con ficha' });
   const uncovered = subject({ id: 'uncovered', code: 'B200', name: 'Sin ficha todavía' });
 
-  it('marca "Medida" solo a la materia cuyo id está en coveredSubjectIds', () => {
+  function coverageMap(
+    entries: [string, { reviewCount: number; chairCount: number; isCovered: boolean }][],
+  ) {
+    return new Map(entries.map(([id, c]) => [id, { subjectId: id, ...c }]));
+  }
+
+  it('la materia con cobertura dice cuántas cátedras y reseñas junta, en negrita', () => {
     render(
-      <SubjectGrid subjects={[covered, uncovered]} coveredSubjectIds={new Set(['covered'])} />,
+      <SubjectGrid
+        subjects={[covered, uncovered]}
+        subjectCoverage={coverageMap([
+          ['covered', { reviewCount: 28, chairCount: 3, isCovered: true }],
+        ])}
+      />,
     );
 
     const coveredCard = screen.getByRole('link', { name: /con ficha/i });
     const uncoveredCard = screen.getByRole('link', { name: /sin ficha todavía/i });
 
-    expect(within(coveredCard).getByText('Medida')).toBeInTheDocument();
-    expect(within(uncoveredCard).queryByText('Medida')).not.toBeInTheDocument();
+    expect(within(coveredCard).getByText('28 reseñas en 3 cátedras')).toHaveClass('font-semibold');
+    expect(within(uncoveredCard).getByText('sin reseñas')).toBeInTheDocument();
   });
 
-  it('sin coveredSubjectIds, ninguna materia se marca como medida', () => {
+  it('con reseñas pero sin cruzar el piso, dice el conteo sin negrita', () => {
+    render(
+      <SubjectGrid
+        subjects={[covered, uncovered]}
+        subjectCoverage={coverageMap([
+          ['covered', { reviewCount: 4, chairCount: 1, isCovered: false }],
+        ])}
+      />,
+    );
+
+    const coveredCard = screen.getByRole('link', { name: /con ficha/i });
+    const text = within(coveredCard).getByText('4 reseñas en 1 cátedra');
+    expect(text).not.toHaveClass('font-semibold');
+  });
+
+  it('sin subjectCoverage, todas las materias dicen "sin reseñas"', () => {
     render(<SubjectGrid subjects={[covered, uncovered]} />);
 
-    expect(screen.queryByText('Medida')).not.toBeInTheDocument();
+    expect(screen.getAllByText('sin reseñas')).toHaveLength(2);
+  });
+});
+
+/**
+ * El grupo sin cadencia (termKind null) no tiene título propio para separarse visualmente: el
+ * borde superior es lo único que evita que sus materias se lean como parte del grupo anterior. Sin
+ * grupo anterior en el mismo año (plan entero sin cuatrimestres, como UNSTA y UTN), ese borde
+ * quedaría pegado debajo de "Año N" sin separar nada, así que no va.
+ */
+describe('SubjectGrid, el borde del grupo sin cadencia', () => {
+  it('aparece cuando el grupo sin cadencia tiene otro grupo antes en el mismo año', () => {
+    render(
+      <SubjectGrid
+        subjects={[
+          subject({
+            id: 'con-cadencia',
+            code: 'A100',
+            name: 'Con cadencia',
+            yearInPlan: 1,
+            termInYear: 1,
+            termKind: 'FourMonth',
+          }),
+          subject({
+            id: 'sin-cadencia',
+            code: null,
+            name: 'Sin cadencia',
+            yearInPlan: 1,
+            termInYear: null,
+            termKind: null,
+          }),
+        ]}
+      />,
+    );
+
+    const card = screen.getByRole('link', { name: /sin cadencia/i });
+    const termGroup = card.parentElement?.parentElement;
+    expect(termGroup).toHaveClass('border-t', 'border-line', 'pt-4');
+  });
+
+  it('no aparece cuando el grupo sin cadencia es el único del año', () => {
+    render(
+      <SubjectGrid
+        subjects={[
+          subject({
+            id: 'sin-cadencia',
+            code: null,
+            name: 'Sin cadencia sola',
+            yearInPlan: 1,
+            termInYear: null,
+            termKind: null,
+          }),
+        ]}
+      />,
+    );
+
+    const card = screen.getByRole('link', { name: /sin cadencia sola/i });
+    const termGroup = card.parentElement?.parentElement;
+    expect(termGroup).not.toHaveClass('border-t');
   });
 });

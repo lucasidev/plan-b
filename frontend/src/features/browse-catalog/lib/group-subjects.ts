@@ -12,7 +12,8 @@ type SubjectTermGroup = {
   /** Clave estable para el `key` de React: `${termInYear ?? 'anual'}-${termKind}`. */
   key: string;
   termInYear: number | null;
-  termKind: string;
+  /** Null agrupa las materias sin tipo de cursada, aparte de las anuales (`termKind: 'FullYear'`). */
+  termKind: string | null;
   subjects: Subject[];
 };
 
@@ -52,8 +53,13 @@ export function groupSubjectsByYear(subjects: readonly Subject[]): SubjectYearGr
     group.subjects.push(subject);
   }
 
-  const termOrder = (term: SubjectTermGroup) => term.termInYear ?? Number.MAX_SAFE_INTEGER;
-  const byCode = (a: Subject, b: Subject) => a.code.localeCompare(b.code);
+  // Anual (termKind 'FullYear') y sin cadencia (termKind null) comparten termInYear null, así que
+  // no alcanza con ese campo para ordenarlos: sin cadencia va último, después de todo lo numerado
+  // y de Anual, porque no hay dato que lo ubique en el año.
+  const termOrder = (term: SubjectTermGroup) => {
+    if (term.termInYear !== null) return term.termInYear;
+    return term.termKind === null ? Number.MAX_SAFE_INTEGER : Number.MAX_SAFE_INTEGER - 1;
+  };
 
   return [...years.entries()]
     .sort(([yearA], [yearB]) => yearA - yearB)
@@ -61,6 +67,13 @@ export function groupSubjectsByYear(subjects: readonly Subject[]): SubjectYearGr
       yearInPlan,
       terms: [...termMap.values()]
         .sort((a, b) => termOrder(a) - termOrder(b))
-        .map((term) => ({ ...term, subjects: [...term.subjects].sort(byCode) })),
+        .map((term) => ({ ...term, subjects: [...term.subjects].sort(compareSubjectsByCode) })),
     }));
+}
+
+/** Ordena por código; las materias sin código cargado van al final. */
+export function compareSubjectsByCode(a: Subject, b: Subject): number {
+  if (a.code === null) return b.code === null ? 0 : 1;
+  if (b.code === null) return -1;
+  return a.code.localeCompare(b.code);
 }

@@ -7,15 +7,18 @@
 
 export interface SubjectFacts {
   subjectId: string;
-  subjectCode: string;
+  subjectCode: string | null;
   subjectName: string;
   yearInPlan: number;
+  careerPlanId: string;
+  careerId: string;
+  careerName: string;
+  universityName: string;
   isPublished: boolean;
   totalVoices: number;
   publishingChairs: number;
   chairsBelowFloor: number;
   span: SubjectSpan | null;
-  attempts: Distribution | null;
   completion: SubjectCompletion | null;
   enablesCount: number;
   spread: Spread[];
@@ -27,29 +30,6 @@ export interface SubjectFacts {
 export interface SubjectSpan {
   fromYear: number;
   toYear: number;
-}
-
-/**
- * La distribución de una frase, con su moda. Nunca un promedio.
- *
- * `openEnded` es la opción abierta de la frase ("tres o más"), cuando tiene una. Viene separada del
- * resto para que la ficha la diga sola: es la gente a la que le costó, que es justo la que un
- * promedio taparía.
- */
-export interface Distribution {
-  code: string;
-  text: string;
-  modeLabel: string;
-  modePercent: number;
-  total: number;
-  options: Slice[];
-  openEnded: Slice | null;
-}
-
-export interface Slice {
-  label: string;
-  percent: number;
-  isNegative: boolean;
 }
 
 export interface SubjectCompletion {
@@ -90,6 +70,22 @@ export interface SubjectChair {
   isPublished: boolean;
   reviewsMissingToPublish: number;
   lastReviewedAt: string | null;
+  leadTeacherName: string | null;
+  headline: SubjectChairHeadline | null;
+}
+
+/**
+ * La frase de conducta con la moda más marcada de una cátedra publicada (US-129): mismo ítem,
+ * opción y porcentaje que su propia ficha ya publica como moda (ADR-0083). `optionValue` identifica
+ * la opción de forma estable (es lo que se persiste; el texto se afina y el orden se puede
+ * reordenar en la curaduría, el valor no); `chair-headlines.ts` lo traduce a la frase de
+ * conclusión.
+ */
+export interface SubjectChairHeadline {
+  itemCode: string;
+  optionValue: number;
+  percent: number;
+  respondents: number;
 }
 
 /**
@@ -101,7 +97,7 @@ export interface SubjectChair {
 export type TakenWith = {
   subjectId: string;
   subjectName: string;
-  subjectCode: string;
+  subjectCode: string | null;
   togetherCount: number;
   /** Cuántas cuentas dejaron al menos una de las dos. Solo viaja si el par publica. */
   droppedCount: number;

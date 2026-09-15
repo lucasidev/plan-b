@@ -13,13 +13,13 @@
 
 export type AdminSubjectRow = {
   id: string;
-  code: string;
+  code: string | null;
   name: string;
   yearInPlan: number;
   termInYear: number | null;
-  termKind: string;
-  weeklyHours: number;
-  totalHours: number;
+  termKind: string | null;
+  weeklyHours: number | null;
+  totalHours: number | null;
   description: string | null;
   isOfficial: boolean;
   isActive: boolean;
@@ -61,7 +61,7 @@ export const initialManagePrerequisiteState: ManagePrerequisiteFormState = { sta
 export type ToggleResult = { ok: true } | { ok: false; message: string };
 
 /** Materia dependiente que devuelve el 409 has_dependents al intentar archivar una materia. */
-export type SubjectDependent = { id: string; code: string; name: string };
+export type SubjectDependent = { id: string; code: string | null; name: string };
 
 /**
  * Resultado de archivar una materia (soft delete, DELETE /api/academic/subjects/{id}). Además del

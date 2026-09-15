@@ -54,9 +54,9 @@ describe('ItemRow', () => {
     expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
 
     // Cada tramo con su propio "de N": si estuvieran sumados habría un solo 128.
-    expect(screen.getByText(/de 16$/)).toBeInTheDocument();
-    expect(screen.getByText(/de 112$/)).toBeInTheDocument();
-    expect(screen.queryByText(/de 128$/)).not.toBeInTheDocument();
+    expect(screen.getByText(/de 16 voces$/)).toBeInTheDocument();
+    expect(screen.getByText(/de 112 voces$/)).toBeInTheDocument();
+    expect(screen.queryByText(/de 128 voces$/)).not.toBeInTheDocument();
   });
 
   /**
@@ -101,7 +101,7 @@ describe('ItemRow', () => {
 
     expect(screen.getByText('Todavía nadie respondió esta pregunta.')).toBeInTheDocument();
     expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
-    expect(screen.getByText(/de 112$/)).toBeInTheDocument();
+    expect(screen.getByText(/de 112 voces$/)).toBeInTheDocument();
     expect(screen.getByText(/no se comparan/)).toBeInTheDocument();
   });
 
@@ -133,5 +133,34 @@ describe('ItemRow', () => {
       'Faltaron muchas · 44 %',
       'Faltaron muchas · 50 %',
     ]);
+  });
+
+  /** La moda va en mono, como `.mode` de la maqueta: sin esto hereda la tipografía de cuerpo. */
+  it('la moda va en IBM Plex Mono', () => {
+    render(<ItemRow item={base} last={false} />);
+
+    expect(screen.getByText('Faltaron muchas · 44 %')).toHaveStyle({
+      fontFamily: 'var(--font-mono)',
+    });
+  });
+
+  /**
+   * El denominador de la frase pluraliza: "de 1 voz" y no "de 1 voces". Es el caso de un tramo
+   * nuevo (US-198) recién estrenado, que arranca en 0 y la primera respuesta lo lleva a 1.
+   */
+  it('con total 1, dice "de 1 voz"', () => {
+    render(
+      <ItemRow
+        item={{
+          ...base,
+          modePercent: 100,
+          total: 1,
+          distribution: [{ label: 'Faltaron muchas', percent: 100, isNegative: true }],
+        }}
+        last={false}
+      />,
+    );
+
+    expect(screen.getByText(/de 1 voz$/)).toBeInTheDocument();
   });
 });

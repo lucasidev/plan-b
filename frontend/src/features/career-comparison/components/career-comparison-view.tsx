@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import {
   MissingFactRow,
   OFFICIAL_FACT_FIELDS,
   OFFICIAL_FACT_LABELS,
   OfficialFactRow,
 } from '@/components/facts';
-import { CatalogTopbar } from '@/features/browse-catalog';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { CareerComparison, CareerComparisonOffering } from '../types';
 
 /**
@@ -31,8 +30,7 @@ export function CareerComparisonView({ comparison }: { comparison: CareerCompari
   );
 
   return (
-    <div className="min-h-screen w-full">
-      <CatalogTopbar />
+    <div className="w-full">
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Header
           title={title}
@@ -134,12 +132,14 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
     <div className="mb-3 rounded-xl border border-line bg-bg-card p-4">
       <div className="mb-2.5 flex items-baseline justify-between gap-2">
         <div className="min-w-0">
-          <Link
+          <FallbackLink
             href={`/careers/${offering.careerId}`}
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
+            prefetch={false}
             className="text-[15px] font-medium text-ink hover:underline"
           >
             {offering.universityName}
-          </Link>
+          </FallbackLink>
           {subtitle && <p className="truncate text-[12px] text-ink-3">{subtitle}</p>}
         </div>
         {offering.institutionKind && (
@@ -157,7 +157,7 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
         rows.map(({ field, fact }, index) => {
           const last = index === rows.length - 1;
           return fact ? (
-            <OfficialFactRow key={fact.id} fact={fact} last={last} />
+            <OfficialFactRow key={fact.id} fact={fact} subject="career" last={last} />
           ) : (
             <MissingFactRow
               key={field}
@@ -181,11 +181,16 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
 function DerivedNote() {
   return (
     <p className="mt-2 text-[11px] leading-relaxed text-ink-3">
-      Un dato marcado "Derivado" es un cálculo con una regla propia, no lo que la fuente publica
+      Un dato marcado "derivado" es un cálculo con una regla propia, no lo que la fuente publica
       directamente.{' '}
-      <Link href="/method" className="text-accent-ink underline-offset-2 hover:underline">
+      <FallbackLink
+        href="/method"
+        // Sin prefetch: ver el porqué en subject-grid.tsx.
+        prefetch={false}
+        className="text-accent-ink underline-offset-2 hover:underline"
+      >
         Mirá Método
-      </Link>{' '}
+      </FallbackLink>{' '}
       para la fórmula y sus sesgos.
     </p>
   );

@@ -33,7 +33,7 @@ Cada una en su archivo, con su criterio de aceptación; el estado y el sprint vi
 
 Las dos que existen por esta épica viven acá, con su ficha y su boceto:
 
-- [**Ficha de institución**](screens/SC-005-institution/README.md) (pública, sin cuenta): donde la institución se ve a sí misma, con la navegación de sus carreras con datos, su transparencia relevada, las notas de curaduría y su cobertura ([ADR-0085](../../../decisions/0085-three-instruments-and-official-data.md)); su propia respuesta y su serie por período (US-172, US-177) quedan como hueco declarado, ver "Lo que esta épica todavía no resuelve".
+- [**Ficha de institución**](screens/SC-005-institution/README.md) (pública, sin cuenta): donde la institución se ve a sí misma, con la navegación de sus carreras con datos, su transparencia relevada y su cobertura ([ADR-0085](../../../decisions/0085-three-instruments-and-official-data.md)); su propia respuesta, su serie por período (US-172, US-177) y las notas de curaduría quedan como hueco declarado, ver "Lo que esta épica todavía no resuelve".
 
 - [**Responder**](screens/SC-020-respond/README.md) (con identidad verificada): responde a los números agregados de la ficha, se publica directo al mandarla (sin chequeo ni plazo) y así queda: con nombre, rol y fecha, sin mover ningún conteo.
 

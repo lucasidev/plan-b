@@ -12,6 +12,14 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// relevancia, no por tipo.
 ///
 /// <para>
+/// El sublabel de una materia es su universidad y carrera, con el código al final cuando lo
+/// tiene (ADR-0097: el código es opcional): el nombre solo no distingue dos materias iguales
+/// dictadas en universidades o carreras distintas. Por lo mismo, el exact y el prefix match por
+/// código se apagan (no NULL) cuando la materia no tiene uno, para que esas materias no floten al
+/// tope del orden por delante de matches reales.
+/// </para>
+///
+/// <para>
 /// La rama de cátedras existe porque la cátedra es el sujeto de lo que el producto publica
 /// (ADR-0083): buscar un apellido tiene que poder llevar a lo que se dice de cursar con esa
 /// cátedra, no solo a la persona. Su sublabel es la materia que dicta, que es lo que distingue a
@@ -22,7 +30,7 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// Las ramas de carrera e institución (US-132, hallazgo V04: "buscar la carrera que uno quiere
 /// estudiar devuelve materias") resuelven un sujeto que hoy no tiene código propio para un exact
 /// match, salvo la institución por su slug: "unsta" matchea "UNSTA" exacto. La carrera es siempre
-/// una carrera EN una institución (su sublabel es el nombre de la universidad), porque la misma
+/// una carrera EN una institución (su sublabel es la sigla de la universidad), porque la misma
 /// carrera existe en más de una institución y cada oferta tiene su propia ficha.
 /// </para>
 ///
@@ -53,18 +61,32 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                     'subject'                                       AS type,
                     s.id                                            AS id,
                     s.name                                          AS label,
-                    s.code                                          AS sublabel,
-                    (academic.immutable_unaccent(lower(s.code)) = academic.immutable_unaccent(lower(@Term)))::int AS rank_exact,
-                    (academic.immutable_unaccent(lower(s.code)) LIKE academic.immutable_unaccent(lower(@Term)) || '%'
-                        OR academic.immutable_unaccent(lower(s.name)) LIKE academic.immutable_unaccent(lower(@Term)) || '%')::int AS rank_prefix,
+                    -- upper(uni.slug): la sigla de la universidad (UNSTA, UNT, UTN-FRT), el mismo
+                    -- criterio que `universityShortName` en
+                    -- frontend/src/features/browse-catalog/lib/describe-career-coverage.ts.
+                    upper(uni.slug) || ' · ' || cr.name
+                        || CASE WHEN s.code IS NOT NULL THEN ' · ' || s.code ELSE '' END
+                                                                    AS sublabel,
+                    (s.code IS NOT NULL
+                        AND academic.immutable_unaccent(lower(s.code)) = academic.immutable_unaccent(lower(@Term)))::int
+                                                                    AS rank_exact,
+                    ((s.code IS NOT NULL
+                        AND academic.immutable_unaccent(lower(s.code)) LIKE academic.immutable_unaccent(lower(@Term)) || '%')
+                        OR academic.immutable_unaccent(lower(s.name)) LIKE academic.immutable_unaccent(lower(@Term)) || '%')::int
+                                                                    AS rank_prefix,
                     GREATEST(similarity(academic.immutable_unaccent(lower(s.name)), academic.immutable_unaccent(lower(@Term))),
                              similarity(academic.immutable_unaccent(lower(s.code)), academic.immutable_unaccent(lower(@Term))))    AS sim
                 FROM academic.subjects s
+                JOIN academic.career_plans cp ON cp.id = s.career_plan_id
+                JOIN academic.careers cr ON cr.id = cp.career_id
+                JOIN academic.universities uni ON uni.id = cr.university_id
                 WHERE s.is_active
-                  AND (academic.immutable_unaccent(lower(s.code)) LIKE academic.immutable_unaccent(lower(@Term)) || '%'
+                  AND ((s.code IS NOT NULL
+                       AND academic.immutable_unaccent(lower(s.code)) LIKE academic.immutable_unaccent(lower(@Term)) || '%')
                    OR academic.immutable_unaccent(lower(s.name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
                    OR academic.immutable_unaccent(lower(s.name)) % academic.immutable_unaccent(lower(@Term))
-                   OR academic.immutable_unaccent(lower(s.code)) % academic.immutable_unaccent(lower(@Term)))
+                   OR (s.code IS NOT NULL
+                       AND academic.immutable_unaccent(lower(s.code)) % academic.immutable_unaccent(lower(@Term))))
 
                 UNION ALL
 
@@ -115,7 +137,7 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                     'career'                                        AS type,
                     cr.id                                           AS id,
                     cr.name                                         AS label,
-                    uni.name                                        AS sublabel,
+                    upper(uni.slug)                                 AS sublabel, -- sigla, ídem rama subject
                     (cr.code IS NOT NULL
                         AND academic.immutable_unaccent(lower(cr.code)) = academic.immutable_unaccent(lower(@Term)))::int
                                                                     AS rank_exact,

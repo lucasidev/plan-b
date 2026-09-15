@@ -2573,7 +2573,12 @@ public static class AcademicSeedData
                 Slug: "analista-en-gestion-educativa",
                 DegreeType: CareerDegreeType.Tecnicatura,
                 DurationYears: 2),
-            Plan: null),
+            // Plan relevado (R7): fuente https://www.eie.unse.edu.ar/cmseie/index.php/analista-en-gestion-educativa/
+            // (Escuela para la Innovación Educativa, consultada 2026-09-15), RM 2585/2020.
+            Plan: new CareerPlanRecord(
+                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000401")),
+                Year: 2020,
+                Label: "RM 2585/2020")),
         new CareerSeed(
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000402")),
@@ -2775,6 +2780,26 @@ public static class AcademicSeedData
     private static readonly CareerPlanId TudcsPlanId =
         new(Guid.Parse("00000003-0000-4000-a000-000000000003"));
 
+    // Planes de las cinco carreras de R7 (cobertura del seed, 2026-09-15): los cuatro primeros ya
+    // existían como Career/CareerPlan (arriba); AnalistaGestionEducativaUnsePlanId es el único plan
+    // nuevo, agregado junto a su Career. Todos quedan Active (AcademicSeeder.SeedCareersAsync
+    // hidrata cada CareerPlanRecord con ese status), que es el plan vigente que la ficha de carrera
+    // muestra inline.
+    private static readonly CareerPlanId IngenieriaInformaticaUnstaPlanId =
+        new(Guid.Parse("00000003-0000-4000-a000-000000000001"));
+
+    private static readonly CareerPlanId AutomatizacionYRoboticaPlanId =
+        new(Guid.Parse("00000003-0000-4000-a000-000000000004"));
+
+    private static readonly CareerPlanId UntProgramadorUniversitarioPlanId =
+        new(Guid.Parse("00000003-0000-4000-a000-000000000023"));
+
+    private static readonly CareerPlanId IngenieriaSistemasUtnPlanId =
+        new(Guid.Parse("00000003-0000-4000-a000-000000000030"));
+
+    private static readonly CareerPlanId AnalistaGestionEducativaUnsePlanId =
+        new(Guid.Parse("00000003-0000-4000-a000-000000000401"));
+
     public static IReadOnlyList<SubjectRecord> Subjects { get; } = new[]
     {
         // ---------- 1er año ----------
@@ -2931,6 +2956,211 @@ public static class AcademicSeedData
             // 0 hs semanales es correcto (no es una cursada con horario fijo, ver
             // Subject.Validate): no lo "corrijas" a 1. 350 hs totales.
             WeeklyHours: 0, TotalHours: 350),
+
+        // ---------------------------------------------------------------------------
+        // UNT: Programador Universitario (00000002-0000-4000-a000-000000000023, plan
+        // ...000000000023 ya existente). Fuente:
+        // https://www.facet.unt.edu.ar/programadoruniversitario/plan-de-estudios/ (Res. HCS
+        // 1926/96, mod. Res. HCS 307/04), consultada 2026-09-15. Publica código, módulo (acá
+        // mapeado a año/cuatrimestre) y horas semanales; no publica horas totales.
+        // ---------------------------------------------------------------------------
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000100")), UntProgramadorUniversitarioPlanId, "TT1", "Cálculo I", 1, 1, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000101")), UntProgramadorUniversitarioPlanId, "TT2", "Álgebra y Geometría Analítica", 1, 1, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000102")), UntProgramadorUniversitarioPlanId, "PU1", "Elementos de Computación y Lógica", 1, 1, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000103")), UntProgramadorUniversitarioPlanId, "P03", "Laboratorio I", 1, 1, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000104")), UntProgramadorUniversitarioPlanId, "TT3", "Cálculo II", 1, 2, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000105")), UntProgramadorUniversitarioPlanId, "TT4", "Elementos de Álgebra Lineal", 1, 2, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000106")), UntProgramadorUniversitarioPlanId, "P06", "Programación", 1, 2, TermKind.FourMonth, 7, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000107")), UntProgramadorUniversitarioPlanId, "P07", "Laboratorio II", 1, 2, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000108")), UntProgramadorUniversitarioPlanId, "P08", "Algoritmos y Estructuras de Datos", 2, 1, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000109")), UntProgramadorUniversitarioPlanId, "P13", "Arquitectura y Organización de Computadoras", 2, 1, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000010a")), UntProgramadorUniversitarioPlanId, "P10", "Métodos Numéricos I", 2, 1, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000010b")), UntProgramadorUniversitarioPlanId, "P11", "Taller de Lenguajes I", 2, 1, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000010c")), UntProgramadorUniversitarioPlanId, "TT7", "Probabilidad y Estadística", 2, 2, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000010d")), UntProgramadorUniversitarioPlanId, "P14", "Paradigmas de Programación", 2, 2, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000010e")), UntProgramadorUniversitarioPlanId, "P09", "Conceptos de Bases de Datos I", 2, 2, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000010f")), UntProgramadorUniversitarioPlanId, "P23", "Taller de Lenguajes II", 2, 2, TermKind.FourMonth, 5, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000110")), UntProgramadorUniversitarioPlanId, "P17", "Análisis y Diseño de Sistemas de Información", 3, 1, TermKind.FourMonth, 3, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000111")), UntProgramadorUniversitarioPlanId, "P18", "Comunicaciones I", 3, 1, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000112")), UntProgramadorUniversitarioPlanId, "P16", "Sistemas Operativos", 3, 1, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000113")), UntProgramadorUniversitarioPlanId, "P15", "Conceptos de Bases de Datos II", 3, 1, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000114")), UntProgramadorUniversitarioPlanId, "P98", "Proyecto Final (anual)", 3, 1, TermKind.FourMonth, 2, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000115")), UntProgramadorUniversitarioPlanId, "P20", "Ingeniería de Software", 3, 2, TermKind.FourMonth, 3, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000116")), UntProgramadorUniversitarioPlanId, "P21", "Comunicaciones II", 3, 2, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000117")), UntProgramadorUniversitarioPlanId, "P25", "Sistemas Abiertos", 3, 2, TermKind.FourMonth, 6, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000118")), UntProgramadorUniversitarioPlanId, "P24", "Taller de Legislación y Organizaciones", 3, 2, TermKind.FourMonth, 4, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000119")), UntProgramadorUniversitarioPlanId, "P99", "Proyecto Final (cont.)", 3, 2, TermKind.FourMonth, 2, null),
+
+        // ---------------------------------------------------------------------------
+        // UNSE: Analista en Gestión Educativa (00000002-0000-4000-a000-000000000401, plan
+        // ...000000000401 nuevo, ver CareerSeed más arriba). Fuente:
+        // https://www.eie.unse.edu.ar/cmseie/index.php/analista-en-gestion-educativa/ (Escuela
+        // para la Innovación Educativa), consultada 2026-09-15. Publica nombre y cuatrimestre
+        // (1º a 4º, acá mapeado a año/cuatrimestre); no publica código ni horas.
+        // ---------------------------------------------------------------------------
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000500")), AnalistaGestionEducativaUnsePlanId, null, "Marco Jurídico de la Educación Argentina", 1, 1, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000501")), AnalistaGestionEducativaUnsePlanId, null, "Las Instituciones Educativas Perspectivas para su Análisis", 1, 1, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000502")), AnalistaGestionEducativaUnsePlanId, null, "La Gestión Administrativa de la Unidad Educativa", 1, 1, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000503")), AnalistaGestionEducativaUnsePlanId, null, "La Gestión de Proyectos Institucionales", 1, 1, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000504")), AnalistaGestionEducativaUnsePlanId, null, "Historia de la Educación Argentina", 1, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000505")), AnalistaGestionEducativaUnsePlanId, null, "Introducción a la Sociología Educativa", 1, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000506")), AnalistaGestionEducativaUnsePlanId, null, "Producción de Textos Educativos", 1, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000507")), AnalistaGestionEducativaUnsePlanId, null, "Tecnologías de Gestión", 1, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000508")), AnalistaGestionEducativaUnsePlanId, null, "Investigación Educativa: Herramientas para la Producción de Información", 1, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000509")), AnalistaGestionEducativaUnsePlanId, null, "Introducción a la Pedagogía", 2, 1, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000050a")), AnalistaGestionEducativaUnsePlanId, null, "Tecnologías de Gestión II", 2, 1, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000050b")), AnalistaGestionEducativaUnsePlanId, null, "Taller de Integración y Trabajo de Campo I", 2, 1, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000050c")), AnalistaGestionEducativaUnsePlanId, null, "La Comunicación en los Textos Educativos", 2, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000050d")), AnalistaGestionEducativaUnsePlanId, null, "Taller de Integración y Trabajo de Campo II", 2, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000050e")), AnalistaGestionEducativaUnsePlanId, null, "Los Recursos Humanos en las Instituciones Educativas", 2, 2, TermKind.FourMonth, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000050f")), AnalistaGestionEducativaUnsePlanId, null, "Pasantía", 2, 2, TermKind.FourMonth, null, null),
+
+        // ---------------------------------------------------------------------------
+        // UNSTA: Tecnicatura Universitaria en Automatización y Robótica (00000002-...-000000000004,
+        // plan ...000000000004 ya existente). Fuente:
+        // https://www.unsta.edu.ar/ingenieria/tecnicatura-universitaria-en-automatizacion-y-robotica/
+        // (RR 1283-22), consultada 2026-09-15. Publica nombre y año; sin código, cadencia,
+        // cuatrimestre ni horas.
+        // ---------------------------------------------------------------------------
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000300")), AutomatizacionYRoboticaPlanId, null, "Introducción a los sistemas automáticos y robótica", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000301")), AutomatizacionYRoboticaPlanId, null, "Álgebra", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000302")), AutomatizacionYRoboticaPlanId, null, "Electrotecnia", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000303")), AutomatizacionYRoboticaPlanId, null, "Programación básica 1", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000304")), AutomatizacionYRoboticaPlanId, null, "Formación Humanística I-1", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000305")), AutomatizacionYRoboticaPlanId, null, "Inglés A1.1", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000306")), AutomatizacionYRoboticaPlanId, null, "Programación básica 2", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000307")), AutomatizacionYRoboticaPlanId, null, "Mecánica Básica", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000308")), AutomatizacionYRoboticaPlanId, null, "Electrónica básica", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000309")), AutomatizacionYRoboticaPlanId, null, "Seminario I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000030a")), AutomatizacionYRoboticaPlanId, null, "Formación Humanística I-2", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000030b")), AutomatizacionYRoboticaPlanId, null, "Inglés A1.2", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000030c")), AutomatizacionYRoboticaPlanId, null, "Microprocesadores", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000030d")), AutomatizacionYRoboticaPlanId, null, "Hidráulica y Neumática", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000030e")), AutomatizacionYRoboticaPlanId, null, "Sistemas y señales", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000030f")), AutomatizacionYRoboticaPlanId, null, "Electrónica digital", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000310")), AutomatizacionYRoboticaPlanId, null, "Robótica 1", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000311")), AutomatizacionYRoboticaPlanId, null, "Formación Humanística II-1", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000312")), AutomatizacionYRoboticaPlanId, null, "Inglés A2.1", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000313")), AutomatizacionYRoboticaPlanId, null, "Sistemas de Control", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000314")), AutomatizacionYRoboticaPlanId, null, "Seminario II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000315")), AutomatizacionYRoboticaPlanId, null, "Elementos básicos de formulación de proyectos", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000316")), AutomatizacionYRoboticaPlanId, null, "Robótica 2", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000317")), AutomatizacionYRoboticaPlanId, null, "Formación Humanística II-2", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000318")), AutomatizacionYRoboticaPlanId, null, "Inglés A2.2", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000319")), AutomatizacionYRoboticaPlanId, null, "Sistemas en tiempo real", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000031a")), AutomatizacionYRoboticaPlanId, null, "Seguridad industrial", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000031b")), AutomatizacionYRoboticaPlanId, null, "Inglés B1.1", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000031c")), AutomatizacionYRoboticaPlanId, null, "Proyecto final", 3, null, null, null, null),
+
+        // ---------------------------------------------------------------------------
+        // UNSTA: Ingeniería en Informática (00000002-0000-4000-a000-000000000001, plan
+        // ...000000000001 ya existente). Fuente:
+        // https://www.unsta.edu.ar/ingenieria/ingenieria-informatica/ (RM-MECCYT 3951/2019),
+        // consultada 2026-09-15. Publica nombre y año; sin código, cadencia, cuatrimestre ni horas.
+        // ---------------------------------------------------------------------------
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000400")), IngenieriaInformaticaUnstaPlanId, null, "Matemática I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000401")), IngenieriaInformaticaUnstaPlanId, null, "Física I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000402")), IngenieriaInformaticaUnstaPlanId, null, "Formación Humanística I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000403")), IngenieriaInformaticaUnstaPlanId, null, "Álgebra I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000404")), IngenieriaInformaticaUnstaPlanId, null, "Introducción a la Informática", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000405")), IngenieriaInformaticaUnstaPlanId, null, "Sistemas de Representación", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000406")), IngenieriaInformaticaUnstaPlanId, null, "Idioma Extranjero I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000407")), IngenieriaInformaticaUnstaPlanId, null, "Álgebra II", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000408")), IngenieriaInformaticaUnstaPlanId, null, "Programación I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000409")), IngenieriaInformaticaUnstaPlanId, null, "Matemática II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040a")), IngenieriaInformaticaUnstaPlanId, null, "Física II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040b")), IngenieriaInformaticaUnstaPlanId, null, "Programación II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040c")), IngenieriaInformaticaUnstaPlanId, null, "Formación Humanística II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040d")), IngenieriaInformaticaUnstaPlanId, null, "Álgebra Discreta", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040e")), IngenieriaInformaticaUnstaPlanId, null, "Idioma Extranjero II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040f")), IngenieriaInformaticaUnstaPlanId, null, "Estructura de Datos I", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000410")), IngenieriaInformaticaUnstaPlanId, null, "Química General", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000411")), IngenieriaInformaticaUnstaPlanId, null, "Electrónica Básica", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000412")), IngenieriaInformaticaUnstaPlanId, null, "Estructuras de Datos II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000413")), IngenieriaInformaticaUnstaPlanId, null, "Arquitectura de Computadores I", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000414")), IngenieriaInformaticaUnstaPlanId, null, "Formación Humanística III", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000415")), IngenieriaInformaticaUnstaPlanId, null, "Métodos Numéricos", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000416")), IngenieriaInformaticaUnstaPlanId, null, "Bases de Datos", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000417")), IngenieriaInformaticaUnstaPlanId, null, "Informática Teórica", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000418")), IngenieriaInformaticaUnstaPlanId, null, "Teoría de Sistemas y Modelos", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000419")), IngenieriaInformaticaUnstaPlanId, null, "Probabilidad y Estadística", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000041a")), IngenieriaInformaticaUnstaPlanId, null, "Investigación Operativa", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000041b")), IngenieriaInformaticaUnstaPlanId, null, "Programación III", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000041c")), IngenieriaInformaticaUnstaPlanId, null, "Comunicación de Datos", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000041d")), IngenieriaInformaticaUnstaPlanId, null, "Formación Humanística IV", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000041e")), IngenieriaInformaticaUnstaPlanId, null, "Arquitectura de Computadores II", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000041f")), IngenieriaInformaticaUnstaPlanId, null, "Sistemas de Información I", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000420")), IngenieriaInformaticaUnstaPlanId, null, "Ingeniería de Software I", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000421")), IngenieriaInformaticaUnstaPlanId, null, "Teleinformática I", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000422")), IngenieriaInformaticaUnstaPlanId, null, "Economía", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000423")), IngenieriaInformaticaUnstaPlanId, null, "Inteligencia Artificial", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000424")), IngenieriaInformaticaUnstaPlanId, null, "Sistemas Operativos", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000425")), IngenieriaInformaticaUnstaPlanId, null, "Compiladores y Trasladores", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000426")), IngenieriaInformaticaUnstaPlanId, null, "Teleinformática II", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000427")), IngenieriaInformaticaUnstaPlanId, null, "Eval. y Form. de Proyectos", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000428")), IngenieriaInformaticaUnstaPlanId, null, "Org. Empresarial e Industrial", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000429")), IngenieriaInformaticaUnstaPlanId, null, "Trabajo de Campo", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000042a")), IngenieriaInformaticaUnstaPlanId, null, "Seminario Humanístico I", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000042b")), IngenieriaInformaticaUnstaPlanId, null, "Gestión Ambiental", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000042c")), IngenieriaInformaticaUnstaPlanId, null, "Eval. y Selec. de Eq. de Hardware", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000042d")), IngenieriaInformaticaUnstaPlanId, null, "Sistemas de Información II", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000042e")), IngenieriaInformaticaUnstaPlanId, null, "Ingeniería de Software II", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000042f")), IngenieriaInformaticaUnstaPlanId, null, "Auditoría de Sistemas", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000430")), IngenieriaInformaticaUnstaPlanId, null, "Legislación", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000431")), IngenieriaInformaticaUnstaPlanId, null, "Seguridad de Sistemas", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000432")), IngenieriaInformaticaUnstaPlanId, null, "Seminario Humanístico II", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000433")), IngenieriaInformaticaUnstaPlanId, null, "Seminario de Informática I", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000434")), IngenieriaInformaticaUnstaPlanId, null, "Seminario de Informática II", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000435")), IngenieriaInformaticaUnstaPlanId, null, "Gestión de RRHH", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000436")), IngenieriaInformaticaUnstaPlanId, null, "Proyecto Final Integrador", 5, null, null, null, null),
+
+        // ---------------------------------------------------------------------------
+        // UTN-FRT: Ingeniería en Sistemas de Información (00000002-...-000000000030, plan
+        // ...000000000030 ya existente, 2023). Fuente:
+        // https://frba.utn.edu.ar/sistemas/plan-de-estudios-2023/ (Ordenanza CS 1877, plan
+        // nacional comun a todas las regionales), consultada 2026-09-15. Publica nombre y año de
+        // las obligatorias; sin código, cadencia, cuatrimestre ni horas. Las electivas no se
+        // cargan: la fuente solo dice cuántas hay por nivel (1 en 3ro, 2 en 4to, 4 en 5to, de 3
+        // horas cada una) sin nombrar la oferta, y este seed no inventa materias que la fuente no
+        // nombra.
+        // ---------------------------------------------------------------------------
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000200")), IngenieriaSistemasUtnPlanId, null, "Análisis Matemático I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000201")), IngenieriaSistemasUtnPlanId, null, "Álgebra y Geometría Analítica", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000202")), IngenieriaSistemasUtnPlanId, null, "Física I", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000203")), IngenieriaSistemasUtnPlanId, null, "Ingeniería y Sociedad", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000204")), IngenieriaSistemasUtnPlanId, null, "Lógica y Estructuras Discretas", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000205")), IngenieriaSistemasUtnPlanId, null, "Algoritmos y Estructuras de Datos", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000206")), IngenieriaSistemasUtnPlanId, null, "Arquitectura de Computadoras", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000207")), IngenieriaSistemasUtnPlanId, null, "Sistemas y Procesos de Negocio", 1, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000208")), IngenieriaSistemasUtnPlanId, null, "Análisis Matemático II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000209")), IngenieriaSistemasUtnPlanId, null, "Física II", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020a")), IngenieriaSistemasUtnPlanId, null, "Probabilidad y Estadística", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020b")), IngenieriaSistemasUtnPlanId, null, "Inglés I", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020c")), IngenieriaSistemasUtnPlanId, null, "Sintaxis y Semántica de los Lenguajes", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020d")), IngenieriaSistemasUtnPlanId, null, "Paradigmas de Programación", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020e")), IngenieriaSistemasUtnPlanId, null, "Sistemas Operativos", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020f")), IngenieriaSistemasUtnPlanId, null, "Análisis de Sistemas de Información", 2, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000210")), IngenieriaSistemasUtnPlanId, null, "Economía", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000211")), IngenieriaSistemasUtnPlanId, null, "Bases de Datos", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000212")), IngenieriaSistemasUtnPlanId, null, "Inglés II", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000213")), IngenieriaSistemasUtnPlanId, null, "Desarrollo de Software", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000214")), IngenieriaSistemasUtnPlanId, null, "Comunicación de Datos", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000215")), IngenieriaSistemasUtnPlanId, null, "Redes de Datos", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000216")), IngenieriaSistemasUtnPlanId, null, "Diseño de Sistemas de Información", 3, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000217")), IngenieriaSistemasUtnPlanId, null, "Legislación", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000218")), IngenieriaSistemasUtnPlanId, null, "Ingeniería y Calidad de Software", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000219")), IngenieriaSistemasUtnPlanId, null, "Ciencia de Datos", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000021a")), IngenieriaSistemasUtnPlanId, null, "Análisis Numérico", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000021b")), IngenieriaSistemasUtnPlanId, null, "Investigación Operativa", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000021c")), IngenieriaSistemasUtnPlanId, null, "Simulación", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000021d")), IngenieriaSistemasUtnPlanId, null, "Tecnologías para la Automatización", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000021e")), IngenieriaSistemasUtnPlanId, null, "Administración de Sistemas de Información", 4, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000021f")), IngenieriaSistemasUtnPlanId, null, "Inteligencia Artificial", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000220")), IngenieriaSistemasUtnPlanId, null, "Sistemas de Gestión", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000221")), IngenieriaSistemasUtnPlanId, null, "Gestión Gerencial", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000222")), IngenieriaSistemasUtnPlanId, null, "Seguridad en los Sistemas de Información", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000223")), IngenieriaSistemasUtnPlanId, null, "Proyecto Final", 5, null, null, null, null),
+        new SubjectRecord(new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000224")), IngenieriaSistemasUtnPlanId, null, "Práctica Profesional Supervisada", 5, null, null, null, null),
 
     };
 
@@ -3313,6 +3543,38 @@ public static class AcademicSeedData
         new TeacherRecord(Tid("22"), Unsta.Id, "belén", "silva", "Profesora Titular"),
         new TeacherRecord(Tid("23"), Unsta.Id, "rocío", "franco", "Jefa de Trabajos Prácticos"),
         new TeacherRecord(Tid("24"), Unsta.Id, "joaquín", "vera", "Jefe de Trabajos Prácticos"),
+
+        // Titulares de las cátedras nuevas de R7 (cobertura del seed, ver sección Chairs más
+        // abajo): una por cátedra, en la universidad de esa cátedra. Ningún apellido repite el de
+        // los titulares de arriba (Pérez, González, Ruiz, Ibáñez, Vega, Domínguez, Aráoz, Bravo,
+        // Fernández, Molina, Aguirre, Benítez, Correa, Acosta, Herrera, Godoy, Juárez, Morales,
+        // Ortiz, Luna, Cabrera, Paz, Silva) ni el de las personas sembradas (Mansilla, Ledesma).
+        new TeacherRecord(Tid("25"), Unt.Id, "pablo", "sosa", "Profesor Titular"),
+        new TeacherRecord(Tid("26"), Unt.Id, "florencia", "medina", "Profesora Titular"),
+        new TeacherRecord(Tid("27"), Unt.Id, "ignacio", "ríos", "Profesor Titular"),
+        new TeacherRecord(Tid("28"), UtnFrt.Id, "malena", "castro", "Profesora Titular"),
+        new TeacherRecord(Tid("29"), UtnFrt.Id, "facundo", "rojas", "Profesor Titular"),
+        new TeacherRecord(Tid("2a"), Unse.Id, "cecilia", "navarro", "Profesora Titular"),
+        new TeacherRecord(Tid("2b"), Unse.Id, "esteban", "quiroga", "Profesor Titular"),
+        new TeacherRecord(Tid("2c"), Unsta.Id, "bruno", "villalba", "Profesor Titular"),
+        new TeacherRecord(Tid("2d"), Unsta.Id, "milagros", "figueroa", "Profesora Titular"),
+        new TeacherRecord(Tid("2e"), Unsta.Id, "franco", "carrizo", "Profesor Titular"),
+        new TeacherRecord(Tid("2f"), Unsta.Id, "lorena", "gómez", "Profesora Titular"),
+
+        // Titulares de las nueve cátedras que suman a las cinco carreras de R7 (ver sección
+        // Chairs más abajo): una por cátedra, en la universidad de esa cátedra.
+        // Ningún apellido repite el de un docente ya sembrado (ni los diez del arranque, ni los
+        // titulares de 211, ni los de la Tecnicatura UNSTA, ni los once de R7 de arriba) ni el de
+        // las personas sembradas (Mansilla, Ledesma).
+        new TeacherRecord(Tid("30"), Unt.Id, "walter", "moyano", "Profesor Titular"),
+        new TeacherRecord(Tid("31"), UtnFrt.Id, "valentina", "salazar", "Profesora Titular"),
+        new TeacherRecord(Tid("32"), UtnFrt.Id, "ricardo", "peralta", "Profesor Titular"),
+        new TeacherRecord(Tid("33"), Unse.Id, "gabriela", "toledo", "Profesora Titular"),
+        new TeacherRecord(Tid("34"), Unse.Id, "manuel", "escobar", "Profesor Titular"),
+        new TeacherRecord(Tid("35"), Unsta.Id, "ivana", "guzmán", "Profesora Titular"),
+        new TeacherRecord(Tid("36"), Unsta.Id, "santiago", "torres", "Profesor Titular"),
+        new TeacherRecord(Tid("37"), Unsta.Id, "brenda", "díaz", "Profesora Titular"),
+        new TeacherRecord(Tid("38"), Unsta.Id, "ariel", "núñez", "Profesor Titular"),
     };
 
     private static TeacherId Tid(string nn) =>
@@ -3325,7 +3587,7 @@ public static class AcademicSeedData
         new(Guid.Parse($"00000005-0000-4000-a000-0000000000{nn}"));
 
     // ====================================================================
-    // Chairs (UNSTA + UTN-FRT): cátedras de prueba para Reseñar (US-196). El mockup de la ficha
+    // Chairs (UNSTA + UTN-FRT + UNT + UNSE): cátedras de prueba para Reseñar (US-196). El mockup de la ficha
     // (SC-002-chair/sketch.html) usa "Análisis Matemático II", que no es una materia del plan real
     // de la TUDCS sembrado acá: se sustituye por Fundamentos de Control de Calidad (211), la
     // primera materia cuatrimestral de 2do año del plan. Tres cátedras con sus titulares, nombradas
@@ -3339,6 +3601,18 @@ public static class AcademicSeedData
     // el equipo de seis cátedras de la Tecnicatura nueva de UTN-FRT. El corpus de reseñas
     // (CorpusSeedData, módulo reviews) responde sobre un subconjunto de estas: el resto queda con
     // titular y cero reseñas, que es el estado "materia sin ninguna voz todavía".
+    //
+    // R7 (cobertura del seed) agrega once cátedras más, una o dos por cada una de las cinco
+    // carreras nuevas (ver sección Subjects): dos hermanas en UNT (Sosa/Medina, P06 Programación)
+    // para que "Las hermanas" se vea fuera de la UNSTA, y una cátedra que publica más otra que no
+    // llega en cada carrera. since_term_id apunta al período más viejo de la universidad de esa
+    // cátedra (Unt: 2024-1c, UtnFrt: 2024-1c, Unse: 2024-1c, cada una con su propio bloque de
+    // AcademicTerms).
+    //
+    // Nueve cátedras más, una en cada materia de las cinco carreras nuevas que hasta acá no tenía
+    // ninguna sembrada (ver CorpusSeedData, módulo reviews, para el corpus completo de las veinte
+    // cátedras). Mismo criterio de since_term_id que el bloque de arriba: el período más viejo de
+    // la universidad de esa cátedra.
     //
     // Convención de UUIDs:
     //   - Chairs: 00000008-0000-4000-a000-0000000000NN
@@ -3408,6 +3682,59 @@ public static class AcademicSeedData
             new[] { new ChairMemberRecord(Tid("21"), ChairMemberRole.Lead, Atid("01")) }),
         new ChairRecord(Chid("18"), Sid("21"), "Silva",
             new[] { new ChairMemberRecord(Tid("22"), ChairMemberRole.Lead, Atid("01")) }),
+
+        // ---------- R7: UNT (Programador Universitario), dos hermanas en la misma materia ----------
+        new ChairRecord(Chid("19"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000106")), "Sosa",
+            new[] { new ChairMemberRecord(Tid("25"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("1a"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000106")), "Medina",
+            new[] { new ChairMemberRecord(Tid("26"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("1b"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000108")), "Ríos",
+            new[] { new ChairMemberRecord(Tid("27"), ChairMemberRole.Lead, Atid("07")) }),
+
+        // ---------- R7: UTN-FRT (Ingeniería en Sistemas de Información) ----------
+        new ChairRecord(Chid("1c"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000205")), "Castro",
+            new[] { new ChairMemberRecord(Tid("28"), ChairMemberRole.Lead, Atid("0d")) }),
+        new ChairRecord(Chid("1d"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020d")), "Rojas",
+            new[] { new ChairMemberRecord(Tid("29"), ChairMemberRole.Lead, Atid("0d")) }),
+
+        // ---------- R7: UNSE (Analista en Gestión Educativa) ----------
+        new ChairRecord(Chid("1e"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000500")), "Navarro",
+            new[] { new ChairMemberRecord(Tid("2a"), ChairMemberRole.Lead, Atid("19")) }),
+        new ChairRecord(Chid("1f"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000507")), "Quiroga",
+            new[] { new ChairMemberRecord(Tid("2b"), ChairMemberRole.Lead, Atid("19")) }),
+
+        // ---------- R7: UNSTA, Tecnicatura Universitaria en Automatización y Robótica ----------
+        new ChairRecord(Chid("20"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000303")), "Villalba",
+            new[] { new ChairMemberRecord(Tid("2c"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("21"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000302")), "Figueroa",
+            new[] { new ChairMemberRecord(Tid("2d"), ChairMemberRole.Lead, Atid("01")) }),
+
+        // ---------- R7: UNSTA, Ingeniería en Informática ----------
+        new ChairRecord(Chid("22"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000408")), "Carrizo",
+            new[] { new ChairMemberRecord(Tid("2e"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("23"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000400")), "Gómez",
+            new[] { new ChairMemberRecord(Tid("2f"), ChairMemberRole.Lead, Atid("01")) }),
+
+        // ---------- Nueve cátedras más, una por cada materia sin cátedra sembrada de las cinco
+        // carreras de R7 ----------
+        new ChairRecord(Chid("24"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000100")), "Moyano",
+            new[] { new ChairMemberRecord(Tid("30"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("25"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020e")), "Salazar",
+            new[] { new ChairMemberRecord(Tid("31"), ChairMemberRole.Lead, Atid("0d")) }),
+        new ChairRecord(Chid("26"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000200")), "Peralta",
+            new[] { new ChairMemberRecord(Tid("32"), ChairMemberRole.Lead, Atid("0d")) }),
+        new ChairRecord(Chid("27"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000502")), "Toledo",
+            new[] { new ChairMemberRecord(Tid("33"), ChairMemberRole.Lead, Atid("19")) }),
+        new ChairRecord(Chid("28"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000509")), "Escobar",
+            new[] { new ChairMemberRecord(Tid("34"), ChairMemberRole.Lead, Atid("19")) }),
+        new ChairRecord(Chid("29"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000301")), "Guzmán",
+            new[] { new ChairMemberRecord(Tid("35"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("2a"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000310")), "Torres",
+            new[] { new ChairMemberRecord(Tid("36"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("2b"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040b")), "Díaz",
+            new[] { new ChairMemberRecord(Tid("37"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("2c"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000416")), "Núñez",
+            new[] { new ChairMemberRecord(Tid("38"), ChairMemberRole.Lead, Atid("01")) }),
     };
 
     private static ChairId Chid(string nn) =>
@@ -3453,19 +3780,19 @@ public sealed record CareerPlanRecord(CareerPlanId Id, int Year, string? Label =
 public sealed record CareerSeed(CareerRecord Career, CareerPlanRecord? Plan);
 
 /// <summary>
-/// Materia del seed. <see cref="CareerPlanId"/> apunta al plan al que pertenece (típicamente
-/// uno solo en MVP: la TUDCS UNSTA, ya que es el caso de uso piloto US-013).
+/// Materia del seed. <see cref="CareerPlanId"/> apunta al plan al que pertenece. Código, cadencia y
+/// carga horaria son opcionales (ADR-0097): la fuente oficial de cada plan no siempre los publica.
 /// </summary>
 public sealed record SubjectRecord(
     SubjectId Id,
     CareerPlanId CareerPlanId,
-    string Code,
+    string? Code,
     string Name,
     int YearInPlan,
     int? TermInYear,
-    TermKind TermKind,
-    int WeeklyHours,
-    int TotalHours);
+    TermKind? TermKind,
+    int? WeeklyHours,
+    int? TotalHours);
 
 /// <summary>
 /// Correlativa del seed: <see cref="SubjectId"/> requiere a <see cref="RequiredSubjectId"/> según

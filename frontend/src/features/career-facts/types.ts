@@ -1,10 +1,11 @@
 /**
  * La ficha de una carrera tal como baja del backend (US-127, US-134, ADR-0085).
  *
- * Espeja `GetCareerFactsResponse`. Alcance acotado a lo que tiene fuente real hoy: identidad,
- * cuánto dura en el papel (`durationYears`, la otra mitad de US-127 todavía no tiene relevamiento
- * propio), la cobertura (US-134) y las notas del equipo (ADR-0084). "Qué frena la cursada" necesita
- * un corpus de reseñas y todavía no viaja acá.
+ * Espeja `GetCareerFactsResponse`. Alcance acotado a lo que tiene fuente real hoy: identidad, la
+ * cobertura (US-134) y las notas del equipo (ADR-0084). Cuánto dura en el papel sale aparte, del
+ * dato oficial `paper_duration` (ADR-0090): el backend lo releva como texto libre ("2 años y
+ * medio"), no como un número que esta ficha pueda formatear. "Qué frena la cursada" necesita un
+ * corpus de reseñas y todavía no viaja acá.
  */
 export interface CareerFacts {
   careerId: string;
@@ -12,7 +13,6 @@ export interface CareerFacts {
   universityName: string;
   /** La facultad o unidad que dicta la carrera. Null cuando el catálogo todavía no la vinculó. */
   academicUnitName: string | null;
-  durationYears: number | null;
   totalSubjects: number;
   coveredSubjects: number;
   coveragePercent: number;

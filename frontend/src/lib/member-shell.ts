@@ -1,55 +1,67 @@
 /**
- * Helpers for the authenticated-area AppShell (US-042-f).
+ * Helpers del shell de toda la aplicación (US-042-f), con o sin sesión.
  *
- * They live under `lib/` (not `components/layout/`) because they are pure functions with
- * no JSX, reused across Sidebar (active item), Topbar (breadcrumbs), and AvatarMenu
- * (initials). If any other product route needs them later (e.g. the home), they are an
- * import away.
+ * Viven bajo `lib/` (no `components/layout/`) porque son funciones puras sin JSX, que
+ * reutilizan Sidebar (item activo, qué rutas pide sesión), Topbar (migas) y AvatarMenu
+ * (iniciales).
  */
 
 /**
- * Catalog of `(member)` routes with the display copy and an optional mockup-style
- * shortcut hint.
+ * Catálogo de rutas del shell, con el copy y un hint de shortcut estilo mockup.
  *
- * The path is the source of truth: we use it for both the `Link href` in the sidebar
- * and for the "active item" match based on `usePathname()`, and to derive the current
- * breadcrumb label.
+ * El path es la fuente de verdad: se usa tanto para el `Link href` del sidebar como para el
+ * match de "item activo" contra `usePathname()`, y para derivar la miga actual.
  *
- * When a new catalog route lands, add it here. When a stub gets real content, nothing
- * in the shell has to change: the page decides whether to render ComingSoon or the real
- * content.
+ * `activePrefixes` cubre una ruta cuyo item de nav queda encendido en más de un árbol de rutas
+ * (Explorar enciende `/universities`, pero también `/careers`, `/subjects`, etc: son las mismas
+ * dos lentes del catálogo). Sin esa lista, el default es el propio `path`.
+ *
+ * `requiresSession` oculta el item del sidebar a quien no es `member`: Mis aportes no tiene nada
+ * que mostrarle a un anónimo o a un admin, y linkear a una pantalla que el guard de `(member)`
+ * va a rebotar es peor que no mostrarla.
+ *
+ * `gateWhenAnonymous` deja el item visible, pero para quien no es `member` (anónimo o con otro
+ * rol) el link pasa por `/sign-in?from=<path>` en vez de ir directo: un anónimo vuelve al item
+ * después de entrar (US-229), y una cuenta que no es de alumno pasa igual por el gate en vez de
+ * pegar contra el guard de `(member)` sin explicación.
  */
 export type MemberRoute = {
   readonly path: string;
   readonly label: string;
   readonly section: 'community' | 'other';
   readonly shortcut?: string;
-  /** Future US that will replace this stub with real content. Display only. */
-  readonly futureUs?: string;
+  readonly activePrefixes?: readonly string[];
+  readonly requiresSession?: boolean;
+  readonly gateWhenAnonymous?: boolean;
 };
 
 export const memberRoutes: readonly MemberRoute[] = [
-  // La sección "Mi cuatrimestre" se retiró con Mi carrera (ADR-0086): agrupaba las pantallas del
-  // planificador, y la tesis dice que el producto no planifica tu cuatrimestre. Inicio queda con
-  // Mis aportes, y esas dos van sin encabezado: son la navegación primaria, no un grupo temático.
+  // Explorar es la puerta al catálogo entero (universidades, carreras, materias, cátedras,
+  // docentes): un solo item de nav para las dos lentes de US-222. Mis aportes va sin encabezado
+  // junto a Explorar: son la navegación primaria, no un grupo temático.
   {
-    path: '/home',
-    label: 'Inicio',
+    path: '/universities',
+    label: 'Explorar',
     section: 'community',
     shortcut: '⌘1',
+    activePrefixes: ['/universities', '/careers', '/subjects', '/chairs', '/teachers', '/plans'],
   },
-  // Mis aportes: lo que esta cuenta reseñó, para poder editarlo o borrarlo (US-165).
+  // Mis aportes: lo que esta cuenta reseñó, para poder editarlo o borrarlo (US-165). Pide
+  // sesión: sin cuenta no hay nada propio que mostrar.
   {
     path: '/reviews/mine',
     label: 'Mis aportes',
     section: 'community',
-    shortcut: '⌘4',
+    shortcut: '⌘2',
+    requiresSession: true,
   },
 
-  // Other (Settings, Help, About plan-b, per the `soporte-v2-ayuda.png` mockup that
-  // groups the three items under "OTROS" at the bottom of the v2 sidebar). My profile
-  // still lives in the avatar menu, not in this nav.
-  { path: '/settings', label: 'Ajustes', section: 'other' },
+  // Otros (Método, Ajustes, Ayuda, Sobre plan-b), agrupados al pie del sidebar per el mockup
+  // `soporte-v2-ayuda.png`. Mi perfil sigue en el menú del avatar, no en esta nav.
+  { path: '/method', label: 'Método', section: 'other' },
+  // Ajustes vive bajo `(member)` (guard con rol): gateado, no oculto, porque la maqueta lo
+  // muestra también sin cuenta.
+  { path: '/settings', label: 'Ajustes', section: 'other', gateWhenAnonymous: true },
   { path: '/help', label: 'Ayuda', section: 'other' },
   { path: '/about', label: 'Sobre plan-b', section: 'other' },
 ] as const;
@@ -57,7 +69,7 @@ export const memberRoutes: readonly MemberRoute[] = [
 /**
  * Las secciones del sidebar. La primera va **sin label**: agrupa la navegación primaria, y
  * ponerle nombre obliga a inventar uno que no está en el glosario (era "Comunidad", que no
- * describe ni a Inicio ni a Mis aportes). "Otros" separa lo secundario, que sí necesita el corte.
+ * describe ni a Explorar ni a Mis aportes). "Otros" separa lo secundario, que sí necesita el corte.
  */
 export const memberSections: ReadonlyArray<{
   readonly key: MemberRoute['section'];
@@ -65,24 +77,33 @@ export const memberSections: ReadonlyArray<{
 }> = [{ key: 'community' }, { key: 'other', label: 'Otros' }] as const;
 
 /**
- * Derives breadcrumbs from `usePathname()`. The shell currently only shows up to two
- * levels (root section + active page); the topbar doesn't have visual room for nested
- * crumbs and none of the member routes are nested deeper than one level, so this is
- * enough.
+ * Deriva las migas desde `usePathname()`. El shell hoy muestra como mucho dos niveles (sección
+ * raíz + página activa); el topbar no tiene lugar visual para migas más anidadas.
  *
- * Returns an empty array for unknown paths (the topbar then renders just the bare last
- * segment, which is honest while a route is being built out).
+ * Devuelve un array vacío para paths desconocidos (el topbar dibuja el último segmento pelado,
+ * que es honesto mientras una ruta se está construyendo).
  */
 export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
+  // Las dos lentes de Explorar (US-222) son la raíz del catálogo, no una página "adentro" de
+  // Explorar: la miga no repite lo que la propia pestaña de la pantalla ya dice.
+  if (pathname === '/universities' || pathname === '/careers') return ['Explorar'];
+
+  const exploreLabel = breadcrumbForExplorePath(pathname);
+  if (exploreLabel) return ['Explorar', exploreLabel];
+
+  // Método y Sobre plan-b cuelgan del sidebar bajo "Otros" (misma sección que Ajustes y Ayuda),
+  // pero son pantallas de contenido propio: la miga no repite el nombre de esa sección.
+  if (pathname === '/method') return ['Método'];
+  if (pathname === '/about') return ['Sobre plan-b'];
+
   const route = memberRoutes.find((r) => r.path === pathname);
   if (route) {
     const section = memberSections.find((s) => s.key === route.section);
     return section?.label ? [section.label, route.label] : [route.label];
   }
 
-  // Known patterns for dynamic routes that do not fit into memberRoutes (because they
-  // have [param] or nested levels). The topbar shows a friendly copy instead of the raw
-  // URL slug.
+  // Patrones conocidos de rutas dinámicas que no entran en memberRoutes (tienen [param] o van
+  // anidadas). El topbar muestra un copy amigable en vez del slug crudo de la URL.
   if (pathname === '/reviews/new') {
     return ['Reseñar una cursada'];
   }
@@ -90,9 +111,37 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
     return ['Mis aportes'];
   }
 
-  // Fallback: split the path into capitalised segments. Better than empty.
+  // Fallback: parte el path en segmentos capitalizados. Mejor que vacío.
   const segment = pathname.split('/').filter(Boolean).pop();
   return segment ? [segment.charAt(0).toUpperCase() + segment.slice(1)] : [];
+}
+
+/**
+ * `breadcrumbsForPath` sin `href`: lo que usa el slot `@crumbs` de `(planb)` (catch-all y
+ * `default`) para las pantallas que no son una de las cuatro fichas con nombres reales.
+ */
+export function genericCrumbs(pathname: string): ReadonlyArray<{ label: string }> {
+  return breadcrumbsForPath(pathname).map((label) => ({ label }));
+}
+
+/**
+ * La miga de segundo nivel de cada pantalla del catálogo (bajo "Explorar"). `null` si el
+ * pathname no es ninguna de sus rutas. El orden de los `if` importa: las rutas anidadas
+ * (`/careers/<id>/plans`) tienen que resolverse antes que su prefijo genérico
+ * (`/careers/<id>`).
+ */
+function breadcrumbForExplorePath(pathname: string): string | null {
+  if (/^\/universities\/[^/]+\/careers$/.test(pathname)) return 'Universidad';
+  // Distinta del plan puntual (`/plans/[id]/subjects`, más abajo): esta es la lista de planes de
+  // la carrera, y el h1 de la página dice "Planes de estudio", no "Plan {año}".
+  if (/^\/careers\/[^/]+\/plans$/.test(pathname)) return 'Planes de estudio';
+  if (/^\/careers\/[^/]+\/where-to-study$/.test(pathname)) return 'Dónde estudiarla';
+  if (/^\/careers\/[^/]+$/.test(pathname)) return 'Carrera';
+  if (/^\/plans\/[^/]+\/subjects$/.test(pathname)) return 'Plan';
+  if (/^\/subjects\/[^/]+$/.test(pathname)) return 'Materia';
+  if (/^\/chairs\/[^/]+$/.test(pathname)) return 'Cátedra';
+  if (/^\/teachers\/[^/]+$/.test(pathname)) return 'Docente';
+  return null;
 }
 
 /**

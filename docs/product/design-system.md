@@ -6,7 +6,7 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y 
 
 ## Los dos invariantes que la paleta carga
 
-1. **El rojo es solo la opción negativa publicada** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): en una distribución, el segmento de la opción negativa; en un badge de moda, solo cuando la moda ES la opción negativa. Nada más se pinta: no hay semáforos, no hay umbrales editoriales, y la recolección (Reseñar) va sin rojo: la alarma es lectura, no captura.
+1. **El rojo es solo la opción negativa publicada** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): en una distribución, el segmento de la opción negativa; en un badge de moda, solo cuando la moda ES la opción negativa. Nada más se pinta: no hay semáforos, no hay umbrales editoriales, y la recolección (Reseñar) va sin rojo: la alarma es lectura, no captura. Las excepciones son dos: las acciones destructivas (Borrar una reseña, Dar de baja la cuenta), con la alarma como texto y borde y nunca como relleno, y el punto de la marca en la barra lateral de la aplicación ("plan-b.").
 2. **Todo conteo publicado viaja con sus voces** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): el estilo nunca muestra un número pelado, y la síntesis de una frase es su moda literal con la distribución al lado, jamás un promedio.
 
 ## Paleta
@@ -26,6 +26,9 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y 
 | `--color-alarm-soft` | `#f5e4e0` | Fondo suave de la alarma. |
 | `--color-alarm-ink` | `#6e1c12` | Alarma como texto sobre soft. |
 | `--color-alarm-hover` | `#741d10` | Hover de acciones alarma. |
+| `--color-alarm-line` | `#e6c3bc` | Borde de una acción destructiva (Borrar, Dar de baja). |
+| `--color-bar-mid` | `#9aa0a8` | Segmento intermedio de una barra de distribución con varios segmentos a la vez (donde `--color-ink-3`/`--color-ink-4` solos no alcanzan). |
+| `--color-bar-pos` | `#d6d3ca` | Segmento positivo de una barra de distribución, en el mismo caso. |
 
 `--color-ink-3` es el tono más claro con el que se escribe texto: llega a 4,5:1 (WCAG AA) sobre los tres fondos (`--color-bg`, `--color-bg-card`, `--color-bg-elev`). `--color-ink-4` no es para texto legible: solo deshabilitado, placeholder y relleno no textual de barras.
 
@@ -49,7 +52,7 @@ Los estados del dominio (`--color-st-*`: aprobada, regular, cursando, desaprobad
 
 ## Mapping al frontend
 
-Tailwind 4 exige el prefijo `--color-` para generar utilities (`bg-bg`, `text-ink`): los nombres de arriba ya lo llevan, y son los que están en `@theme`. Dos cosas quedan pendientes, ninguna cosmética: retirar `--color-accent*` (sigue viva, Apricot, porque algunos componentes todavía la consumen como acento decorativo, algo que el contrato Boletín no tiene) y sumar Newsreader vía `next/font` como `--font-display` (hoy sigue en Geist).
+Tailwind 4 exige el prefijo `--color-` para generar utilities (`bg-bg`, `text-ink`): los nombres de arriba ya lo llevan, y son los que están en `@theme`. Newsreader ya carga vía `next/font` (`frontend/src/lib/fonts.ts`) y alimenta `--font-serif`: es el token que cubre tanto los títulos y números publicados como las citas itálicas, no `--font-display` (que sigue en Geist, token separado para lo que en el futuro necesite divergir). Queda pendiente, no cosmético: retirar `--color-accent*` (sigue viva, Apricot, porque algunos componentes todavía la consumen como acento decorativo, algo que el contrato Boletín no tiene).
 
 ## Fuentes en el repo
 

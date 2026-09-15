@@ -1,28 +1,30 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { Pill } from '@/components/ui';
 import { formatTermKind, formatTermOfYear } from '@/lib/academic-terms';
+import { describeSubjectCoverage } from '../lib/describe-career-coverage';
 import { groupSubjectsByYear } from '../lib/group-subjects';
-import type { Subject } from '../types';
+import type { Subject, SubjectCoverage } from '../types';
 
 /**
  * Grilla de materias de un plan (US-001, `/plans/[id]/subjects`), agrupada por año y término.
  * Sin estados de alumno (aprobada/regular/etc.): eso es Mi carrera (US-045), logueado. Acá solo
  * el listado público code + name + termKind, cada uno linkeando al detalle público (US-002).
  *
- * `coveredSubjectIds` marca cuáles ya tienen ficha (V10: antes había que entrar materia por
- * materia para ubicar la cobertura que la Ficha de carrera resume en "1 de 21"). Opcional: un
- * caller que todavía no resolvió la cobertura (o no la necesita, como el admin) no tiene que
- * armar un Set vacío a mano.
+ * `subjectCoverage` trae cuántas cátedras y reseñas junta cada materia (US-134, SC-018): antes
+ * había que entrar materia por materia para ubicar la cobertura que la Ficha de carrera resume en
+ * "23 de 51". Opcional: un caller que todavía no la resolvió (o no la necesita, como el admin) no
+ * tiene que armar un Map vacío a mano. Ausente para una materia sin ninguna reseña con cátedra:
+ * se lee "sin reseñas".
  *
  * TODO(US-001): correlativas (para_cursar / para_rendir) cuando el catálogo público las exponga.
  * `SubjectListItem` (GET /api/academic/subjects) hoy no las trae; requiere extender el backend.
  */
 export function SubjectGrid({
   subjects,
-  coveredSubjectIds,
+  subjectCoverage,
 }: {
   subjects: Subject[];
-  coveredSubjectIds?: ReadonlySet<string>;
+  subjectCoverage?: ReadonlyMap<string, SubjectCoverage>;
 }) {
   if (subjects.length === 0) {
     return (
@@ -40,17 +42,29 @@ export function SubjectGrid({
             Año {yearGroup.yearInPlan}
           </h2>
           <div className="mt-3 flex flex-col gap-5">
-            {yearGroup.terms.map((term) => (
-              <div key={term.key}>
-                <h3 className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
-                  {formatTermOfYear(term.termKind, term.termInYear)}
-                </h3>
+            {yearGroup.terms.map((term, termIndex) => (
+              // El grupo sin cadencia no tiene título (no hay con qué nombrarlo): el borde lo
+              // separa del grupo anterior del mismo año para que sus materias no se lean como
+              // parte de él (ej. como si fueran anuales). Solo cuando hay grupo anterior: si es
+              // el único del año (todo el plan sin cuatrimestres, como UNSTA y UTN), el borde
+              // quedaría pegado debajo de "Año N" sin separar nada.
+              <div
+                key={term.key}
+                className={
+                  term.termKind === null && termIndex > 0 ? 'border-t border-line pt-4' : undefined
+                }
+              >
+                {term.termKind !== null && (
+                  <h3 className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
+                    {formatTermOfYear(term.termKind, term.termInYear)}
+                  </h3>
+                )}
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {term.subjects.map((subject) => (
                     <SubjectCard
                       key={subject.id}
                       subject={subject}
-                      hasFicha={coveredSubjectIds?.has(subject.id) ?? false}
+                      coverage={subjectCoverage?.get(subject.id)}
                     />
                   ))}
                 </div>
@@ -63,18 +77,31 @@ export function SubjectGrid({
   );
 }
 
-function SubjectCard({ subject, hasFicha }: { subject: Subject; hasFicha: boolean }) {
+function SubjectCard({ subject, coverage }: { subject: Subject; coverage?: SubjectCoverage }) {
   return (
-    <Link
+    <FallbackLink
       href={`/subjects/${subject.id}`}
+      // Sin prefetch: una precarga en viewport compite con el click real y el router puede
+      // soltar la navegación (ver shell-link.tsx, issue #525).
+      prefetch={false}
       className="flex flex-col gap-1.5 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
     >
-      <span className="font-mono text-[10.5px] tracking-wide text-ink-3">{subject.code}</span>
+      {subject.code && (
+        <span className="font-mono text-[10.5px] tracking-wide text-ink-3">{subject.code}</span>
+      )}
       <span className="text-[13.5px] font-medium leading-snug text-ink">{subject.name}</span>
-      <span className="flex items-center gap-1.5">
-        <Pill>{formatTermKind(subject.termKind)}</Pill>
-        {hasFicha && <Pill tone="good">Medida</Pill>}
+      {subject.termKind && (
+        <span className="flex items-center gap-1.5">
+          <Pill>{formatTermKind(subject.termKind)}</Pill>
+        </span>
+      )}
+      <span
+        className={
+          coverage?.isCovered ? 'text-[11px] font-semibold text-ink' : 'text-[11px] text-ink-3'
+        }
+      >
+        {describeSubjectCoverage(coverage)}
       </span>
-    </Link>
+    </FallbackLink>
   );
 }

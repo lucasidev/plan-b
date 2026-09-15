@@ -18,9 +18,11 @@ internal sealed class ApproveSubjectItemValidator : AbstractValidator<ApproveSub
 {
     public ApproveSubjectItemValidator()
     {
-        RuleFor(i => i.Code).NotEmpty().MaximumLength(40);
+        // Code y TermKind son opcionales (ADR-0097): solo se valida el largo de Code cuando el
+        // item lo trae. TermKind sin parsear a un valor definido queda null, no rechaza el item
+        // (mismo criterio que ApproveCareerPlanImportCommandHandler).
+        RuleFor(i => i.Code).MaximumLength(40).When(i => i.Code is not null);
         RuleFor(i => i.Name).NotEmpty().MaximumLength(200);
         RuleFor(i => i.YearInPlan).InclusiveBetween(1, 10);
-        RuleFor(i => i.TermKind).NotEmpty();
     }
 }

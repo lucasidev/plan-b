@@ -1,10 +1,10 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 /**
  * E2E del catálogo público (US-001): universidades → carreras → planes → materias, sin login.
- * Recorre UNSTA (seed determinístico, `AcademicSeedData.cs`) porque es la única universidad con
- * datos en los 4 niveles: la Tecnicatura Universitaria en Desarrollo y Calidad de Software
- * (TUDCS) es la única carrera con materias cargadas (plan 2018, `AcademicSeedData.Subjects`).
+ * Recorre UNSTA (seed determinístico, `AcademicSeedData.cs`): la Tecnicatura Universitaria en
+ * Desarrollo y Calidad de Software (TUDCS) tiene materias cargadas (plan 2018,
+ * `AcademicSeedData.Subjects`).
  *
  * Usamos `page.goto` directo a los ids seedeados (determinísticos entre runs) en vez de
  * encadenar clicks: más robusto contra flake de hidratación en navegaciones multi-nivel. Un
@@ -15,16 +15,27 @@ const UNSTA_SLUG = 'unsta';
 const TUDCS_CAREER_ID = '00000002-0000-4000-a000-000000000003';
 const TUDCS_PLAN_2018_ID = '00000003-0000-4000-a000-000000000003';
 
+/**
+ * El link de una universidad en la lista de `/universities`, acotado al `listitem` que la
+ * contiene (ADR-0096): la columna "Lo que los datos dicen" puede nombrar a la misma universidad
+ * en sus propios links (la más elegida, quien más avanza), así que buscar por nombre en toda la
+ * página resuelve más de un elemento (mismo patrón que 87c05bf8).
+ */
+function universityLink(page: Page, name: string | RegExp) {
+  return page.getByRole('listitem').filter({ hasText: name }).getByRole('link');
+}
+
 test.describe('Catálogo público (US-001)', () => {
   test.setTimeout(120_000);
 
   test('visitante anónimo navega de universidades a materias', async ({ page }) => {
     await page.goto('/universities');
-    await expect(page.getByRole('heading', { name: 'Universidades', level: 1 })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.getByRole('tab', { name: 'Universidades', selected: true })).toBeVisible();
     await expect(
-      page.getByRole('link', { name: /universidad del norte santo tomás de aquino/i }),
+      universityLink(page, /universidad del norte santo tomás de aquino/i),
     ).toBeVisible();
 
     await page.goto(`/universities/${UNSTA_SLUG}/careers`);
@@ -34,10 +45,14 @@ test.describe('Catálogo público (US-001)', () => {
         level: 1,
       }),
     ).toBeVisible({ timeout: 30_000 });
+    // .first(): "Facultades y carreras" siempre la lista; si además junta reseñas suficientes
+    // para "Por dónde empezar", el mismo nombre aparece dos veces en la página.
     await expect(
-      page.getByRole('link', {
-        name: /tecnicatura universitaria en desarrollo y calidad de software/i,
-      }),
+      page
+        .getByRole('link', {
+          name: /tecnicatura universitaria en desarrollo y calidad de software/i,
+        })
+        .first(),
     ).toBeVisible();
 
     await page.goto(`/careers/${TUDCS_CAREER_ID}/plans`);
@@ -61,21 +76,23 @@ test.describe('Catálogo público (US-001)', () => {
 
   test('el link de la lista de universidades navega a sus carreras', async ({ page }) => {
     await page.goto('/universities');
-    await page.getByRole('link', { name: /universidad del norte santo tomás de aquino/i }).click();
+    await universityLink(page, /universidad del norte santo tomás de aquino/i).click();
     await expect(page).toHaveURL(new RegExp(`/universities/${UNSTA_SLUG}/careers$`), {
       timeout: 30_000,
     });
   });
 
-  test('desde la lista de carreras se llega a la ficha, y de ahí a sus planes', async ({
+  test('desde la lista de carreras se llega a la ficha, y ahí ve el plan inline', async ({
     page,
   }) => {
     // La ficha de carrera se construyó después que la lista, y la lista seguía saltándosela para
     // ir directo a los planes: una pantalla a la que solo se llega tipeando la URL es una que
     // nadie lee. Este test es el que sostiene que esté enganchada.
     await page.goto(`/universities/${UNSTA_SLUG}/careers`);
+    // .first(): mismo motivo que el test de arriba, "Facultades y carreras" antes que "Por dónde empezar".
     await page
       .getByRole('link', { name: /tecnicatura universitaria en desarrollo y calidad de software/i })
+      .first()
       .click();
 
     await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`), { timeout: 30_000 });
@@ -86,9 +103,75 @@ test.describe('Catálogo público (US-001)', () => {
       }),
     ).toBeVisible();
 
-    await page.getByRole('link', { name: /ver las \d+ materias/i }).click();
-    await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}/plans$`), {
+    // El plan vigente se lee inline en la ficha (ya no hace falta salir a /careers/[id]/plans),
+    // compacto por año y sin agrupar por cuatrimestre (V.career de la maqueta aprobada): "Primer
+    // año", no "Año 1" (esa etiqueta es de /plans/[id]/subjects, que sigue agrupando por término).
+    await expect(page.getByText('El plan 2018')).toBeVisible();
+    // getByText('Primer año') viola strict mode: también matchea el dato oficial "Plan vigente"
+    // ("...9 en primer año..."). El h3 del plan es el único heading con ese nombre.
+    await expect(page.getByRole('heading', { name: 'Primer año', level: 3 })).toBeVisible();
+    await expect(page.getByRole('link', { name: '101 Algoritmos y Paradigmas' })).toBeVisible();
+  });
+
+  test('US-222: la lente de Carreras agrupa lo que se dicta en más de una institución (ADR-0096)', async ({
+    page,
+  }) => {
+    // La Tecnicatura de UNSTA comparte carrera canónica con UNT y UTN-FRT
+    // (CanonicalCareerGroupings.cs, "Tecnicatura o técnico en programación"): dato determinístico
+    // del seed, no depende de que alguien haya reseñado nada.
+    await page.goto('/careers');
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.getByRole('tab', { name: 'Carreras', selected: true })).toBeVisible();
+    // El h2 es un solo `.pb-eyebrow` ("En más de una institución · para comparar lado a lado",
+    // ADR-0096, maqueta aprobada): regex por prefijo, no el texto completo.
+    await expect(
+      page.getByRole('heading', { name: /^En más de una institución/, level: 2 }),
+    ).toBeVisible();
+
+    // Una fila por carrera canónica, no un heading por grupo: las instituciones son texto plano
+    // adentro de la fila (sin link propio), y la fila entera lleva a compararlas lado a lado
+    // (ADR-0096, maqueta aprobada).
+    const tecnicaturaRow = page.getByRole('link', {
+      name: /tecnicatura o técnico en programación/i,
+    });
+    await expect(tecnicaturaRow).toBeVisible();
+    await expect(tecnicaturaRow).toContainText('UNSTA');
+    await tecnicaturaRow.click();
+    await expect(page).toHaveURL(/\/careers\/[^/]+\/where-to-study$/, { timeout: 30_000 });
+    // La URL sola no alcanza: si la comparación llamara notFound(), la URL no cambia (queda
+    // resuelta por el router, el 404 se pinta encima). El h1 confirma que la pantalla real cargó.
+    await expect(
+      page.getByRole('heading', { name: /tecnicatura o técnico en programación/i, level: 1 }),
+    ).toBeVisible();
+  });
+
+  test('US-222: /careers muestra primero "en más de una institución" y no mezcla sus grupos con "en una sola"', async ({
+    page,
+  }) => {
+    await page.goto('/careers');
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.getByRole('tab', { name: 'Carreras', selected: true })).toBeVisible();
+
+    // Cada h2 es un solo `.pb-eyebrow` con su conteo pegado (ADR-0096, maqueta aprobada): el
+    // prefijo, no el texto completo (que incluye "· para comparar lado a lado" y "· N carreras").
+    // Hay un tercer h2 en la columna derecha ("Lo que los datos dicen", `DataHighlights`), que no
+    // es parte de la lente: se descarta antes de afirmar el orden de los dos que sí lo son.
+    const sectionHeadings = (
+      await page.getByRole('heading', { level: 2 }).allTextContents()
+    ).filter((heading) => !heading.startsWith('Lo que los datos dicen'));
+    expect(sectionHeadings).toHaveLength(2);
+    expect(sectionHeadings[0]).toMatch(/^En más de una institución/);
+    expect(sectionHeadings[1]).toMatch(/^En una sola institución/);
+
+    // El grupo canónico multi-institución (Tecnicatura o técnico en programación) no puede
+    // reaparecer adentro de la lista compacta de "en una sola institución".
+    const singleSection = page.locator('section', {
+      has: page.getByRole('heading', { name: /^En una sola institución/ }),
+    });
+    await expect(singleSection.getByText('Tecnicatura o técnico en programación')).toHaveCount(0);
   });
 });

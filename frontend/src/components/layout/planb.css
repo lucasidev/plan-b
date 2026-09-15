@@ -1,0 +1,1052 @@
+/*
+ * Clases del shell y de Explorar, portadas literalmente de la maqueta aprobada
+ * (planb-catalogo-adentro.html, <style>, líneas 4 a 235): cada clase con el prefijo `pb-` para no
+ * chocar con las utilities de Tailwind, las variables de la maqueta mapeadas a los tokens de
+ * `app/globals.css` (mismos valores), todo envuelto en `@layer components` para que las utilities
+ * de Tailwind de las otras pantallas sigan ganando. Valores (tamaños, paddings, radios, pesos,
+ * letter-spacing, gaps, breakpoints) idénticos a la maqueta: no se redondean ni "mejoran" acá; el
+ * contrato vive en docs/product/design-system.md.
+ *
+ * Quedan afuera (son el marco de la maqueta, no del producto): `body`, `:root`, `.console*` (la
+ * consola de controles de la maqueta) y `.demo-note`.
+ *
+ * Único ajuste no mecánico: en la maqueta, `.pb-sidebar`/`.pb-topbar`/`.pb-shell`/`.pb-frame`/etc.
+ * usan `top: 80px` y `calc(100vh - 80px)` porque ahí arriba está la consola (`.console`, sticky,
+ * ~80px). Sin consola en el producto, esos 80px no compensan nada: quedan en `top: 0` / `100vh`.
+ */
+@layer components {
+  * {
+    box-sizing: border-box;
+  }
+  a {
+    color: inherit;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  button:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    text-wrap: balance;
+  }
+  p {
+    margin: 0;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ---- Piezas comunes del producto ---- */
+  .pb-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+  .pb-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-3);
+    /* Una fuente, una URL o un token largo sin espacios (institution-facts/transparency-checklist,
+     * career-facts, subject-facts, data-highlights) no tiene dónde partir línea: sin esto, ese
+     * texto empuja a su contenedor en vez de ajustarse a lo que hay. */
+    overflow-wrap: anywhere;
+  }
+  .pb-serif {
+    font-family: var(--font-serif);
+  }
+  .pb-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .pb-card.pb-flat {
+    background: transparent;
+  }
+  .pb-num {
+    font-family: var(--font-serif);
+    font-variant-numeric: tabular-nums;
+  }
+  .pb-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--color-bg-elev);
+    color: var(--color-ink-2);
+    white-space: nowrap;
+  }
+  .pb-pill.pb-alarm {
+    background: var(--color-alarm-soft);
+    color: var(--color-alarm-ink);
+  }
+  .pb-pill.pb-pub {
+    background: var(--color-ink);
+    color: var(--color-bg-card);
+  }
+  .pb-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-ink);
+    color: var(--color-bg-card);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-weight: 500;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .pb-cta.pb-ghost {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1px solid var(--color-line);
+  }
+  .pb-link {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .pb-muted {
+    color: var(--color-ink-3);
+  }
+  .pb-divider {
+    height: 1px;
+    background: var(--color-line-2);
+  }
+
+  .pb-bar {
+    display: flex;
+    gap: 1px;
+    height: 7px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 6px 0 5px;
+  }
+  .pb-bar span {
+    display: block;
+    height: 100%;
+    background: var(--color-bar-mid);
+  }
+  .pb-bar span.pb-pos {
+    background: var(--color-bar-pos);
+  }
+  .pb-bar span.pb-neg {
+    background: var(--color-alarm);
+  }
+  .pb-mode {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    border-radius: 6px;
+    padding: 3px 9px;
+    background: var(--color-bg-elev);
+    color: var(--color-ink-2);
+    white-space: nowrap;
+  }
+  .pb-mode.pb-neg {
+    background: var(--color-alarm-soft);
+    color: var(--color-alarm-ink);
+  }
+  .pb-q {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .pb-q .pb-t {
+    font-size: 13.5px;
+  }
+  .pb-item + .pb-item {
+    border-top: 1px solid var(--color-line-2);
+  }
+  .pb-item {
+    padding: 11px 0;
+  }
+  .pb-fill {
+    display: flex;
+    gap: 3px;
+    height: 8px;
+    margin: 8px 0;
+  }
+  .pb-fill span {
+    border-radius: 4px;
+  }
+
+  .pb-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-3);
+  }
+  .pb-crumbs button {
+    color: var(--color-ink-3);
+  }
+  .pb-crumbs button:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+  .pb-crumbs b {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+  /* Solo el segmento de la carrera (issue de las migas a tres líneas, 1280px): las demás migas
+   * siguen haciendo wrap. 200px deja "Explorar / {universidad} / {carrera}" en su propia línea
+   * con margen, y a la carrera un tramo legible antes del recorte (el nombre completo va al
+   * `title`). */
+  .pb-crumbs .pb-crumb-truncate {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+  /* La carrera como última miga (/careers/[id], activa): la maqueta la muestra entera en su
+   * propia línea, sin el tope de 200px. max-width 100% resuelve contra el ancho de .pb-crumbs
+   * (el bloque entero de migas): ocupa lo que haga falta hasta ahí, y solo recorta con ellipsis
+   * si ni la línea completa alcanza. */
+  .pb-crumbs .pb-crumb-truncate-full {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+
+  .pb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .pb-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    padding: 11px 14px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  .pb-row:hover {
+    background: var(--color-bg-elev);
+  }
+  .pb-row > span:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .pb-row .pb-name {
+    display: block;
+    font-weight: 500;
+    font-size: 14px;
+  }
+  .pb-row .pb-sub {
+    display: block;
+    font-size: 12px;
+    color: var(--color-ink-3);
+  }
+  .pb-row .pb-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .pb-row.pb-dim .pb-name {
+    color: var(--color-ink-3);
+    font-weight: 400;
+  }
+
+  .pb-kv {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .pb-kv > div {
+    padding: 10px 0;
+    border-top: 1px solid var(--color-line-2);
+  }
+  .pb-kv > div:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .pb-kv .pb-k {
+    font-size: 11px;
+    color: var(--color-ink-3);
+    margin-bottom: 2px;
+  }
+  .pb-kv .pb-v {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.3;
+  }
+  .pb-kv .pb-v.pb-small {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--color-ink-2);
+  }
+  .pb-kv .pb-src {
+    margin-top: 3px;
+  }
+
+  .pb-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .pb-stats > div {
+    background: var(--color-bg-card);
+    padding: 12px 14px;
+  }
+  .pb-stats .pb-v {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .pb-stats .pb-v small {
+    font-size: 14px;
+    color: var(--color-ink-3);
+    font-family: var(--font-ui);
+  }
+  .pb-stats .pb-k {
+    font-size: 11px;
+    color: var(--color-ink-3);
+    margin-top: 4px;
+  }
+
+  .pb-plan {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+  }
+  .pb-plan h3 {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .pb-plan ul {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  /* button y a: la maqueta navega con data-go (JS); el producto usa Link (issue #525, ver
+   * shell-link.tsx y el mismo criterio en .pb-sidebar nav / .pb-lens de más arriba). */
+  .pb-plan li button,
+  .pb-plan li a {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
+    text-align: left;
+    font-size: 13px;
+  }
+  .pb-plan li button:hover,
+  .pb-plan li a:hover {
+    background: var(--color-bg-elev);
+  }
+  .pb-plan li .pb-code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-3);
+    width: 30px;
+    flex-shrink: 0;
+  }
+  .pb-plan li.pb-measured button,
+  .pb-plan li.pb-measured a {
+    font-weight: 500;
+  }
+  .pb-plan li.pb-measured .pb-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-ink);
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .pb-plan li .pb-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid var(--color-ink-4);
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .pb-lens {
+    display: inline-flex;
+    gap: 2px;
+    background: var(--color-bg-elev);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  /* button y a: la maqueta cambia de lente con JS (data-lens); el producto navega a /universities
+   * o /careers de verdad, así que la pestaña es un link. */
+  .pb-lens button,
+  .pb-lens a {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--color-ink-2);
+  }
+  .pb-lens button[aria-selected='true'],
+  .pb-lens a[aria-selected='true'] {
+    background: var(--color-bg-card);
+    color: var(--color-ink);
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgb(25 27 31 / 6%);
+  }
+  .pb-section {
+    margin-bottom: 22px;
+  }
+  .pb-section > .pb-eyebrow {
+    margin-bottom: 8px;
+  }
+  .pb-note {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--color-ink-2);
+  }
+
+  /* ---- El shell de planb, el mismo de Inicio y Mis aportes ---- */
+  .pb-shell {
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+  .pb-sidebar {
+    background: var(--color-bg);
+    border-right: 1px solid var(--color-line);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+  }
+  .pb-sidebar .pb-brandrow {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .pb-sidebar .pb-career {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pb-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .pb-sidebar .pb-sec {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    /* ink-4 sobre bg no llega a 4.5:1 (WCAG AA, texto chico): ink-3 sí (5,22:1). */
+    color: var(--color-ink-3);
+    padding: 14px 8px 4px;
+  }
+  /* button y a: la maqueta navega con data-go (JS); el producto usa FallbackLink (<a>) para los
+   * seis-siete items del sidebar (issue #525, ver fallback-link.tsx). */
+  .pb-sidebar nav button,
+  .pb-sidebar nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    width: 100%;
+    text-align: left;
+    color: var(--color-ink);
+  }
+  .pb-sidebar nav button:hover,
+  .pb-sidebar nav a:hover {
+    background: var(--color-bg-elev);
+  }
+  .pb-sidebar nav button.pb-on,
+  .pb-sidebar nav a.pb-on {
+    background: var(--color-bg-elev);
+    font-weight: 500;
+  }
+  .pb-sidebar nav button .pb-sc,
+  .pb-sidebar nav a .pb-sc {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    /* ink-3 sobre line (el fondo de esta pastilla) da 4,27:1: no llega al 4.5:1 de WCAG AA para
+     * texto chico. ink-2 sobre line sí (6,28:1). El fondo de la pastilla queda igual. */
+    color: var(--color-ink-2);
+    background: var(--color-line);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  .pb-sidebar nav button.pb-on .pb-sc,
+  .pb-sidebar nav a.pb-on .pb-sc {
+    background: var(--color-bg-elev);
+  }
+  .pb-sidebar .pb-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--color-line);
+    padding-top: 12px;
+  }
+  .pb-sidebar .pb-acct {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pb-sidebar .pb-acct .pb-who {
+    min-width: 0;
+    flex: 1;
+  }
+  .pb-sidebar .pb-acct .pb-who div:first-child {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pb-sidebar .pb-acct .pb-who div:last-child {
+    font-size: 11px;
+    color: var(--color-ink-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pb-topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-line);
+    padding: 10px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .pb-topbar .pb-where {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-ink-3);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pb-topbar .pb-where b {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+  .pb-topbar .pb-search {
+    width: 320px;
+    margin-left: auto;
+  }
+  .pb-topbar .pb-write {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-ink);
+    color: var(--color-bg-card);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .pb-content {
+    max-width: 1120px;
+    padding: 26px 32px 60px;
+  }
+  .pb-dossier {
+    display: grid;
+    /* minmax(0, 320px), no 320px a secas: un track fijo sigue heredando el min-width automático
+     * de su contenido (el ancho mínimo de una pill o de un valor largo, SC-005/UTN-FRT), y esa
+     * columna crecía más allá de sus 320px y empujaba el resto a scroll horizontal. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+    gap: 32px;
+  }
+  .pb-content .pb-head {
+    padding: 0 0 20px;
+    border-bottom: 1px solid var(--color-line);
+    margin-bottom: 22px;
+  }
+  .pb-content .pb-head h1 {
+    font-size: 32px;
+    line-height: 1.1;
+    margin: 6px 0 8px;
+    /* La maqueta no fija el peso: el h1 usa la negrita del navegador, que con Newsreader cargada
+     * solo en 400/500/600 (src/lib/fonts.ts) resuelve en 600. El reset de Tailwind deja los
+     * headings en `font-weight: inherit`, así que acá se fija a mano. */
+    font-weight: 600;
+  }
+  /* La maqueta usa `.h-sub`/`.h-meta` (pensadas para `.pb-page`, los frames A/B/C) también dentro
+   * de `.pb-content` (`V.explore().head`, frameApp): sin esto, esas dos clases no tendrían efecto
+   * ahí y el subtítulo se leería como texto de cuerpo suelto, pegado al h1. */
+  .pb-content .pb-head .pb-h-sub {
+    font-size: 13px;
+    color: var(--color-ink-2);
+    margin-top: 4px;
+  }
+  .pb-content .pb-head .pb-h-meta {
+    margin-top: 6px;
+  }
+  .pb-content .pb-head .pb-stats {
+    margin-top: 16px;
+  }
+  @media (max-width: 980px) {
+    .pb-dossier {
+      grid-template-columns: 1fr;
+    }
+    .pb-topbar .pb-search {
+      display: none;
+    }
+  }
+  @media (max-width: 760px) {
+    .pb-shell {
+      grid-template-columns: 1fr;
+    }
+    .pb-sidebar {
+      position: static;
+      height: auto;
+      border-right: 0;
+      border-bottom: 1px solid var(--color-line);
+    }
+  }
+
+  .pb-frame {
+    min-height: 100vh;
+  }
+  .pb-brand {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+  }
+  .pb-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    height: 34px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-line);
+    border-radius: 8px;
+    padding: 0 10px;
+    color: var(--color-ink-3);
+    font-size: 12.5px;
+  }
+  .pb-search .pb-ph {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pb-search .pb-kbd {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    padding: 0 5px;
+  }
+  .pb-topbar .pb-signin {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-ink-2);
+    padding: 7px 10px;
+    border-radius: 6px;
+  }
+  .pb-topbar .pb-signin:hover {
+    color: var(--color-ink);
+    background: var(--color-bg-elev);
+  }
+  .pb-topbar .pb-avatar {
+    flex-shrink: 0;
+  }
+  .pb-sidebar .pb-footer .pb-anon {
+    font-size: 12px;
+    color: var(--color-ink-3);
+    line-height: 1.45;
+  }
+  .pb-account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pb-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-bg-elev);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink-2);
+  }
+  .pb-nav a,
+  .pb-nav button {
+    display: block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    text-decoration: none;
+    width: 100%;
+    text-align: left;
+  }
+  .pb-nav a.pb-on,
+  .pb-nav button.pb-on {
+    background: var(--color-bg-elev);
+    font-weight: 500;
+  }
+  .pb-nav a:hover,
+  .pb-nav button:hover {
+    background: var(--color-bg-elev);
+  }
+
+  /* A · El índice */
+  .pb-a .pb-frame {
+    display: grid;
+    grid-template-columns: 264px minmax(0, 1fr);
+  }
+  .pb-a .pb-rail {
+    border-right: 1px solid var(--color-line);
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+  }
+  .pb-a .pb-rail .pb-eyebrow {
+    margin-bottom: 6px;
+  }
+  .pb-a .pb-tree {
+    font-size: 13px;
+  }
+  .pb-a .pb-tree .pb-lvl {
+    padding: 4px 0 4px 0;
+  }
+  .pb-a .pb-tree .pb-lvl > button {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    text-align: left;
+    width: 100%;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .pb-a .pb-tree .pb-lvl > button:hover {
+    background: var(--color-bg-elev);
+  }
+  .pb-a .pb-tree .pb-lvl > button.pb-on {
+    background: var(--color-bg-elev);
+    font-weight: 500;
+  }
+  .pb-a .pb-tree .pb-lvl .pb-kind {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: 58px;
+    flex-shrink: 0;
+  }
+  .pb-a .pb-tree .pb-sib {
+    margin-left: 66px;
+    padding: 2px 0 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .pb-a .pb-tree .pb-sib button {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    color: var(--color-ink-2);
+  }
+  .pb-a .pb-tree .pb-sib button:hover {
+    background: var(--color-bg-elev);
+    color: var(--color-ink);
+  }
+  .pb-a .pb-tree .pb-sib button.pb-on {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+  .pb-a .pb-page {
+    max-width: 720px;
+    padding: 28px 40px 60px;
+  }
+  .pb-a .pb-rail .pb-bottom {
+    margin-top: auto;
+  }
+
+  /* B · La mesa de lectura */
+  .pb-b .pb-top {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .pb-b .pb-top-in {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .pb-b .pb-top .pb-nav {
+    display: flex;
+    gap: 2px;
+  }
+  .pb-b .pb-top .pb-nav a,
+  .pb-b .pb-top .pb-nav button {
+    width: auto;
+    padding: 6px 10px;
+  }
+  .pb-b .pb-top .pb-search {
+    width: 300px;
+    margin-left: auto;
+  }
+  .pb-b .pb-page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 26px 24px 60px;
+  }
+  .pb-b .pb-dossier {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 32px;
+  }
+  .pb-b .pb-head {
+    padding: 6px 0 20px;
+    border-bottom: 1px solid var(--color-line);
+    margin-bottom: 22px;
+  }
+  .pb-b .pb-head h1 {
+    font-size: 34px;
+    line-height: 1.1;
+    margin: 6px 0 8px;
+  }
+  .pb-b .pb-head .pb-stats {
+    margin-top: 16px;
+  }
+  @media (max-width: 860px) {
+    .pb-b .pb-dossier {
+      grid-template-columns: 1fr;
+    }
+    .pb-b .pb-top .pb-search {
+      display: none;
+    }
+  }
+
+  /* C · El expediente */
+  .pb-c .pb-frame {
+    display: grid;
+    grid-template-columns: 236px 360px minmax(0, 1fr);
+  }
+  .pb-c .pb-rail {
+    border-right: 1px solid var(--color-line);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .pb-c .pb-pane {
+    border-right: 1px solid var(--color-line);
+    background: var(--color-bg-elev);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+  }
+  .pb-c .pb-pane .pb-pane-head {
+    padding: 16px 16px 10px;
+    position: sticky;
+    top: 0;
+    background: var(--color-bg-elev);
+  }
+  .pb-c .pb-pane .pb-pane-head h2 {
+    font-size: 15px;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .pb-c .pb-pane ul {
+    padding: 0 8px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pb-c .pb-pane li button {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    text-align: left;
+    padding: 9px 10px;
+    border-radius: 8px;
+  }
+  .pb-c .pb-pane li button:hover {
+    background: var(--color-bg-card);
+  }
+  .pb-c .pb-pane li button.pb-on {
+    background: var(--color-bg-card);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+  .pb-c .pb-pane li .pb-l1 {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .pb-c .pb-pane li .pb-l2 {
+    font-size: 11.5px;
+    color: var(--color-ink-3);
+    font-family: var(--font-mono);
+  }
+  .pb-c .pb-pane li.pb-dim .pb-l1 {
+    color: var(--color-ink-3);
+    font-weight: 400;
+  }
+  .pb-c .pb-page {
+    max-width: 760px;
+    padding: 26px 36px 60px;
+  }
+  .pb-c .pb-rail .pb-bottom {
+    margin-top: auto;
+  }
+  @media (max-width: 1080px) {
+    .pb-c .pb-frame {
+      grid-template-columns: 236px minmax(0, 1fr);
+    }
+    .pb-c .pb-pane {
+      display: none;
+    }
+  }
+  @media (max-width: 860px) {
+    .pb-a .pb-frame,
+    .pb-c .pb-frame {
+      grid-template-columns: 1fr;
+    }
+    .pb-a .pb-rail,
+    .pb-c .pb-rail {
+      position: static;
+      height: auto;
+      border-right: 0;
+      border-bottom: 1px solid var(--color-line);
+    }
+  }
+
+  .pb-page h1 {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+  .pb-page .pb-h-sub {
+    font-size: 13px;
+    color: var(--color-ink-2);
+    margin-top: 4px;
+  }
+  .pb-page .pb-h-meta {
+    margin-top: 6px;
+  }
+  .pb-page .pb-head {
+    margin-bottom: 20px;
+  }
+  .pb-b .pb-page .pb-head h1 {
+    font-size: 34px;
+  }
+  .pb-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .pb-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 26px;
+  }
+  .pb-home-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pb-row,
+    .pb-plan li button,
+    .pb-nav a,
+    .pb-nav button {
+      transition: background-color 0.12s ease;
+    }
+  }
+}

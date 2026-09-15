@@ -3,9 +3,10 @@ import { prerequisiteFieldsSchema, SUBJECT_LIMITS, subjectFieldsSchema } from '.
 
 /**
  * Schema tests (tier "Utils / Schemas", ADR-0036). Cubre los rangos que espejan `Subject.Validate`
- * del backend (US-062): code/name obligatorios, yearInPlan 1-10, weeklyHours 0-40, totalHours
- * positivo y al menos la semanal, el invariante term_kind/term_in_year (anual sin número, el resto
- * con número 1-6), y el schema de correlativas (requiredSubjectId + type).
+ * del backend (US-062): name obligatorio, yearInPlan 1-10; code, cadencia, cuatrimestre y horas
+ * opcionales pero con sus rangos cuando el dato está (weeklyHours 0-40, totalHours positivo y al
+ * menos la semanal), el invariante term_kind/term_in_year (sin cadencia no hay cuatrimestre, anual
+ * sin número, el resto con número 1-6), y el schema de correlativas (requiredSubjectId + type).
  */
 describe('subjectFieldsSchema', () => {
   const base = {
@@ -24,15 +25,43 @@ describe('subjectFieldsSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('acepta una materia solo con name y yearInPlan: el resto de los opcionales vacíos', () => {
+    const result = subjectFieldsSchema.safeParse({
+      code: '',
+      name: 'Proyecto Final',
+      yearInPlan: '4',
+      termKind: '',
+      termInYear: '',
+      weeklyHours: '',
+      totalHours: '',
+      description: '',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toMatchObject({ name: 'Proyecto Final', yearInPlan: 4 });
+      expect(result.data.code).toBeUndefined();
+      expect(result.data.termKind).toBeUndefined();
+      expect(result.data.termInYear).toBeUndefined();
+      expect(result.data.weeklyHours).toBeUndefined();
+      expect(result.data.totalHours).toBeUndefined();
+    }
+  });
+
   describe('code', () => {
-    it('rechaza vacío', () => {
+    it('acepta vacío (colapsa a undefined): el código es opcional', () => {
       const result = subjectFieldsSchema.safeParse({ ...base, code: '' });
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.code).toBeUndefined();
+      }
     });
 
-    it('rechaza solo espacios', () => {
+    it('acepta solo espacios (colapsa a undefined)', () => {
       const result = subjectFieldsSchema.safeParse({ ...base, code: '   ' });
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.code).toBeUndefined();
+      }
     });
 
     it('rechaza más de 40 caracteres', () => {
@@ -127,6 +156,23 @@ describe('subjectFieldsSchema', () => {
   });
 
   describe('cross-field: termKind/termInYear', () => {
+    it('acepta sin cadencia y sin termInYear: los dos son opcionales', () => {
+      const result = subjectFieldsSchema.safeParse({ ...base, termKind: '', termInYear: '' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.termKind).toBeUndefined();
+        expect(result.data.termInYear).toBeUndefined();
+      }
+    });
+
+    it('rechaza termInYear presente sin cadencia', () => {
+      const result = subjectFieldsSchema.safeParse({ ...base, termKind: '', termInYear: '1' });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toMatch(/sin cadencia no se puede indicar/i);
+      }
+    });
+
     it('acepta Anual sin termInYear', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
@@ -234,6 +280,33 @@ describe('subjectFieldsSchema', () => {
     it('rechaza 41', () => {
       const result = subjectFieldsSchema.safeParse({ ...base, weeklyHours: '41' });
       expect(result.success).toBe(false);
+    });
+
+    it('acepta vacío (colapsa a undefined): la carga semanal es opcional', () => {
+      const result = subjectFieldsSchema.safeParse({ ...base, weeklyHours: '' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.weeklyHours).toBeUndefined();
+      }
+    });
+  });
+
+  describe('totalHours', () => {
+    it('acepta vacío (colapsa a undefined): la carga total es opcional', () => {
+      const result = subjectFieldsSchema.safeParse({ ...base, totalHours: '' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.totalHours).toBeUndefined();
+      }
+    });
+
+    it('acepta sin ninguna de las dos horas', () => {
+      const result = subjectFieldsSchema.safeParse({
+        ...base,
+        weeklyHours: '',
+        totalHours: '',
+      });
+      expect(result.success).toBe(true);
     });
   });
 

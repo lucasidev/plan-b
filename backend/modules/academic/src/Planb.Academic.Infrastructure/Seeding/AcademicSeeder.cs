@@ -356,20 +356,34 @@ public sealed class AcademicSeeder
 
     private async Task SeedSubjectsAsync(DateTimeOffset now, CancellationToken ct)
     {
-        // ux_subjects_plan_code.
-        var ledger = new SeedLedger<SubjectId, (CareerPlanId, string)>(
+        // ux_subjects_plan_code protege (career_plan_id, code) solo cuando code no es null:
+        // Postgres no hace chocar los NULL entre sí, así que varias materias sin código del mismo
+        // plan no tienen clave natural que las distinga entre sí. El ledger de clave natural solo
+        // ve las materias que sí tienen código; las que no, se identifican por su id
+        // determinístico del seed, mismo criterio que Teachers (sin índice único natural). Sin
+        // esto, la segunda materia sin código de un plan comparte la clave (plan, null) de la
+        // primera y el ledger la saltea como si ya existiera.
+        var existing = await _db.Subjects
+            .AsNoTracking()
+            .Select(s => new { s.Id, s.CareerPlanId, s.Code })
+            .ToListAsync(ct);
+
+        var codeLedger = new SeedLedger<SubjectId, (CareerPlanId, string)>(
             "materia",
-            (await _db.Subjects
-                .AsNoTracking()
-                .Select(s => new { s.Id, s.CareerPlanId, s.Code })
-                .ToListAsync(ct))
-                .Select(s => (s.Id, (s.CareerPlanId, s.Code))),
+            existing
+                .Where(s => s.Code is not null)
+                .Select(s => (s.Id, (s.CareerPlanId, s.Code!))),
             _logger);
+
+        var codelessIds = existing.Select(s => s.Id).ToHashSet();
 
         var inserted = 0;
         foreach (var record in AcademicSeedData.Subjects)
         {
-            if (!ledger.ShouldInsert(record.Id, (record.CareerPlanId, record.Code))) continue;
+            var shouldInsert = record.Code is { } code
+                ? codeLedger.ShouldInsert(record.Id, (record.CareerPlanId, code))
+                : codelessIds.Add(record.Id);
+            if (!shouldInsert) continue;
 
             _db.Subjects.Add(Subject.Hydrate(
                 record.Id,

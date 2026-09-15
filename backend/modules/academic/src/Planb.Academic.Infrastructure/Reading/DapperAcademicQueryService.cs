@@ -2,6 +2,7 @@ using System.Globalization;
 using Dapper;
 using Planb.Academic.Application.Contracts;
 using Planb.Academic.Domain.OfficialFacts;
+using Planb.Academic.Infrastructure.Seeding;
 using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
@@ -86,17 +87,21 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
     public async Task<IReadOnlyList<CareerListItem>> ListCareersByUniversityAsync(
         Guid universityId, CancellationToken ct = default)
     {
+        // LEFT JOIN a academic_units: mismo patrón que GetCareerByIdAsync y
+        // DapperCanonicalCareerComparisonReader (AcademicUnitId es nullable, ix_careers_academic_unit_id).
         const string sql = @"
             SELECT
-                id            AS Id,
-                university_id AS UniversityId,
-                name          AS Name,
-                slug          AS Slug,
-                is_official   AS IsOfficial
-            FROM academic.careers
-            WHERE university_id = @UniversityId
-              AND is_active
-            ORDER BY is_official DESC, name ASC;";
+                c.id             AS Id,
+                c.university_id  AS UniversityId,
+                c.name           AS Name,
+                c.slug           AS Slug,
+                c.is_official    AS IsOfficial,
+                au.name          AS AcademicUnitName
+            FROM academic.careers c
+            LEFT JOIN academic.academic_units au ON au.id = c.academic_unit_id
+            WHERE c.university_id = @UniversityId
+              AND c.is_active
+            ORDER BY c.is_official DESC, c.name ASC;";
 
         using var db = _connections.Create();
         var rows = await db.QueryAsync<CareerListItem>(
@@ -187,7 +192,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 term_kind      AS TermKind
             FROM academic.subjects
             WHERE career_plan_id = @CareerPlanId AND (@IncludeArchived OR is_active)
-            ORDER BY year_in_plan ASC, term_in_year ASC NULLS LAST, code ASC;";
+            ORDER BY year_in_plan ASC, term_in_year ASC NULLS LAST, code ASC NULLS LAST, name ASC;";
 
         using var db = _connections.Create();
         var rows = await db.QueryAsync<SubjectListItem>(
@@ -317,7 +322,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             JOIN academic.subjects s  ON s.id = p.subject_id
             JOIN academic.subjects rs ON rs.id = p.required_subject_id
             WHERE s.career_plan_id = @CareerPlanId
-            ORDER BY s.code ASC, rs.code ASC, p.type ASC;";
+            ORDER BY s.code ASC NULLS LAST, rs.code ASC NULLS LAST, p.type ASC;";
 
         using var db = _connections.Create();
         var rows = await db.QueryAsync<PublicPrerequisiteEdge>(
@@ -526,9 +531,23 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             ORDER BY u.name ASC, c.name ASC;";
 
         using var db = _connections.Create();
-        var rows = await db.QueryAsync<CareerCatalogItem>(new CommandDefinition(sql, cancellationToken: ct));
-        return rows.AsList();
+        var rows = await db.QueryAsync<CareerCatalogRow>(new CommandDefinition(sql, cancellationToken: ct));
+        return rows.Select(ToCareerCatalogItem).ToList();
     }
+
+    // La carrera canónica (CanonicalCareerGroupings, US-195) no tiene columna ni JOIN: es un lookup
+    // en memoria contra el archivo que el equipo cura a mano, no un dato que viva en la tabla.
+    // Internal para que el mapeo se pueda testear sin pegarle a la base (InternalsVisibleTo a
+    // Planb.Academic.Tests).
+    internal static CareerCatalogItem ToCareerCatalogItem(CareerCatalogRow row) => new(
+        row.Id,
+        row.Name,
+        row.UniversityId,
+        row.UniversityName,
+        row.IsOfficial,
+        CanonicalCareerGroupings.All
+            .FirstOrDefault(g => g.CareerIds.Any(id => id.Value == row.Id))
+            ?.Name);
 
     public async Task<IReadOnlySet<Guid>> ListCareersWithOfficialDataAsync(
         IReadOnlyCollection<Guid> careerIds, CancellationToken ct = default)
@@ -560,7 +579,10 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         return rows.ToHashSet();
     }
 
-    private sealed record SubjectLabelRow(Guid Id, string Name, string Code);
+    internal sealed record CareerCatalogRow(
+        Guid Id, string Name, Guid UniversityId, string UniversityName, bool IsOfficial);
+
+    private sealed record SubjectLabelRow(Guid Id, string Name, string? Code);
 
     private sealed record TermLabelRow(Guid Id, string Label);
 

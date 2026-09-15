@@ -1,6 +1,6 @@
 # Inicio (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Entrar](../../README.md). **Estado**: escrita el 2026-08-30 junto con [US-231](../../stories/US-231-see-whether-what-i-reviewed-did-anything/README.md), que faltaba, y construida el mismo día, con sus dos bloques y datos reales. El conteo de voces por cátedra sale de `GET /api/reviews/chairs/mine`, que las devuelve todas en una consulta; si ese read degrada, la fila se dibuja igual con el conteo ausente en vez de con un cero. Pide cuenta. Slug `/home`.
+> Ficha de pantalla, dueña: la épica [Entrar](../../README.md). **Estado**: escrita el 2026-08-30 junto con [US-231](../../stories/US-231-see-whether-what-i-reviewed-did-anything/README.md), que faltaba, y construida el mismo día, con sus dos bloques y datos reales. El conteo de voces por cátedra sale de `GET /api/reviews/chairs/mine`, que las devuelve todas en una consulta; si ese read degrada, la fila se dibuja igual con el conteo ausente en vez de con un cero. Pide cuenta. Slug `/home`. **Retirada el 2026-09-14** con el catálogo adentro de planb ([#536](https://github.com/lucasidev/plan-b/issues/536)): sus dos bloques viven en [Mis aportes](../../../undo/screens/SC-018-my-contributions/README.md), que es adonde entra una cuenta, y `/home` redirige ahí. Lo que sigue describe lo que fue.
 
 Vive en Entrar por el mismo motivo que la pantalla de [Error](../SC-023-error/README.md): es chasis, no un paso de ningún recorrido. Nadie se propone "ir a Inicio"; se cae acá al cruzar el umbral.
 

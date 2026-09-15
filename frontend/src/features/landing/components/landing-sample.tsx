@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { DemoCorpusNotice, ItemRow } from '@/components/facts';
 import type { ChairFacts } from '@/features/chair-facts';
+import { subjectLabel } from '@/lib/subject-label';
 
 /**
  * La muestra honesta de la entrada (US-221, bloque 3 de SC-004): una ficha **real** con sus voces,
@@ -54,7 +55,7 @@ function SampleSheet({ sample }: { sample: ChairFacts }) {
         Cátedra {sample.chairName}
       </h3>
       <p className="mb-0.5 text-[13px] text-ink-2">
-        {sample.subjectCode} · {sample.subjectName}
+        {subjectLabel(sample.subjectCode, sample.subjectName)}
       </p>
       <p className="mb-4 text-[11px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>
         {sample.reviewCount} {sample.reviewCount === 1 ? 'voz' : 'voces'}
@@ -85,6 +86,8 @@ function SampleSheet({ sample }: { sample: ChairFacts }) {
 
       <Link
         href={`/chairs/${sample.chairId}`}
+        // Sin prefetch: ver el porqué en subject-grid.tsx.
+        prefetch={false}
         className="text-[13px] text-ink underline underline-offset-2"
       >
         Ver la ficha entera →

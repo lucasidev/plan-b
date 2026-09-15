@@ -14,6 +14,6 @@ public sealed record TeacherChairItem(
     string ChairName,
     Guid SubjectId,
     string SubjectName,
-    string SubjectCode,
+    string? SubjectCode,
     string Role,
     bool IsCurrent);

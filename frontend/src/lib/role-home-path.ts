@@ -16,7 +16,7 @@ import type { Session } from './session';
 export function roleHomePath(role: Session['role']): string {
   switch (role) {
     case 'member':
-      return '/home';
+      return '/reviews/mine';
     case 'admin':
       return '/admin';
   }

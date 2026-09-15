@@ -12,10 +12,15 @@ public sealed record ApproveCareerPlanImportCommand(
 /// <summary>
 /// Item editable del preview. El alumno selecciona qué materias entran al plan y puede
 /// override del parser (cambiar nombre, año, cuatri). El backend confía estos valores.
+///
+/// <para>
+/// Code y TermKind son opcionales, como en el aggregate (ADR-0097): el parser no siempre los
+/// detecta, y lo que no trae el item queda null, no se inventa.
+/// </para>
 /// </summary>
 public sealed record ApproveSubjectItem(
-    string Code,
+    string? Code,
     string Name,
     int YearInPlan,
     int? TermInYear,
-    string TermKind);
+    string? TermKind);

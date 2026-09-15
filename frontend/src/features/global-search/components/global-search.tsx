@@ -122,13 +122,20 @@ export function GlobalSearch() {
   }
 
   return (
-    // w-full + min-w-0 (no un width fijo): un flex item con width fijo no se achica por
-    // default (min-width:auto lo frena en su contenido), así que a 393px este buscador
-    // desbordaba el header en vez de ceder el lugar al logo y a "Ingresar" (V13).
-    <div className="relative w-full min-w-0 max-w-[320px]">
+    // flex-1 (no w-full): `width: 100%` como flex-basis compite por casi todo el ancho del
+    // topbar contra sus hermanos de ancho fijo, y en el reparto de encogimiento este buscador
+    // absorbía casi toda la resta y quedaba en 0px a 393px (V13). flex-1 arranca de un
+    // flex-basis chico y crece con lo que sobra, min-w-0 lo deja seguir achicándose si hace
+    // falta, y max-w-[320px] lo tapa para que no crezca de más en desktop. Desde `lg`, donde
+    // conviven con migas que pueden ser largas, `lg:w-[320px] lg:flex-none` lo saca por completo
+    // del reparto de espacio: 320px fijos (`.topbar .search` de la maqueta), nunca menos. Ahí son
+    // las migas las que ceden y bajan de línea, no el buscador el que se achica hasta el ícono.
+    <div className="relative flex-1 min-w-0 max-w-[320px] lg:w-[320px] lg:flex-none">
       <div
         className="flex min-w-0 items-center bg-bg-card border border-line rounded-pill shadow-card"
-        style={{ padding: '7px 14px', gap: 6 }}
+        // Alto fijo: sin esto, el box se estiraba con el line-height real del input y podía
+        // variar un par de px entre navegadores, rompiendo el alto fijo de 56px del topbar.
+        style={{ height: 34, padding: '0 14px', gap: 6 }}
       >
         <Search size={13} className="shrink-0 text-ink-3" aria-hidden />
         <input
@@ -139,8 +146,8 @@ export function GlobalSearch() {
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={showDropdown && items.length > 0 ? optionId(active) : undefined}
-          placeholder="Buscar materia, carrera o docente..."
-          aria-label="Buscar materia, carrera o docente"
+          placeholder="Buscar materia, carrera, docente o institución"
+          aria-label="Buscar materia, carrera, docente o institución"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -150,7 +157,9 @@ export function GlobalSearch() {
           // Delay para que el onMouseDown de un resultado dispare antes de cerrar.
           onBlur={() => setTimeout(() => setOpen(false), 120)}
           onKeyDown={onInputKeyDown}
-          className="flex-1 bg-transparent border-0 outline-none text-ink"
+          // truncate: cuando el sidebar angosto le deja poco lugar, el placeholder se corta con
+          // "…" en vez de desbordar el box y romperle el alto fijo al topbar.
+          className="flex-1 min-w-0 truncate bg-transparent border-0 outline-none text-ink"
           style={{ font: 'inherit', fontSize: 13 }}
         />
         {/* Sin teclado físico en celular, el atajo no significa nada: se esconde para dejarle
@@ -173,7 +182,11 @@ export function GlobalSearch() {
           id={listboxId}
           role="listbox"
           aria-label="Resultados de búsqueda"
-          className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-lg border border-line bg-bg-card shadow-card"
+          // Por debajo de `sm` no hay caja de 320px de la que colgar (V13: la caja hereda un
+          // ancho angosto del reparto flex del topbar): el desplegable se despega de ella y se
+          // fija bajo el topbar entero (56px, su alto fijo), al ancho de la pantalla menos 16px
+          // de margen a cada lado. Desde `sm` vuelve a colgar de la caja, como siempre.
+          className="fixed left-4 right-4 top-[56px] z-50 overflow-hidden rounded-lg border border-line bg-bg-card shadow-card sm:absolute sm:left-0 sm:right-0 sm:top-auto sm:mt-1"
         >
           {items.length === 0 ? (
             <div className="px-3 py-2.5 text-[12.5px] text-ink-3">
@@ -200,11 +213,19 @@ export function GlobalSearch() {
                   i === active ? 'bg-bg-elev' : 'bg-transparent',
                 )}
               >
-                <span className="flex-1 truncate text-[13px] text-ink">{item.label}</span>
-                <span className="font-mono text-[11px] tabular-nums text-ink-3">
-                  {item.sublabel}
+                {/* Dos líneas, nunca partidas: nombre arriba, subtítulo abajo, cada una trunca
+                    con "…" en vez de wrappear. Misma tipografía que las filas de dos líneas de
+                    Explorar (pb-name/pb-sub, university-list.tsx). Sin subtítulo (null o
+                    vacío), no hay segunda línea. */}
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[14px] font-medium text-ink">
+                    {item.label}
+                  </span>
+                  {item.sublabel && (
+                    <span className="block truncate text-[12px] text-ink-3">{item.sublabel}</span>
+                  )}
                 </span>
-                <span className="rounded-pill border border-line px-2 py-[1px] text-[10px] text-ink-3">
+                <span className="shrink-0 rounded-pill border border-line px-2 py-[1px] text-[10px] text-ink-3">
                   {TYPE_LABEL[item.type]}
                 </span>
               </div>

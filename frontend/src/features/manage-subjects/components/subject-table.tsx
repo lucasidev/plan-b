@@ -6,6 +6,7 @@ import { useState, useTransition } from 'react';
 import { formatTermOfYear } from '@/lib/academic-terms';
 import { cn } from '@/lib/utils';
 import { deactivateSubjectAction, reactivateSubjectAction } from '../actions';
+import { compareByCodeThenName } from '../lib/compare-by-code';
 import type { AdminSubjectRow, SubjectDependent } from '../types';
 
 const GRID = 'minmax(0,90px) minmax(0,1fr) 64px minmax(0,120px) 96px 168px';
@@ -111,11 +112,14 @@ function SubjectRow({ basePath, subject }: { basePath: string; subject: AdminSub
         <div className="truncate font-mono text-ink">{subject.code}</div>
         <div className="truncate text-ink-2">{subject.name}</div>
         <div className="truncate font-mono text-[11px] text-ink-2">
-          {formatTermOfYear(subject.termKind, subject.termInYear, { short: true })}
+          {subject.termKind &&
+            formatTermOfYear(subject.termKind, subject.termInYear, { short: true })}
         </div>
         <div className="text-right font-mono text-[11px] text-ink-2">
           {subject.totalHours}
-          <span className="text-ink-4"> ({subject.weeklyHours}/sem)</span>
+          {subject.weeklyHours !== null && (
+            <span className="text-ink-4"> ({subject.weeklyHours}/sem)</span>
+          )}
         </div>
         <div>
           <StatusBadge active={subject.isActive} />
@@ -164,7 +168,7 @@ function SubjectRow({ basePath, subject }: { basePath: string; subject: AdminSub
                   key={d.id}
                   className="rounded-sm bg-st-failed-bg px-1.5 py-0.5 font-mono text-[10.5px] text-st-failed-fg"
                 >
-                  {d.code} · {d.name}
+                  {d.code ? `${d.code} · ${d.name}` : d.name}
                 </li>
               ))}
             </ul>
@@ -206,5 +210,5 @@ function byYearThenTermThenCode(a: AdminSubjectRow, b: AdminSubjectRow): number 
   const termA = a.termInYear ?? 0;
   const termB = b.termInYear ?? 0;
   if (termA !== termB) return termA - termB;
-  return a.code.localeCompare(b.code);
+  return compareByCodeThenName(a, b);
 }

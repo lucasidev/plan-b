@@ -65,9 +65,10 @@ public class ApproveCareerPlanImportCommandHandlerTests
     private static ApproveSubjectItem ValidItem(string code, int yearInPlan = 1) =>
         new(code, $"Materia {code}", yearInPlan, 1, "FourMonth");
 
-    // Code en blanco: Subject.Create rechaza con CodeRequired.
+    // Name en blanco: Subject.Create rechaza con NameRequired (Code ya no alcanza para invalidar:
+    // en blanco se normaliza a null).
     private static ApproveSubjectItem InvalidItem() =>
-        new("", "Materia inválida", 1, 1, "FourMonth");
+        new("COD-X", "", 1, 1, "FourMonth");
 
     // ── Reuse-or-create de Career ────────────────────────────────────────
 
@@ -211,5 +212,64 @@ public class ApproveCareerPlanImportCommandHandlerTests
             e.CareerId == existingCareer.Id.Value &&
             e.SubjectCount == 2));
         await deps.UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    // ── Nada se inventa (ADR-0097) ────────────────────────────────────────
+
+    [Fact]
+    public async Task Handle_LeavesCodeTermKindTermInYearAndHoursNull_WhenTheItemDoesNotBringThem()
+    {
+        var deps = NewDeps();
+        var userId = Guid.NewGuid();
+        var universityId = UniversityId.New();
+        var import = ParsedImport(deps.Clock, userId, universityId);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
+
+        var existingCareer = Career.Create(universityId, "TUDCS", "tudcs", deps.Clock).Value;
+        deps.Careers.FindByUniversityAndSlugAsync(universityId, "tudcs", Arg.Any<CancellationToken>())
+            .Returns(existingCareer);
+        deps.Plans.FindByCareerAndYearAsync(existingCareer.Id, import.PlanYear, Arg.Any<CancellationToken>())
+            .Returns((CareerPlan?)null);
+
+        var bareItem = new ApproveSubjectItem(null, "Materia sin datos", 1, null, null);
+        var command = new ApproveCareerPlanImportCommand(userId, import.Id.Value, [bareItem]);
+        var result = await Invoke(deps, command);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.SubjectCount.ShouldBe(1);
+        await deps.Subjects.Received(1).AddRangeAsync(
+            Arg.Is<IEnumerable<Subject>>(list =>
+                list!.Single().Code == null &&
+                list!.Single().TermKind == null &&
+                list!.Single().TermInYear == null &&
+                list!.Single().WeeklyHours == null &&
+                list!.Single().TotalHours == null),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_TreatsAnUnparseableTermKind_AsNullInsteadOfDefaultingToFourMonth()
+    {
+        var deps = NewDeps();
+        var userId = Guid.NewGuid();
+        var universityId = UniversityId.New();
+        var import = ParsedImport(deps.Clock, userId, universityId);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
+
+        var existingCareer = Career.Create(universityId, "TUDCS", "tudcs", deps.Clock).Value;
+        deps.Careers.FindByUniversityAndSlugAsync(universityId, "tudcs", Arg.Any<CancellationToken>())
+            .Returns(existingCareer);
+        deps.Plans.FindByCareerAndYearAsync(existingCareer.Id, import.PlanYear, Arg.Any<CancellationToken>())
+            .Returns((CareerPlan?)null);
+
+        var garbageItem = new ApproveSubjectItem("MAT101", "Materia con cadencia ilegible", 1, 1, "Trimestral");
+        var command = new ApproveCareerPlanImportCommand(userId, import.Id.Value, [garbageItem]);
+        var result = await Invoke(deps, command);
+
+        result.IsSuccess.ShouldBeTrue();
+        await deps.Subjects.Received(1).AddRangeAsync(
+            Arg.Is<IEnumerable<Subject>>(list =>
+                list!.Single().TermKind == null && list!.Single().TermInYear == null),
+            Arg.Any<CancellationToken>());
     }
 }

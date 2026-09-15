@@ -47,6 +47,13 @@
   --color-alarm-soft: #f5e4e0;
   --color-alarm-ink: #6e1c12;
   --color-alarm-hover: #741d10;
+  --color-alarm-line: #e6c3bc;
+
+  /* Barras de distribución (design-system.md): la opción intermedia y la positiva, cuando ink-3
+   * / ink-4 no alcanzan porque conviven varios segmentos en la misma barra. Valores de la maqueta
+   * aprobada (planb-catalogo-adentro.html), sin token previo. */
+  --color-bar-mid: #9aa0a8;
+  --color-bar-pos: #d6d3ca;
 
   /* Subject lifecycle states (oklch: keep these intact for perceptual
    * uniformity across hues). */
@@ -74,7 +81,7 @@
   --font-mono:
     var(--next-font-mono, 'IBM Plex Mono'), ui-monospace, 'SF Mono', monospace;
   --font-serif:
-    var(--next-font-serif, 'Instrument Serif'), 'Cambria', 'Georgia', serif;
+    var(--next-font-serif, 'Newsreader'), 'Georgia', 'Times New Roman', serif;
 
   /* Border radii */
   --radius-sm: 8px;

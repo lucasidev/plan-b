@@ -12,10 +12,10 @@ import { expect, test } from '@playwright/test';
  * que nadie lee.
  */
 
-const SUBJECT_211 = '00000004-0000-4000-a000-000000000012';
-// 211 la mutan los specs de admin en paralelo (le agregan cátedras) y su ficha cambia de alto
-// bajo el puntero en celular. 102 (Álgebra I, seed académico, sin cátedras) no la toca nadie.
-const SUBJECT_102 = '00000004-0000-4000-a000-000000000002';
+// Fernández (Sid 01), cátedra del seed académico sin una sola reseña: ningún otro spec la toca
+// (a diferencia de las cátedras del corpus de demostración, Pérez/González/Ruiz/Ibáñez/Vega), así
+// que su pie es un punto de entrada a Método estable, publicada o no (V.chair, línea 573).
+const CHAIR_WITHOUT_CORPUS = '00000008-0000-4000-a000-000000000009';
 
 test.describe('Método (US-130)', () => {
   test('se lee sin cuenta y publica las reglas con sus razones', async ({ page }) => {
@@ -51,8 +51,8 @@ test.describe('Método (US-130)', () => {
     await expect(page.getByText(/no se publica\. sirve para leer bien el resto/i)).toBeVisible();
   });
 
-  test('se llega desde la ficha de una materia, sin tipear la URL', async ({ page }) => {
-    await page.goto(`/subjects/${SUBJECT_102}`);
+  test('se llega desde la ficha de una cátedra, sin tipear la URL', async ({ page }) => {
+    await page.goto(`/chairs/${CHAIR_WITHOUT_CORPUS}`);
 
     await page.getByRole('link', { name: /cómo calculamos esto/i }).click();
 
@@ -63,7 +63,7 @@ test.describe('Método (US-130)', () => {
   });
 
   test('US-130 N1: la ficha no repite la fórmula, linkea a Método', async ({ page }) => {
-    await page.goto(`/subjects/${SUBJECT_211}`);
+    await page.goto(`/chairs/${CHAIR_WITHOUT_CORPUS}`);
 
     const ficha = (await page.locator('body').textContent()) ?? '';
 

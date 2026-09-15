@@ -499,19 +499,19 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
 
       await page.goto('/home', { timeout: 15_000 });
       await page.waitForLoadState('networkidle').catch(() => {});
-      const homePerezRow = page.getByText(/p[eé]rez/i);
+      const homePerezRow = page.getByRole('article').filter({ hasText: /p[eé]rez/i });
       const hasHomePerez = await checkVisible(
-        homePerezRow,
-        'Inicio debe mostrar la Cátedra Pérez entre lo que reseñó, con sus voces',
+        homePerezRow.getByText(/junta \d+ rese/i),
+        'Mis aportes debe mostrar la fila de la Cátedra Pérez con "junta N reseñas"',
       );
       record({
         step: 3,
         story: 'US-231',
         expected:
-          'Al entrar, Inicio muestra las cátedras que reseñó, cada una con cuántas voces junta y si publica.',
+          'Al entrar, el bloque "Lo que reseñaste" de Mis aportes muestra las cátedras que reseñó, cada una con cuántas reseñas junta.',
         observed: hasHomePerez
           ? `Aparece: "${await textOf(homePerezRow)}"`
-          : 'No aparece ninguna mención a Pérez en Inicio.',
+          : 'No aparece ninguna mención a Pérez en Mis aportes.',
         verdict: hasHomePerez ? 'cumple' : 'no cumple',
         screenshot: '07-home-impact.png',
       });
@@ -545,7 +545,7 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
         step: 3,
         story: 'US-162',
         expected:
-          'En la ficha de Pérez, "Faltaron muchas" sumó una voz: el total pasa de 14 a 15 y el conteo de esa opción sube en uno.',
+          'En la ficha de Pérez, "Faltaron muchas" sumó una voz: el total pasa de 16 a 17 y el conteo de esa opción sube en uno.',
         observed: comparisonObserved,
         verdict: comparisonVerdict,
         screenshot: '08-chair-after-review.png',
@@ -837,7 +837,7 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
         step: 7,
         story: 'US-166',
         expected:
-          'La ficha de Pérez sigue con la voz sumada (15 voces, "faltaron muchas" con su conteo): la baja no descuenta lo ya publicado.',
+          'La ficha de Pérez sigue con la voz sumada (17 voces, "faltaron muchas" con su conteo): la baja no descuenta lo ya publicado.',
         observed: q2Persisted
           ? `Sigue en "faltaron muchas ${q2Persisted.pct} %, de ${q2Persisted.total}" (antes de la baja: ${q2After ? `${q2After.pct} %, de ${q2After.total}` : 'no se pudo leer'}).`
           : 'No se pudo volver a leer la distribución.',

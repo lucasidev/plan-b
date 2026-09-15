@@ -13,7 +13,7 @@ export interface ChairFacts {
   chairName: string;
   subjectId: string;
   subjectName: string;
-  subjectCode: string;
+  subjectCode: string | null;
   leadTeacherName: string | null;
   /** A dónde lleva el nombre del titular (V06). Null junto con leadTeacherName: sin titular cargado. */
   leadTeacherId: string | null;
@@ -28,6 +28,17 @@ export interface ChairFacts {
   contrasts: Contrast[];
   /** True si alguna de las voces contadas viene del corpus de demostración sembrado, no de una reseña real. */
   hasDemoCorpusVoices: boolean;
+}
+
+/**
+ * Una cátedra hermana, de la misma materia (US-147, "Las hermanas · misma materia"). No viaja en
+ * `GetChairFactsResponse`: la página la arma con `chairFacts.subjectId` contra la ficha de materia,
+ * que ya trae cada cátedra con su cantidad de reseñas.
+ */
+export interface ChairSibling {
+  chairId: string;
+  chairName: string;
+  reviewCount: number;
 }
 
 /** De cuándo son las voces: entre qué años se cursó y cuándo entró la última reseña. */

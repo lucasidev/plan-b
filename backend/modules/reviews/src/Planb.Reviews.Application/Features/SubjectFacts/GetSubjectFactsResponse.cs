@@ -12,15 +12,19 @@ namespace Planb.Reviews.Application.Features.SubjectFacts;
 /// </summary>
 public sealed record GetSubjectFactsResponse(
     Guid SubjectId,
-    string SubjectCode,
+    string? SubjectCode,
     string SubjectName,
     int YearInPlan,
+    /// <summary>El plan al que pertenece, para poder pedir las otras materias del mismo año.</summary>
+    Guid CareerPlanId,
+    Guid CareerId,
+    string CareerName,
+    string UniversityName,
     bool IsPublished,
     int TotalVoices,
     int PublishingChairs,
     int ChairsBelowFloor,
     SubjectSpanView? Span,
-    DistributionView? Attempts,
     SubjectCompletionView? Completion,
     int EnablesCount,
     IReadOnlyList<SpreadView> Spread,
@@ -41,7 +45,7 @@ public sealed record GetSubjectFactsResponse(
 public sealed record TakenWithView(
     Guid SubjectId,
     string SubjectName,
-    string SubjectCode,
+    string? SubjectCode,
     int TogetherCount,
     int DroppedCount,
     bool IsPublished,
@@ -49,32 +53,6 @@ public sealed record TakenWithView(
 
 /// <summary>Entre qué años se cursó lo que esta ficha resume.</summary>
 public sealed record SubjectSpanView(int FromYear, int ToYear);
-
-/// <summary>
-/// La distribución de una frase, con su moda y sus tramos.
-///
-/// <para>
-/// Es distribución y no promedio: la ficha de pantalla pedía "2,1 intentos", y esa forma no
-/// sobrevive porque la última opción de la frase es abierta ("tres o más"), así que el promedio
-/// subestima siempre y por un margen que nadie puede recalcular.
-/// </para>
-///
-/// <para>
-/// <see cref="OpenEnded"/> es justamente esa opción, separada del resto para que la pantalla la
-/// diga sola. Es la gente a la que le costó: la que el promedio taparía y el dato existe para
-/// mostrar.
-/// </para>
-/// </summary>
-public sealed record DistributionView(
-    string Code,
-    string Text,
-    string ModeLabel,
-    int ModePercent,
-    int Total,
-    IReadOnlyList<SliceView> Options,
-    SliceView? OpenEnded);
-
-public sealed record SliceView(string Label, int Percent, bool IsNegative);
 
 /// <summary>De cada diez que la cursan, cuántas llegan. Agregada sobre todas sus cátedras.</summary>
 public sealed record SubjectCompletionView(int OutOfTen, int Reaching, int Total);
@@ -114,4 +92,19 @@ public sealed record SubjectChairView(
     int ReviewCount,
     bool IsPublished,
     int ReviewsMissingToPublish,
-    DateTimeOffset? LastReviewedAt);
+    DateTimeOffset? LastReviewedAt,
+    string? LeadTeacherName,
+    /// <summary>
+    /// La frase de conducta con la moda más marcada de esta cátedra. Null si no publica, o si
+    /// ninguna frase de conducta junta el piso de respuestas.
+    /// </summary>
+    SubjectChairHeadlineView? Headline);
+
+/// <summary>
+/// La frase de conducta con la moda más marcada de una cátedra publicada (US-129): mismo ítem,
+/// opción y porcentaje que su propia ficha ya publica como moda (ADR-0083). La ficha de materia
+/// arma la frase de conclusión a partir de <see cref="ItemCode"/> y <see cref="OptionValue"/>, que
+/// identifican la opción de forma estable (el texto se afina sin romper esa identidad; el orden en
+/// que se muestra la opción sí puede cambiar con la curaduría, el valor no).
+/// </summary>
+public sealed record SubjectChairHeadlineView(string ItemCode, int OptionValue, int Percent, int Respondents);

@@ -134,10 +134,10 @@ describe('createSubjectAction', () => {
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it('rechaza cuando Zod invalida (código vacío), sin llamar al backend', async () => {
+  it('rechaza cuando Zod invalida (nombre vacío), sin llamar al backend', async () => {
     const result = await createSubjectAction(
       initialManageSubjectState,
-      formData({ ...VALID_SUBJECT, code: '', planId: PLAN_ID }),
+      formData({ ...VALID_SUBJECT, name: '', planId: PLAN_ID }),
     );
 
     expect(result.status).toBe('error');

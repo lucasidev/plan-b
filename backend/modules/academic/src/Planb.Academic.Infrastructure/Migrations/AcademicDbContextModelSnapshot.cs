@@ -574,7 +574,6 @@ namespace Planb.Academic.Infrastructure.Migrations
                         .HasColumnName("career_plan_id");
 
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("character varying(40)")
                         .HasColumnName("code");
@@ -610,12 +609,11 @@ namespace Planb.Academic.Infrastructure.Migrations
                         .HasColumnName("term_in_year");
 
                     b.Property<string>("TermKind")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("term_kind");
 
-                    b.Property<int>("TotalHours")
+                    b.Property<int?>("TotalHours")
                         .HasColumnType("integer")
                         .HasColumnName("total_hours");
 
@@ -623,7 +621,7 @@ namespace Planb.Academic.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<int>("WeeklyHours")
+                    b.Property<int?>("WeeklyHours")
                         .HasColumnType("integer")
                         .HasColumnName("weekly_hours");
 
@@ -642,7 +640,7 @@ namespace Planb.Academic.Infrastructure.Migrations
 
                     b.ToTable("subjects", "academic", t =>
                         {
-                            t.HasCheckConstraint("ck_subjects_term_kind_year_consistency", "(term_kind = 'FullYear' AND term_in_year IS NULL) OR (term_kind <> 'FullYear' AND term_in_year IS NOT NULL)");
+                            t.HasCheckConstraint("ck_subjects_term_kind_year_consistency", "(term_kind IS NULL AND term_in_year IS NULL) OR (term_kind = 'FullYear' AND term_in_year IS NULL) OR (term_kind IS NOT NULL AND term_kind <> 'FullYear' AND term_in_year IS NOT NULL)");
                         });
                 });
 

@@ -22,7 +22,7 @@ public sealed record GetChairFactsResponse(
     string ChairName,
     Guid SubjectId,
     string SubjectName,
-    string SubjectCode,
+    string? SubjectCode,
     string? LeadTeacherName,
     /// <summary>
     /// A dónde lleva el nombre del titular (V06): sin id, la ficha solo podía mostrarlo como

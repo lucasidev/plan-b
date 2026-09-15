@@ -2,10 +2,11 @@ import { z } from 'zod';
 
 /**
  * Schema de los campos de una materia (US-062 admin). Los rangos espejan las validaciones del
- * aggregate Subject del backend (`Subject.Validate`): code/name obligatorios (code max 40, name max
- * 200, columnas del data-model), yearInPlan 1-10, weeklyHours 0-40, totalHours positivo y al menos
- * la semanal, y el invariante term_kind/term_in_year (una materia anual nunca lleva número de
- * cuatrimestre o bimestre; cualquier otra cadencia sí, entre 1 y 6): feedback inmediato, el dominio
+ * aggregate Subject del backend (`Subject.Validate`): name obligatorio (max 200, columna del
+ * data-model) y yearInPlan 1-10; code, cadencia, cuatrimestre y horas son opcionales, pero cuando
+ * el dato está siguen sus rangos (code max 40, weeklyHours 0-40, totalHours positivo y al menos la
+ * semanal) y el invariante term_kind/term_in_year (sin cadencia no hay cuatrimestre; una materia
+ * anual nunca lo lleva; cualquier otra cadencia sí, entre 1 y 6): feedback inmediato, el dominio
  * revalida (defensa en profundidad, no la única barrera).
  */
 
@@ -38,11 +39,10 @@ const optionalTrimmed = (max: number, msg: string) =>
 
 export const subjectFieldsSchema = z
   .object({
-    code: z
-      .string()
-      .trim()
-      .min(1, 'El código es obligatorio.')
-      .max(SUBJECT_LIMITS.code.maxLength, `Máximo ${SUBJECT_LIMITS.code.maxLength} caracteres.`),
+    code: optionalTrimmed(
+      SUBJECT_LIMITS.code.maxLength,
+      `Máximo ${SUBJECT_LIMITS.code.maxLength} caracteres.`,
+    ),
     name: z
       .string()
       .trim()
@@ -53,9 +53,14 @@ export const subjectFieldsSchema = z
       .int('El año del plan tiene que ser un número entero.')
       .min(SUBJECT_LIMITS.yearInPlan.min, `Mínimo ${SUBJECT_LIMITS.yearInPlan.min}.`)
       .max(SUBJECT_LIMITS.yearInPlan.max, `Máximo ${SUBJECT_LIMITS.yearInPlan.max}.`),
-    termKind: z.enum(['TwoMonth', 'FourMonth', 'SixMonth', 'FullYear'], {
-      message: 'Elegí una cadencia.',
-    }),
+    termKind: z.preprocess(
+      (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+      z
+        .enum(['TwoMonth', 'FourMonth', 'SixMonth', 'FullYear'], {
+          message: 'Elegí una cadencia.',
+        })
+        .optional(),
+    ),
     termInYear: z.preprocess(
       (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
       z.coerce
@@ -65,37 +70,56 @@ export const subjectFieldsSchema = z
         .max(SUBJECT_LIMITS.termInYear.max, `Máximo ${SUBJECT_LIMITS.termInYear.max}.`)
         .optional(),
     ),
-    weeklyHours: z.coerce
-      .number({ message: 'Ingresá una carga horaria semanal válida.' })
-      .int('Tiene que ser un número entero.')
-      // 0 es válido: hay materias con carga total pero sin carga semanal fija (Proyecto Final de
-      // la TUDCS son 0 hs/sem y 350 totales, igual que prácticas profesionales y tesis).
-      .min(SUBJECT_LIMITS.weeklyHours.min, 'No puede ser negativa.')
-      .max(
-        SUBJECT_LIMITS.weeklyHours.max,
-        `Máximo ${SUBJECT_LIMITS.weeklyHours.max} horas semanales.`,
-      ),
-    totalHours: z.coerce
-      .number({ message: 'Ingresá una carga horaria total válida.' })
-      .int('Tiene que ser un número entero.')
-      .min(SUBJECT_LIMITS.totalHours.min, 'Tiene que ser mayor a 0.'),
+    weeklyHours: z.preprocess(
+      (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+      z.coerce
+        .number({ message: 'Ingresá una carga horaria semanal válida.' })
+        .int('Tiene que ser un número entero.')
+        // 0 es válido: hay materias con carga total pero sin carga semanal fija (Proyecto Final de
+        // la TUDCS son 0 hs/sem y 350 totales, igual que prácticas profesionales y tesis).
+        .min(SUBJECT_LIMITS.weeklyHours.min, 'No puede ser negativa.')
+        .max(
+          SUBJECT_LIMITS.weeklyHours.max,
+          `Máximo ${SUBJECT_LIMITS.weeklyHours.max} horas semanales.`,
+        )
+        .optional(),
+    ),
+    totalHours: z.preprocess(
+      (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+      z.coerce
+        .number({ message: 'Ingresá una carga horaria total válida.' })
+        .int('Tiene que ser un número entero.')
+        .min(SUBJECT_LIMITS.totalHours.min, 'Tiene que ser mayor a 0.')
+        .optional(),
+    ),
     description: optionalTrimmed(
       SUBJECT_LIMITS.description.maxLength,
       `Máximo ${SUBJECT_LIMITS.description.maxLength} caracteres.`,
     ),
   })
+  .refine((v) => v.termKind !== undefined || v.termInYear === undefined, {
+    message: 'Sin cadencia no se puede indicar el cuatrimestre o bimestre.',
+    path: ['termInYear'],
+  })
   .refine((v) => v.termKind !== 'FullYear' || v.termInYear === undefined, {
     message: 'Una materia anual no lleva número de cuatrimestre o bimestre.',
     path: ['termInYear'],
   })
-  .refine((v) => v.termKind === 'FullYear' || v.termInYear !== undefined, {
-    message: 'Elegí el cuatrimestre o bimestre de la materia.',
-    path: ['termInYear'],
-  })
-  .refine((v) => v.totalHours >= v.weeklyHours, {
-    message: 'La carga horaria total tiene que ser al menos la semanal.',
-    path: ['totalHours'],
-  });
+  .refine(
+    (v) => v.termKind === undefined || v.termKind === 'FullYear' || v.termInYear !== undefined,
+    {
+      message: 'Elegí el cuatrimestre o bimestre de la materia.',
+      path: ['termInYear'],
+    },
+  )
+  .refine(
+    (v) =>
+      v.totalHours === undefined || v.weeklyHours === undefined || v.totalHours >= v.weeklyHours,
+    {
+      message: 'La carga horaria total tiene que ser al menos la semanal.',
+      path: ['totalHours'],
+    },
+  );
 
 export type SubjectFieldsValues = z.infer<typeof subjectFieldsSchema>;
 

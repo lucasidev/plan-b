@@ -29,7 +29,7 @@ public static class GetSubjectAdminQueryHandler
             Name = subject.Name,
             YearInPlan = subject.YearInPlan,
             TermInYear = subject.TermInYear,
-            TermKind = subject.TermKind.ToString(),
+            TermKind = subject.TermKind?.ToString(),
             WeeklyHours = subject.WeeklyHours,
             TotalHours = subject.TotalHours,
             Description = subject.Description,

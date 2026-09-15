@@ -1,14 +1,16 @@
-import Link from 'next/link';
 import { DemoCorpusNotice, ItemRow } from '@/components/facts';
-import { CatalogTopbar } from '@/features/browse-catalog';
+import { FallbackLink } from '@/components/layout/fallback-link';
+import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
 import { formatRelativeDate } from '@/lib/format-date';
-import type { ChairFacts } from '../types';
+import type { ChairFacts, ChairSibling } from '../types';
 
 /**
- * La ficha de una cátedra (SC-002, US-147, ADR-0083): lo que el producto publica.
+ * La ficha de una cátedra (SC-002, US-147, ADR-0083), markup literal de la maqueta aprobada
+ * (planb-catalogo-adentro.html, `V.chair`, `frameApp`).
  *
  * De arriba abajo: identidad con su línea de sustento, la fama por convergencia, cómo termina la
- * cursada, qué hizo la cátedra, qué les pasó a los que cursaron, y el pie.
+ * cursada, qué hizo la cátedra, qué les pasó a los que cursaron, la comparación contra las
+ * hermanas, el pie, y la columna derecha con las cátedras hermanas de la misma materia.
  *
  * Lo que esta pantalla no muestra nunca, y es la mitad del diseño: ningún puntaje ni promedio,
  * ninguna reseña individual, ningún desenlace de una persona, y ninguna comparación contra una
@@ -16,6 +18,20 @@ import type { ChairFacts } from '../types';
  */
 type Props = {
   facts: ChairFacts;
+  /**
+   * Las otras cátedras de la misma materia con al menos una reseña ("Las hermanas · misma
+   * materia", `V.chair().aside`). La página las arma con `chairFacts.subjectId` contra la ficha
+   * de materia: `ChairFacts` no las trae. Sin ninguna, la columna no se dibuja.
+   */
+  siblings?: ChairSibling[];
+  /**
+   * Si alguna cátedra hermana (misma materia) ya cruzó el piso de publicación, para "Comparada
+   * con las otras cátedras": sin contrastes y con esto en `false`, se explica que todavía no hay
+   * base; sin contrastes pero con esto en `true`, la sección calla (sin señal, silencio, línea
+   * 562 de la maqueta). `undefined` cuando no se pudo saber (la ficha de materia falló): tampoco
+   * se muestra, porque no se puede afirmar algo que no se verificó.
+   */
+  hasPublishedSibling?: boolean;
   /**
    * A dónde manda "¿La cursaste? Reseñala" (US-229): sin sesión, directo al gate con el
    * motivo, en vez de a `/reviews/new` (que el guard de `(member)` redirigiría igual, pero sin
@@ -25,81 +41,162 @@ type Props = {
   reviewHref?: string;
 };
 
-export function ChairFactsSheet({ facts, reviewHref = '/reviews/new' }: Props) {
+export function ChairFactsSheet({
+  facts,
+  siblings = [],
+  hasPublishedSibling,
+  reviewHref = '/reviews/new',
+}: Props) {
   return (
-    <div className="min-h-screen w-full">
-      {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
-          búsqueda y no hay cómo seguir buscando ni volver. */}
-      <CatalogTopbar />
-      <div className="mx-auto w-full max-w-[560px] px-4 py-8">
-        <Identity facts={facts} />
+    <PageFrame
+      head={<Head facts={facts} />}
+      stats={chairStats(facts)}
+      main={
+        <Main facts={facts} hasPublishedSibling={hasPublishedSibling} reviewHref={reviewHref} />
+      }
+      aside={siblings.length > 0 ? <Siblings siblings={siblings} /> : undefined}
+    />
+  );
+}
 
-        {facts.isPublished ? (
-          <>
-            {facts.fame && <Fame facts={facts} />}
-            {facts.completion && <Completion facts={facts} />}
-            <Block
-              label="Qué hizo la cátedra"
-              items={facts.chairConduct}
-              emptyNote="Todavía nadie contestó estas preguntas."
-            />
-            <Block
-              label="Qué les pasó a los que cursaron"
-              items={facts.studentExperience}
-              emptyNote="Todavía nadie contestó estas preguntas."
-            />
-            {facts.contrasts.length > 0 && <Contrasts facts={facts} />}
-          </>
-        ) : (
-          <BelowFloor facts={facts} />
-        )}
-
-        <Footer reviewHref={reviewHref} />
+/** "Las hermanas · misma materia": las otras cátedras de la materia que ya juntaron una reseña. */
+function Siblings({ siblings }: { siblings: ChairSibling[] }) {
+  return (
+    <div className="pb-section min-w-0">
+      <div className="pb-eyebrow">Las hermanas · misma materia</div>
+      <div className="pb-list">
+        {siblings.map((sibling) => (
+          <FallbackLink
+            key={sibling.chairId}
+            href={`/chairs/${sibling.chairId}`}
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
+            prefetch={false}
+            className="pb-row"
+            style={{ padding: '8px 12px' }}
+          >
+            <span>
+              <span className="pb-name" style={{ fontSize: 13.5 }}>
+                Cátedra {sibling.chairName}
+              </span>
+            </span>
+            <span className="pb-right">
+              <span className="pb-meta">
+                {sibling.reviewCount} {sibling.reviewCount === 1 ? 'reseña' : 'reseñas'}
+              </span>
+            </span>
+          </FallbackLink>
+        ))}
       </div>
     </div>
   );
+}
+
+/** La tira `.pb-stats` de la cabecera (`V.chair().stats` en la maqueta): solo con la cátedra publicada. */
+function chairStats(facts: ChairFacts): PageFrameStat[] {
+  if (!facts.isPublished) return [];
+
+  const stats: PageFrameStat[] = [];
+  if (facts.completion) {
+    stats.push([`${facts.completion.outOfTen} de 10`, 'llegan al final']);
+  }
+  stats.push([`${facts.reviewCount}`, 'reseñas']);
+  stats.push([`${facts.fame ? facts.fame.itemsAgreeing : 0}`, 'frases convergen']);
+  stats.push([`${facts.contrasts.length}`, 'contrastes con hermanas']);
+  return stats;
 }
 
 /**
  * Identidad y sustento. La línea de abajo dice de cuándo son las voces: un conteo sin su ventana
  * temporal no distingue a la cátedra de hoy de la de hace cinco años.
  */
-function Identity({ facts }: { facts: ChairFacts }) {
+function Head({ facts }: { facts: ChairFacts }) {
   return (
-    <div className="mb-[18px]">
-      <h1 className="mb-0.5 font-serif text-[24px] font-semibold text-ink">
-        Cátedra {facts.chairName}
-      </h1>
-      <p className="mb-1 text-[13px] text-ink-2">
-        <Link href={`/subjects/${facts.subjectId}`} className="underline underline-offset-2">
+    <>
+      <div className="pb-eyebrow">
+        Cátedra · {facts.subjectCode && `${facts.subjectCode} · `}
+        <FallbackLink
+          href={`/subjects/${facts.subjectId}`}
+          // Sin prefetch: ver el porqué en subject-grid.tsx.
+          prefetch={false}
+        >
           {facts.subjectName}
-        </Link>
+        </FallbackLink>
         {facts.leadTeacherName &&
           (facts.leadTeacherId ? (
             <>
               {' · a cargo de '}
-              <Link
+              <FallbackLink
                 href={`/teachers/${facts.leadTeacherId}`}
-                className="underline underline-offset-2"
+                prefetch={false}
+                className="pb-link"
               >
                 {facts.leadTeacherName}
-              </Link>
+              </FallbackLink>
             </>
           ) : (
             ` · a cargo de ${facts.leadTeacherName}`
           ))}
-      </p>
+      </div>
+      <h1 className="pb-serif">Cátedra {facts.chairName}</h1>
       {facts.isPublished && facts.span && (
-        <p className="text-[11px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>
-          {facts.reviewCount} {facts.reviewCount === 1 ? 'voz' : 'voces'}
+        <p className="pb-h-meta pb-meta">
+          {facts.reviewCount} {facts.reviewCount === 1 ? 'reseña' : 'reseñas'}
           {facts.span.fromYear === facts.span.toYear
             ? ` de ${facts.span.fromYear}`
-            : ` repartidas de ${facts.span.fromYear} a ${facts.span.toYear}`}
+            : ` de ${facts.span.fromYear} a ${facts.span.toYear}`}
           {facts.span.lastReviewedAt &&
             ` · lo último es de ${formatRelativeDate(facts.span.lastReviewedAt)}`}
         </p>
       )}
-      {facts.hasDemoCorpusVoices && <DemoCorpusNotice />}
+      {facts.hasDemoCorpusVoices && (
+        // margin-top 10px puntual de este uso (V.chair, línea 566 de la maqueta): no es parte del
+        // estilo base de DemoCorpusNotice, que también vive sin este margen en la muestra de la
+        // entrada.
+        <div style={{ marginTop: 10 }}>
+          <DemoCorpusNotice />
+        </div>
+      )}
+    </>
+  );
+}
+
+function Main({
+  facts,
+  hasPublishedSibling,
+  reviewHref,
+}: {
+  facts: ChairFacts;
+  hasPublishedSibling?: boolean;
+  reviewHref: string;
+}) {
+  return (
+    <div className="min-w-0">
+      {facts.isPublished ? (
+        <>
+          <Fame facts={facts} />
+          {facts.completion && (
+            <CompletionSection
+              outOfTen={facts.completion.outOfTen}
+              reaching={facts.completion.reaching}
+              total={facts.completion.total}
+            />
+          )}
+          <Block
+            label="Qué hizo la cátedra"
+            items={facts.chairConduct}
+            emptyNote="Todavía nadie contestó estas preguntas."
+          />
+          <Block
+            label="Qué les pasó a los que cursaron"
+            items={facts.studentExperience}
+            emptyNote="Todavía nadie contestó estas preguntas."
+          />
+          <Contrasts facts={facts} hasPublishedSibling={hasPublishedSibling} />
+        </>
+      ) : (
+        <BelowFloor facts={facts} />
+      )}
+      <Footer reviewHref={reviewHref} />
     </div>
   );
 }
@@ -113,13 +210,16 @@ function BelowFloor({ facts }: { facts: ChairFacts }) {
   const none = facts.reviewCount === 0;
 
   return (
-    <div className="mb-5 rounded-xl border border-line bg-bg-card p-4">
-      <p className="mb-1.5 font-serif text-[19px] font-semibold leading-tight text-ink">
+    <div className="pb-card" style={{ marginBottom: 20 }}>
+      <p
+        className="pb-serif"
+        style={{ fontSize: 19, fontWeight: 600, lineHeight: 1.25, marginBottom: 6 }}
+      >
         {none
           ? 'Todavía nadie reseñó cómo es cursar acá.'
           : `Junta ${facts.reviewCount} ${facts.reviewCount === 1 ? 'reseña' : 'reseñas'}: con ${facts.reviewsMissingToPublish} más se publica.`}
       </p>
-      <p className="text-[12.5px] leading-relaxed text-ink-3">
+      <p className="pb-muted" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
         {none
           ? 'Podés ser la primera persona en hacerlo.'
           : 'Hasta las 10 no se muestran los conteos, para que no se pueda deducir quién dijo qué.'}
@@ -138,21 +238,24 @@ function Fame({ facts }: { facts: ChairFacts }) {
   if (!fame) return null;
 
   return (
-    <section className="mb-5">
-      <p className="mb-2 text-[12px] text-ink-3">Los hechos que la marcan</p>
-      <div className="rounded-xl border border-line bg-bg-card p-4">
-        <p className="mb-1.5 font-serif text-[19px] font-semibold leading-tight text-ink">
+    <section className="pb-section">
+      <div className="pb-eyebrow">Los hechos que la marcan</div>
+      <div className="pb-card">
+        <p
+          className="pb-serif"
+          style={{ fontSize: 19, fontWeight: 500, lineHeight: 1.25, marginBottom: 8 }}
+        >
           {fame.itemsAgreeing} respuestas distintas apuntan al mismo lado.
         </p>
         {/* La pregunta y la respuesta van como par, no fundidas en una oración: el boceto enuncia
             la fama como afirmación ("Acá no se aprende preguntando"), pero esa frase editorial no
             existe en ningún catálogo, y derivarla del texto de la pregunta produce castellano
             roto. Se muestra lo que se preguntó y lo que se contestó, que es verificable. */}
-        <ul className="m-0 list-none space-y-1.5 p-0">
+        <ul style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {fame.items.map((item) => (
-            <li key={item.code} className="text-[12.5px] leading-relaxed text-ink-3">
-              {item.text} <span className="text-ink-2">{item.negativeLabel}</span>, el{' '}
-              {item.percent} % de {item.total}.
+            <li key={item.code} style={{ fontSize: 12.5, color: 'var(--color-ink-3)' }}>
+              {item.text} <span style={{ color: 'var(--color-ink-2)' }}>{item.negativeLabel}</span>,
+              el {item.percent} % de {item.total} voces.
             </li>
           ))}
         </ul>
@@ -162,34 +265,32 @@ function Fame({ facts }: { facts: ChairFacts }) {
 }
 
 /**
- * La tasa de finalización, agregada y nada más. La pregunta que abre es para la universidad, no
- * para el que no terminó: por eso el dato se publica sin señalar a nadie (US-148).
+ * La tasa de finalización, agregada y nada más, con el conteo completo (US-154). La pregunta que
+ * abre es para la universidad, no para el que no terminó: por eso el dato se publica sin señalar a
+ * nadie (US-148).
  */
-function Completion({ facts }: { facts: ChairFacts }) {
-  const c = facts.completion;
-  if (!c) return null;
-
+function CompletionSection({
+  outOfTen,
+  reaching,
+  total,
+}: {
+  outOfTen: number;
+  reaching: number;
+  total: number;
+}) {
   return (
-    <section className="mb-5">
-      <p className="mb-2 text-[12px] text-ink-3">Cómo termina la cursada acá</p>
-      <div className="rounded-xl border border-line bg-bg-card p-4">
-        <p className="mb-2 font-serif text-[18px] font-medium text-ink">
-          De cada 10 que la cursan, llegan {c.outOfTen}.
+    <section className="pb-section">
+      <div className="pb-eyebrow">Cómo termina la cursada acá</div>
+      <div className="pb-card">
+        <p className="pb-serif" style={{ fontSize: 18, fontWeight: 500 }}>
+          De cada 10 que la cursan, llegan {outOfTen}.
         </p>
-        <div className="mb-2 flex gap-[3px]">
-          <span
-            className="h-2 rounded-[4px]"
-            style={{ flex: c.outOfTen, background: 'var(--color-ink-3)' }}
-          />
-          {c.outOfTen < 10 && (
-            <span
-              className="h-2 rounded-[4px]"
-              style={{ flex: 10 - c.outOfTen, background: 'var(--color-alarm-soft)' }}
-            />
-          )}
+        <div className="pb-fill">
+          <span style={{ flex: outOfTen, background: 'var(--color-ink-3)' }} />
+          <span style={{ flex: 10 - outOfTen, background: 'var(--color-alarm-soft)' }} />
         </div>
-        <p className="text-[12.5px] leading-relaxed text-ink-3">
-          Aprobada o regular, sobre {c.total} cursadas reseñadas. Ninguna reseña muestra cómo
+        <p className="pb-muted" style={{ fontSize: 12.5 }}>
+          Aprobada o regular, {reaching} de {total} cursadas reseñadas. Ninguna reseña muestra cómo
           terminó nadie: esto es el conteo.
         </p>
       </div>
@@ -207,11 +308,13 @@ function Block({
   emptyNote: string;
 }) {
   return (
-    <section className="mb-5">
-      <p className="mb-2 text-[12px] text-ink-3">{label}</p>
-      <div className="rounded-xl border border-line bg-bg-card px-4 py-[5px]">
+    <section className="pb-section">
+      <div className="pb-eyebrow">{label}</div>
+      <div className="pb-card" style={{ padding: '4px 16px' }}>
         {items.length === 0 ? (
-          <p className="py-2.5 text-[13px] text-ink-3">{emptyNote}</p>
+          <p style={{ padding: '10px 0', fontSize: 13, color: 'var(--color-ink-3)' }}>
+            {emptyNote}
+          </p>
         ) : (
           items.map((item, index) => (
             <ItemRow key={item.code} item={item} last={index === items.length - 1} />
@@ -226,31 +329,50 @@ function Block({
  * Los contrastes contra las cátedras hermanas. Solo aparecen los que sobrevivieron la regla de los
  * intervalos separados: si una diferencia no está acá, es porque puede explicarse por el tamaño de
  * la muestra, y publicarla igual sería inventar una distinción.
+ *
+ * Sin contrastes hay dos lecturas posibles, y solo una es honesta de decir: si ninguna hermana
+ * llegó al piso todavía, no hay base para comparar. Si alguna sí llegó pero ningún contraste
+ * sobrevivió la regla, o si no se pudo saber (la ficha de materia falló), la sección calla en vez
+ * de afirmar algo que no se verificó (línea 562 de la maqueta: sin señal, silencio).
  */
-function Contrasts({ facts }: { facts: ChairFacts }) {
+function Contrasts({
+  facts,
+  hasPublishedSibling,
+}: {
+  facts: ChairFacts;
+  hasPublishedSibling?: boolean;
+}) {
+  if (facts.contrasts.length === 0 && hasPublishedSibling !== false) {
+    return null;
+  }
+
   return (
-    <section className="mb-5">
-      <p className="mb-2 text-[12px] text-ink-3">
-        Comparada con las otras cátedras de {facts.subjectName}
-      </p>
-      <div className="rounded-xl border border-line bg-bg-card p-4">
-        <ul className="m-0 list-none space-y-2.5 p-0">
-          {facts.contrasts.map((c) => (
-            <li key={c.itemCode} className="text-[13px] leading-relaxed text-ink-2">
-              <span className="text-ink">{c.itemText}</span>
-              <br />
-              {c.negativeLabel}: <b className="font-medium">{c.herePercent} %</b> acá,{' '}
-              {c.siblingsPercent} % en las otras.
-              <span
-                className="ml-1 text-[10.5px] text-ink-3"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                de {c.hereTotal} y {c.siblingsTotal}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <section className="pb-section">
+      <div className="pb-eyebrow">Comparada con las otras cátedras de la materia</div>
+      {facts.contrasts.length > 0 ? (
+        <div className="pb-card">
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {facts.contrasts.map((c) => (
+              <li key={c.itemCode} style={{ fontSize: 13 }}>
+                <span style={{ color: 'var(--color-ink)' }}>{c.itemText}</span>
+                <br />
+                {c.negativeLabel}: <b style={{ fontWeight: 500 }}>{c.herePercent} %</b> acá,{' '}
+                {c.siblingsPercent} % en las otras.{' '}
+                <span className="pb-meta" style={{ marginLeft: 4 }}>
+                  de {c.hereTotal} y {c.siblingsTotal} voces
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="pb-meta" style={{ marginTop: 8 }}>
+            Solo se publica lo que sobrevive a la regla de los intervalos; sin señal, silencio.
+          </p>
+        </div>
+      ) : (
+        <p className="pb-muted" style={{ fontSize: 12.5 }}>
+          Sin base comparable todavía: ninguna hermana llega a las 10 reseñas.
+        </p>
+      )}
     </section>
   );
 }
@@ -259,23 +381,25 @@ function Contrasts({ facts }: { facts: ChairFacts }) {
  * El pie. Lleva a Método, que es lo que hace auditable todo lo de arriba: un conteo sin su regla
  * publicada es "confiá en mí". Falta "Bajar los datos" hacia el CSV, que es otra story de la misma
  * épica y todavía no existe; un link a una pantalla inexistente es peor que no ofrecerla.
+ *
+ * Se muestra tanto publicada como bajo el piso: bajo el piso es cuando más sentido tiene invitar
+ * a sumar la reseña que falta.
  */
 function Footer({ reviewHref }: { reviewHref: string }) {
   return (
-    <div className="flex items-center justify-between gap-2.5">
-      <Link
+    <div className="pb-foot">
+      <FallbackLink
         href="/method"
-        className="text-[12px] text-accent-ink underline-offset-2 hover:underline"
+        // Sin prefetch: ver el porqué en subject-grid.tsx.
+        prefetch={false}
+        className="pb-link"
+        style={{ fontSize: 12 }}
       >
         ¿Cómo calculamos esto?
-      </Link>
-      <Link
-        href={reviewHref}
-        className="whitespace-nowrap rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
-        style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
-      >
+      </FallbackLink>
+      <FallbackLink href={reviewHref} className="pb-cta">
         ¿La cursaste? Reseñala
-      </Link>
+      </FallbackLink>
     </div>
   );
 }

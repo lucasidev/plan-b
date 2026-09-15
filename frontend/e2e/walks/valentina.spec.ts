@@ -243,9 +243,13 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       screenshot: '02-explore-university.png',
     });
 
-    const careerLink = page.getByRole('link', {
-      name: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
-    });
+    // .first(): "Facultades y carreras" siempre lista la carrera; si además junta reseñas
+    // suficientes para "Por dónde empezar", el mismo nombre aparece ahí también.
+    const careerLink = page
+      .getByRole('link', {
+        name: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+      })
+      .first();
     await checkVisible(
       careerLink,
       'desde la universidad, debe poder llegar a la carrera sin buscar nada',
@@ -303,7 +307,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       coverageText,
       'debe poder ver la cobertura de la carrera',
     );
-    const restText = page.getByText(/todavía no juntan las 10 reseñas del piso/i);
+    const restText = page.getByText(/todavía no juntan reseñas suficientes/i);
     record({
       step: 3,
       story: 'US-134',
@@ -427,39 +431,55 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     await page.goto(`/subjects/${SUBJECT_FUNDAMENTOS_ID}`);
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    const perezRow = page.getByRole('link', { name: 'Pérez 14 voces' });
-    const gonzalezRow = page.getByRole('link', { name: 'González 12 voces' });
-    const ruizRow = page.getByRole('link', { name: 'Ruiz 6 reseñas · faltan 4' });
-    const hasPerez = await checkVisible(perezRow, 'Pérez debe figurar publicando con 14 voces');
+    // El link es la fila entera, "Cátedra {nombre}" como texto de apertura, y debajo su frase de
+    // conclusión ("La cátedra {nombre} {frase}: lo dice el N % de sus M reseñas.") o, sin
+    // conclusión todavía, "N reseñas, todavía sin conclusiones."; las cátedras sin ninguna reseña
+    // se pliegan en "K cátedras más" + "sin reseñas todavía".
+    const perezRow = page.getByRole('link', { name: /^Cátedra Pérez/ });
+    const gonzalezRow = page.getByRole('link', { name: /^Cátedra González/ });
+    const ruizRow = page.getByRole('link', { name: /^Cátedra Ruiz/ });
+    const perezConclusion = page.getByText(
+      /La cátedra Pérez|^\d+ reseñas, todavía sin conclusiones/,
+    );
+    const gonzalezConclusion = page.getByText(
+      /La cátedra González|^\d+ reseñas, todavía sin conclusiones/,
+    );
+    const ruizConclusion = page.getByText(/La cátedra Ruiz|^\d+ reseñas, todavía sin conclusiones/);
+    const foldedLine = page.getByText(/^\d+ cátedras? más$/);
+    const hasPerez = await checkVisible(
+      perezRow,
+      'Pérez debe figurar entre las cátedras con reseñas',
+    );
     const hasGonzalez = await checkVisible(
       gonzalezRow,
-      'González debe figurar publicando con 12 voces',
+      'González debe figurar entre las cátedras con reseñas',
     );
     const hasRuiz = await checkVisible(
       ruizRow,
-      'Ruiz debe figurar juntando 6 reseñas, con 4 faltantes',
+      'Ruiz debe figurar entre las cátedras con reseñas (junta 6, bajo el piso de 10)',
     );
+    const hasFolded = await isVisible(foldedLine, 2000);
     record({
       step: 6,
       story: 'US-131',
       expected:
-        'Tres cátedras con su estado: Pérez publica con 14 voces, González con 12, Ruiz junta 6 y le faltan 4.',
-      observed: `"${await textOf(perezRow)}" · "${await textOf(gonzalezRow)}" · "${await textOf(ruizRow)}"`,
+        'Tres cátedras listadas por nombre, cada una con su conclusión (o "todavía sin conclusiones"); las que no tienen ninguna reseña se pliegan en una sola línea.',
+      observed: `Pérez: "${await textOf(perezConclusion)}". González: "${await textOf(gonzalezConclusion)}". Ruiz: "${await textOf(ruizConclusion)}".${hasFolded ? ` Plegado: "${await textOf(foldedLine)}".` : ' Sin cátedras plegadas en esta materia.'}`,
       verdict: combineVerdict([hasPerez, hasGonzalez, hasRuiz]),
       screenshot: '06-subject-fiche.png',
     });
 
-    const voicesLine = page.getByText(/\d+ voces en \d+ cátedras/);
+    const voicesLine = page.getByText(/\d+ reseñas en \d+ cátedras/);
     const hasVoicesLine = await checkVisible(
       voicesLine,
-      'debe decir sobre cuántas voces y en cuántas cátedras se calcula',
+      'debe decir sobre cuántas reseñas y en cuántas cátedras se calcula',
     );
     const coverageWord = page.getByText(/cobertura/i);
     const hasCoverageWord = await isVisible(coverageWord, 2000);
     record({
       step: 6,
       story: 'US-134',
-      expected: 'Sobre cuántas voces se calcula la materia, y su cobertura.',
+      expected: 'Sobre cuántas reseñas se calcula la materia, y su cobertura.',
       observed: `"${await textOf(voicesLine)}". La palabra "cobertura" ${hasCoverageWord ? 'sí aparece' : 'no aparece'} en esta ficha (a diferencia de la ficha de carrera, que sí la nombra): lo que hay es esa línea, con en cuántas cátedras hay datos.`,
       verdict: hasVoicesLine ? (hasCoverageWord ? 'cumple' : 'parcial') : 'no cumple',
       screenshot: '06-subject-fiche.png',
@@ -537,7 +557,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       'siempre 14 · a veces 29 · casi nunca 57 · nadie preguntaba 0 · de 14',
     );
     const q2Dist = page.getByText(
-      'casi todas 21 · faltaron algunas 29 · faltaron muchas 50 · de 14',
+      'casi todas 19 · faltaron algunas 25 · faltaron muchas 56 · de 16',
     );
     const hasQ1 = await checkVisible(q1, 'cada frase debe estar a la vista');
     const hasQ1Mode = await checkVisible(q1Mode, 'con la opción más marcada y su porcentaje');
@@ -551,7 +571,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       story: 'US-130 / US-131',
       expected:
         'Por cada frase: la opción más marcada con su porcentaje, y la distribución entera con el total de voces.',
-      observed: `"${await textOf(q1)}" -> ${await textOf(q1Mode)} (${await textOf(q1Dist)}). "¿Se dictaron las clases?" -> Faltaron muchas · 50 % (${await textOf(q2Dist)})`,
+      observed: `"${await textOf(q1)}" -> ${await textOf(q1Mode)} (${await textOf(q1Dist)}). "¿Se dictaron las clases?" -> Faltaron muchas · 56 % (${await textOf(q2Dist)})`,
       verdict: combineVerdict([hasQ1, hasQ1Mode, hasQ1Dist, hasQ2Dist]),
       screenshot: '07-chair-publishing.png',
     });
@@ -576,7 +596,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       screenshot: '07-chair-publishing.png',
     });
 
-    const denominatorLine = page.getByText('Aprobada o regular, sobre 14 cursadas reseñadas.');
+    const denominatorLine = page.getByText(/Aprobada o regular, \d+ de 16 cursadas reseñadas\./);
     const hasDenominator = await isVisible(denominatorLine, 3000);
     record({
       step: 7,

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
 using Planb.Reviews.Application.Features.SubjectFacts;
 using Shouldly;
@@ -40,6 +41,12 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid ChairGonzalez =
         Guid.Parse("00000008-0000-4000-a000-000000000002");
 
+    private static readonly Guid TudcsCareerId =
+        Guid.Parse("00000002-0000-4000-a000-000000000003");
+
+    private static readonly Guid Unsta =
+        Guid.Parse("00000001-0000-4000-a000-000000000001");
+
     private static readonly Guid[] Terms =
     [
         Guid.Parse("00000005-0000-4000-a000-000000000001"),
@@ -55,6 +62,12 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         _fixture = fixture;
         _anonymous = fixture.Factory.CreateClient();
     }
+
+    private Task<AuthenticatedClient> AdminAsync() =>
+        AuthenticatedClient.CreateAsync(
+            _fixture, $"subject-facts-admin.{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
+
+    private sealed record CreatedDto(Guid Id);
 
     /// <summary>
     /// Publica reseñas sobre una cátedra, cada una con su cuenta. <paramref name="negative"/> dice
@@ -103,6 +116,98 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
+    /// <summary>
+    /// Una carrera se puede desactivar desde el backoffice (US-061-b). La materia sigue existiendo
+    /// (nadie la tocó), pero su carrera ya no resuelve (<c>GetCareerByIdAsync</c> filtra
+    /// <c>is_active</c>, mismo criterio que la materia y la cátedra): la ficha pasa a 404, no a un
+    /// 500 por una referencia que dejó de existir para el lector.
+    /// </summary>
+    [Fact]
+    public async Task A_subject_whose_career_was_deactivated_is_not_found()
+    {
+        var admin = await AdminAsync();
+        var unique = Guid.NewGuid().ToString("N")[..8];
+
+        var career = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/universities/{Unsta}/careers",
+            new { name = $"Carrera Descartable {unique}", slug = $"carrera-descartable-{unique}" });
+        career.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var careerId = (await career.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var plan = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/careers/{careerId}/plans", new { year = 2024, label = (string?)null });
+        plan.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var planId = (await plan.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var subject = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects",
+            new
+            {
+                code = "999",
+                name = "Materia Descartable",
+                yearInPlan = 1,
+                termInYear = 1,
+                termKind = "FourMonth",
+                weeklyHours = 4,
+                totalHours = 64,
+                description = (string?)null,
+            });
+        subject.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var subjectId = (await subject.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        (await admin.Client.DeleteAsync($"/api/academic/careers/{careerId}")).EnsureSuccessStatusCode();
+
+        var response = await _anonymous.GetAsync($"/api/reviews/subjects/{subjectId}/facts");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    /// <summary>
+    /// Una materia solo publica lo que su fuente oficial trae (feat: a subject records only what
+    /// its source publishes): sin código, la ficha lo dice con null y no con un string vacío ni un
+    /// 404.
+    /// </summary>
+    [Fact]
+    public async Task A_subject_without_a_code_still_publishes_its_facts()
+    {
+        var admin = await AdminAsync();
+        var unique = Guid.NewGuid().ToString("N")[..8];
+
+        var career = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/universities/{Unsta}/careers",
+            new { name = $"Carrera Sin Código {unique}", slug = $"carrera-sin-codigo-{unique}" });
+        career.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var careerId = (await career.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var plan = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/careers/{careerId}/plans", new { year = 2024, label = (string?)null });
+        plan.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var planId = (await plan.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var subject = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects",
+            new
+            {
+                code = (string?)null,
+                name = "Materia Sin Código",
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        subject.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var subjectId = (await subject.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var response = await _anonymous.GetOkAsync<GetSubjectFactsResponse>(
+            $"/api/reviews/subjects/{subjectId}/facts");
+
+        response!.SubjectCode.ShouldBeNull();
+        response.SubjectName.ShouldBe("Materia Sin Código");
+        response.IsPublished.ShouldBeFalse();
+    }
+
     [Fact]
     public async Task A_subject_without_chairs_exists_and_publishes_nothing()
     {
@@ -119,6 +224,13 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         facts.Shared.ShouldBeEmpty();
         facts.Completion.ShouldBeNull();
         facts.Span.ShouldBeNull();
+
+        // La identidad de carrera y universidad viaja siempre, la tenga publicada o no: es lo que
+        // arma la miga de la ficha, no un conteo.
+        facts.CareerPlanId.ShouldBe(TudcsPlanId);
+        facts.CareerId.ShouldBe(TudcsCareerId);
+        facts.CareerName.ShouldBe("Tecnicatura Universitaria en Desarrollo y Calidad de Software");
+        facts.UniversityName.ShouldBe("Universidad del Norte Santo Tomás de Aquino");
     }
 
     /// <summary>
@@ -154,6 +266,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         waiting.ReviewCount.ShouldBe(3);
         waiting.IsPublished.ShouldBeFalse();
         waiting.ReviewsMissingToPublish.ShouldBe(7);
+        waiting.Headline.ShouldBeNull();
 
         // ---- Publicando: dos cátedras que se separan contestan la pregunta de la ficha.
         // González suma hasta 15 (3 negativas de 15) y Pérez entra con 12, 9 de ellas negativas.
@@ -180,6 +293,22 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         // resultados, Pérez 12 y peores. Manda la cantidad de voces.
         facts.Chairs[0].ChairId.ShouldBe(ChairGonzalez);
         facts.Chairs[0].ReviewCount.ShouldBe(15);
+
+        // Cada cátedra publicada trae el nombre de su titular y la frase que más la resume, con el
+        // mismo porcentaje que ya arma el contraste de arriba (20 % y 75 % negativo).
+        var gonzalez = facts.Chairs.Single(c => c.ChairId == ChairGonzalez);
+        gonzalez.LeadTeacherName.ShouldBe("Patricia González");
+        gonzalez.Headline.ShouldNotBeNull();
+        gonzalez.Headline!.ItemCode.ShouldBe("CHAIR_ANSWERS_IN_CLASS");
+        gonzalez.Headline.Percent.ShouldBe(80);
+        gonzalez.Headline.Respondents.ShouldBe(15);
+
+        var perez = facts.Chairs.Single(c => c.ChairId == ChairPerez);
+        perez.LeadTeacherName.ShouldBe("Martín Pérez");
+        perez.Headline.ShouldNotBeNull();
+        perez.Headline!.ItemCode.ShouldBe("CHAIR_ANSWERS_IN_CLASS");
+        perez.Headline.Percent.ShouldBe(75);
+        perez.Headline.Respondents.ShouldBe(12);
 
         // Y la que sigue sin llegar al piso aparece igual, sin un solo conteo.
         facts.Chairs.ShouldContain(c => !c.IsPublished && c.ReviewCount == 0);

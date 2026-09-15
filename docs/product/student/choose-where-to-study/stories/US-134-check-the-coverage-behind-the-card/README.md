@@ -18,6 +18,7 @@ Como quien está eligiendo, quiero saber si lo que dice la ficha de la carrera v
 - [Ficha de carrera](../../screens/SC-001-career/README.md): la cobertura es una sección propia, siempre a la vista; "qué frena la cursada" muestra solo lo que ya alcanzó el piso.
 - [Ficha de materia](../../screens/SC-007-subject/README.md): la cátedra que todavía no llega al piso se lista con su cuenta y cuánto le falta, sin sumar a los números de la materia.
 - [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): cada oferta comparada muestra su propia cobertura.
+- [Mis aportes](../../../undo/screens/SC-018-my-contributions/README.md): la misma cobertura, leída para la carrera declarada de la cuenta.
 
 ## Notas
 

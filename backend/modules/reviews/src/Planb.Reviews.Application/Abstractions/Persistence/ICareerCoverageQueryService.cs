@@ -16,12 +16,18 @@ public interface ICareerCoverageQueryService
         Guid careerId, int minimumReviews, CancellationToken ct = default);
 
     /// <summary>
-    /// Qué materias de un plan puntual ya tienen una cátedra que cruzó el piso (V10: la lista de
-    /// materias del plan no marca cuáles tienen ficha). Mismo criterio de "medida" que
+    /// El conteo detrás de la cobertura de cada materia de ESE plan, para las que tengan al menos
+    /// una reseña con cátedra (cubierta o no). Mismo criterio de "medida" que
     /// <see cref="GetCoverageAsync"/>, pero acotado a un plan (no a los planes activos de una
     /// carrera) porque el caller ya está parado sobre una materia de ESE plan.
+    /// <see cref="PlanSubjectCoverageView.ReviewCount"/> es la suma entre TODAS sus cátedras, lo
+    /// que se muestra al lado de la materia ("3 cátedras · 28 reseñas"); el piso lo decide
+    /// <see cref="PlanSubjectCoverageView.IsCovered"/> por CÁTEDRA, no por esa suma (dos cátedras de
+    /// 6 reseñas cada una no publican aunque sumen 12). Las reseñas sin cátedra ("No me acuerdo")
+    /// no entran en ningún conteo de acá. Una materia sin ninguna reseña con cátedra no aparece: no
+    /// hay nada que contar.
     /// </summary>
-    Task<IReadOnlyList<Guid>> GetCoveredSubjectIdsAsync(
+    Task<IReadOnlyList<PlanSubjectCoverageView>> GetSubjectCoverageAsync(
         Guid careerPlanId, int minimumReviews, CancellationToken ct = default);
 
     /// <summary>
@@ -64,3 +70,15 @@ public sealed record CareerCoverageBatch(
 /// ficha.
 /// </summary>
 public sealed record CareerCoverage(int TotalSubjects, int CoveredSubjects);
+
+/// <summary>
+/// Una materia con al menos una reseña, con el conteo detrás de si ya cruzó el piso (US-134).
+/// </summary>
+public sealed record PlanSubjectCoverageView(
+    Guid SubjectId,
+    /// <summary>Todas las reseñas de sus cátedras, publiquen o no todavía.</summary>
+    int ReviewCount,
+    /// <summary>Cátedras con al menos una reseña, publiquen o no.</summary>
+    int ChairCount,
+    /// <summary>Alguna cátedra cruzó el piso de publicación (<see cref="Planb.Reviews.Domain.Reviews.PublishingRules.ChairMinimumReviews"/>).</summary>
+    bool IsCovered);
