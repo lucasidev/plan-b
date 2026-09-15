@@ -217,6 +217,18 @@
     white-space: nowrap;
     vertical-align: bottom;
   }
+  /* La carrera como última miga (/careers/[id], activa): la maqueta la muestra entera en su
+   * propia línea, sin el tope de 200px. max-width 100% resuelve contra el ancho de .pb-crumbs
+   * (el bloque entero de migas): ocupa lo que haga falta hasta ahí, y solo recorta con ellipsis
+   * si ni la línea completa alcanza. */
+  .pb-crumbs .pb-crumb-truncate-full {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
 
   .pb-list {
     display: flex;

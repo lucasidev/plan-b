@@ -216,6 +216,14 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByText('Sitio UNSTA · plan vigente')).toBeInTheDocument();
   });
 
+  /** La tira ("V.career().stats" de la maqueta aprobada): "2 ½" con la etiqueta "años en el papel". */
+  it('la tira dice "2 ½ años en el papel", el número al principio de paper_duration', () => {
+    renderSheet(BASE, [PAPER_DURATION]);
+
+    expect(screen.getByText('2 ½')).toBeInTheDocument();
+    expect(screen.getByText('años en el papel')).toBeInTheDocument();
+  });
+
   /**
    * ADR-0090: con relevamiento parcial (una sola afirmación de las seis), la ficha dice qué le
    * falta en vez de esconder las otras cinco filas en silencio, igual que Dónde estudiarla.
@@ -293,6 +301,31 @@ describe('CareerFactsSheet', () => {
     expect(derivedLink).toHaveAttribute('href', '/method#graduation-flow-proxy');
   });
 
+  /** La nota larga del proxy vive en Método, no en la fila: debajo va el literal fijo. */
+  it('un dato derivado muestra "Derivado · la regla está en Método" debajo, nunca la nota del proxy', () => {
+    renderSheet(BASE, [
+      {
+        id: 'fact-cohort-graduation',
+        subjectId: 'career-1',
+        field: 'cohort_graduation',
+        status: 'Derived',
+        value: '21,4 %',
+        unit: 'percent',
+        period: '2022',
+        sourceName: 'Anuario SPU',
+        sourceUrl: 'https://spu.example/anuario',
+        derivationRuleId: 'graduation-flow-proxy',
+        note: 'Proxy de flujo institucional, no es una cohorte real.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(screen.getByText('Derivado · la regla está en Método')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Proxy de flujo institucional, no es una cohorte real.'),
+    ).not.toBeInTheDocument();
+  });
+
   /** US-133 E2, N1: sin proxy todavía, la etiqueta fija, nunca un cero ni un cálculo propio. */
   it('egreso por cohorte sin derivar todavía se dice no publicado, nunca un cero', () => {
     renderSheet(BASE, [
@@ -341,6 +374,35 @@ describe('CareerFactsSheet', () => {
 
     expect(screen.getByText('Régimen de ingreso')).toBeInTheDocument();
     expect(screen.getByText('Ingreso directo, sin examen ni curso')).toBeInTheDocument();
+  });
+
+  /**
+   * Maqueta aprobada (V.career línea 511): un dato Published con nota muestra la nota primero y
+   * la fuente después, separadas por un espacio porque la nota ya cierra en punto.
+   */
+  it('un dato publicado con nota muestra la nota primero y la fuente después', () => {
+    renderSheet(BASE, [
+      {
+        id: 'fact-current-plan',
+        subjectId: 'career-1',
+        field: 'current_plan',
+        status: 'Published',
+        value: 'RM 2495/2018, modificado por RM 1186/2021',
+        unit: null,
+        period: '2018',
+        sourceName: 'Sitio UNSTA',
+        sourceUrl: 'https://unsta.edu.ar/tudcs',
+        derivationRuleId: null,
+        note: '21 materias: 9 en primer año, 8 en segundo, 4 en tercero.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(
+      screen.getByText(
+        '21 materias: 9 en primer año, 8 en segundo, 4 en tercero. Sitio UNSTA · 2018',
+      ),
+    ).toBeInTheDocument();
   });
 
   /** F05, O03: una tecnicatura no tiene acreditación CONEAU, tiene validez nacional: su propia etiqueta, no la genérica. */

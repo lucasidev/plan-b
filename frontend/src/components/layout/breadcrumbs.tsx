@@ -10,7 +10,10 @@ import './planb.css';
  *
  * `truncate` marca el segmento de la carrera (la única miga sin nombre corto en el backend): a
  * diferencia del resto, que hace wrap en vez de recortarse, esa se corta con ellipsis y el nombre
- * completo va al `title`, para que la cadena entera entre en dos líneas a 1280px.
+ * completo va al `title`. Como miga intermedia (/subjects/[id], /chairs/[id]) se recorta a un
+ * ancho fijo para que la cadena entera entre en dos líneas a 1280px; como última miga, activa
+ * (/careers/[id]), la maqueta la muestra entera en su propia línea: ahí ocupa todo el ancho del
+ * bloque de migas y solo recorta si ni así entra (`Breadcrumbs` elige la variante por posición).
  */
 export type Crumb = {
   label: string;
@@ -40,7 +43,13 @@ export function Breadcrumbs({ items }: { items: ReadonlyArray<Crumb> }) {
     <nav className="pb-crumbs" aria-label="Dónde estás">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
-        const className = item.truncate ? 'pb-crumb-truncate' : undefined;
+        // Miga intermedia: recorte fijo a 200px (subjects/chairs). Última miga: recorte al ancho
+        // del bloque entero, la maqueta la muestra completa en su propia línea (careers/[id]).
+        const className = item.truncate
+          ? isLast
+            ? 'pb-crumb-truncate-full'
+            : 'pb-crumb-truncate'
+          : undefined;
         const title = item.truncate ? item.label : undefined;
         return (
           <Fragment key={item.label}>

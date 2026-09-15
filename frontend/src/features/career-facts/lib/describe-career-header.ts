@@ -2,7 +2,9 @@ import {
   formatOfficialFactValue,
   OFFICIAL_FACT_FIELDS,
   type OfficialFact,
+  officialFactCellContent,
 } from '@/components/facts';
+import type { PageFrameStat } from '@/components/layout/page-frame';
 
 /**
  * La línea de sustento bajo el h1 de la ficha de carrera (US-127, ADR-0090): hasta tres oraciones,
@@ -34,6 +36,40 @@ export function careerSustentoSentence(byField: ReadonlyMap<string, OfficialFact
   }
 
   return sentences.length > 0 ? sentences.join(' ') : null;
+}
+
+/**
+ * La celda "en el papel" de la tira (V.career().stats de la maqueta aprobada: valor "2 ½",
+ * etiqueta "años en el papel"): el número al principio de `paper_duration`, con medios ("y
+ * medio", o una fracción ",5"/".5"). Solo con `unit === 'years'`: un valor en otra unidad (por
+ * ejemplo "5 semestres", con `unit: null`) no son años, y la forma compacta lo diría igual. Sin
+ * esa unidad, sin número al principio, sin fracción reconocible o sin dato Published, cae al
+ * valor genérico de `officialFactCellContent` con la etiqueta de siempre.
+ */
+export function paperDurationStat(fact: OfficialFact | undefined): PageFrameStat {
+  if (fact?.status === 'Published' && fact.value && fact.unit === 'years') {
+    const parsed = parseLeadingYears(fact.value);
+    if (parsed) {
+      const { whole, half } = parsed;
+      const value = half ? `${whole} ½` : `${whole}`;
+      const label = whole === 1 && !half ? 'año en el papel' : 'años en el papel';
+      return [value, label];
+    }
+  }
+  return [officialFactCellContent(fact).value, 'en el papel'];
+}
+
+/** El entero inicial de un texto de duración, y si trae medio: por decimal (",5"/".5") o por la palabra "medio". */
+function parseLeadingYears(raw: string): { whole: number; half: boolean } | null {
+  const match = raw.match(/^(\d+)(?:[.,](\d+))?/);
+  if (!match) return null;
+
+  const whole = Number(match[1]);
+  const fraction = match[2];
+  if (fraction) {
+    return fraction === '5' ? { whole, half: true } : null;
+  }
+  return { whole, half: /\bmedio\b/i.test(raw) };
 }
 
 /** El egreso por cohorte como cuenta de cada 100 (`21,4 %` → 21): redondeado, para la oración de sustento. */

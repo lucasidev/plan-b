@@ -115,8 +115,11 @@ describe('Breadcrumbs', () => {
     expect(university).not.toHaveAttribute('title');
   });
 
-  /** La última miga (activa, en negrita) también puede llevar truncate: es el caso de /careers/[id]. */
-  it('la miga activa (última, en negrita) también puede llevar truncate', () => {
+  /**
+   * La última miga (activa, en negrita, /careers/[id]) usa la variante de ancho completo: la
+   * maqueta la muestra entera en su propia línea, sin el tope de 200px de una miga intermedia.
+   */
+  it('la miga activa (última, en negrita) con truncate usa la variante de ancho completo', () => {
     render(
       <Breadcrumbs
         items={[
@@ -133,6 +136,11 @@ describe('Breadcrumbs', () => {
       'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
     );
     expect(career.tagName).toBe('B');
-    expect(career).toHaveClass('pb-crumb-truncate');
+    expect(career).toHaveClass('pb-crumb-truncate-full');
+    expect(career).not.toHaveClass('pb-crumb-truncate');
+    expect(career).toHaveAttribute(
+      'title',
+      'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+    );
   });
 });
