@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { subjectLabel } from '@/lib/subject-label';
 
 /**
@@ -69,7 +69,7 @@ export function TeacherChairs({ chairs }: { chairs: TeacherChair[] }) {
 
 function ChairRow({ chair, last }: { chair: TeacherChair; last: boolean }) {
   return (
-    <Link
+    <FallbackLink
       href={`/chairs/${chair.chairId}`}
       // Sin prefetch: ver el porqué en subject-grid.tsx.
       prefetch={false}
@@ -88,6 +88,6 @@ function ChairRow({ chair, last }: { chair: TeacherChair; last: boolean }) {
       <span className="shrink-0 font-mono text-[11px] text-ink-3">
         {ROLE_LABEL[chair.role] ?? chair.role}
       </span>
-    </Link>
+    </FallbackLink>
   );
 }

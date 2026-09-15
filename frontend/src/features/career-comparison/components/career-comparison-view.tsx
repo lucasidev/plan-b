@@ -1,10 +1,10 @@
-import Link from 'next/link';
 import {
   MissingFactRow,
   OFFICIAL_FACT_FIELDS,
   OFFICIAL_FACT_LABELS,
   OfficialFactRow,
 } from '@/components/facts';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { CareerComparison, CareerComparisonOffering } from '../types';
 
 /**
@@ -132,14 +132,14 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
     <div className="mb-3 rounded-xl border border-line bg-bg-card p-4">
       <div className="mb-2.5 flex items-baseline justify-between gap-2">
         <div className="min-w-0">
-          <Link
+          <FallbackLink
             href={`/careers/${offering.careerId}`}
             // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="text-[15px] font-medium text-ink hover:underline"
           >
             {offering.universityName}
-          </Link>
+          </FallbackLink>
           {subtitle && <p className="truncate text-[12px] text-ink-3">{subtitle}</p>}
         </div>
         {offering.institutionKind && (
@@ -183,14 +183,14 @@ function DerivedNote() {
     <p className="mt-2 text-[11px] leading-relaxed text-ink-3">
       Un dato marcado "derivado" es un cálculo con una regla propia, no lo que la fuente publica
       directamente.{' '}
-      <Link
+      <FallbackLink
         href="/method"
         // Sin prefetch: ver el porqué en subject-grid.tsx.
         prefetch={false}
         className="text-accent-ink underline-offset-2 hover:underline"
       >
         Mirá Método
-      </Link>{' '}
+      </FallbackLink>{' '}
       para la fórmula y sus sesgos.
     </p>
   );

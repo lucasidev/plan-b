@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import {
   CAREER_OFFICIAL_FACT_ORDER,
   formatOfficialFactValue,
@@ -8,6 +7,7 @@ import {
   officialFactCaption,
   officialFactCellContent,
 } from '@/components/facts';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
 import {
   type CareerCoverage,
@@ -313,9 +313,9 @@ function OfficialDataValue({ fact }: { fact: OfficialFact }) {
       return (
         <>
           {formatOfficialFactValue(fact.value ?? '', fact.unit)}{' '}
-          <Link href={methodHref} prefetch={false} className="pb-pill">
+          <FallbackLink href={methodHref} prefetch={false} className="pb-pill">
             derivado
-          </Link>
+          </FallbackLink>
         </>
       );
     }
@@ -396,7 +396,7 @@ function PlanSection({ activePlan }: { activePlan: ActivePlan }) {
                 const isCovered = coverage?.isCovered ?? false;
                 return (
                   <li key={subject.id} className={isCovered ? 'pb-measured' : ''}>
-                    <Link
+                    <FallbackLink
                       href={`/subjects/${subject.id}`}
                       // Sin prefetch: ver el porqué en subject-grid.tsx.
                       prefetch={false}
@@ -409,7 +409,7 @@ function PlanSection({ activePlan }: { activePlan: ActivePlan }) {
                         </span>
                       )}
                       <span className="pb-dot" aria-hidden="true" />
-                    </Link>
+                    </FallbackLink>
                   </li>
                 );
               })}
@@ -428,14 +428,14 @@ function PlanSection({ activePlan }: { activePlan: ActivePlan }) {
 function PlanFallback({ careerId }: { careerId: string }) {
   return (
     <p className="pb-section" style={{ fontSize: 13 }}>
-      <Link
+      <FallbackLink
         href={`/careers/${careerId}/plans`}
         // Sin prefetch: ver el porqué en subject-grid.tsx.
         prefetch={false}
         className="pb-link"
       >
         Ver los planes
-      </Link>
+      </FallbackLink>
     </p>
   );
 }
@@ -492,7 +492,7 @@ function StartHere({ activePlan }: { activePlan: ActivePlan }) {
       <div className="pb-eyebrow">Por dónde empezar · las materias con reseñas</div>
       <div className="pb-list" style={{ gap: 4 }}>
         {withReviews.map(({ subject, coverage }) => (
-          <Link
+          <FallbackLink
             key={subject.id}
             href={`/subjects/${subject.id}`}
             // Sin prefetch: ver el porqué en subject-grid.tsx.
@@ -509,7 +509,7 @@ function StartHere({ activePlan }: { activePlan: ActivePlan }) {
             <span className="pb-right pb-muted" aria-hidden="true">
               →
             </span>
-          </Link>
+          </FallbackLink>
         ))}
       </div>
     </div>
@@ -538,7 +538,7 @@ function WhereToStudy({
       </p>
       <div className="pb-list">
         {offerings.map((offering) => (
-          <Link
+          <FallbackLink
             key={offering.careerId}
             href={`/careers/${offering.careerId}`}
             // Sin prefetch: ver el porqué en subject-grid.tsx.
@@ -561,13 +561,17 @@ function WhereToStudy({
             <span className="pb-meta" style={{ marginTop: 4 }}>
               Dura en el papel: {paperDurationValue(offering.facts)}
             </span>
-          </Link>
+          </FallbackLink>
         ))}
       </div>
       <p className="pb-meta" style={{ marginTop: 8 }}>
-        <Link href={`/careers/${careerId}/where-to-study`} prefetch={false} className="pb-link">
+        <FallbackLink
+          href={`/careers/${careerId}/where-to-study`}
+          prefetch={false}
+          className="pb-link"
+        >
           Comparar las {numberInWords(totalOfferings)} lado a lado
-        </Link>
+        </FallbackLink>
       </p>
     </div>
   );

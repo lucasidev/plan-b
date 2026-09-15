@@ -496,8 +496,8 @@
     color: var(--color-ink-3);
     padding: 14px 8px 4px;
   }
-  /* button y a: la maqueta navega con data-go (JS); el producto usa ShellLink (<a>) para los
-   * seis-siete items del sidebar (issue #525, ver shell-link.tsx). */
+  /* button y a: la maqueta navega con data-go (JS); el producto usa FallbackLink (<a>) para los
+   * seis-siete items del sidebar (issue #525, ver fallback-link.tsx). */
   .pb-sidebar nav button,
   .pb-sidebar nav a {
     display: flex;

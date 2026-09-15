@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { formatShortDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import { formatOfficialFactValue } from './format-official-fact-value';
@@ -66,9 +66,12 @@ function Body({ fact, subject }: { fact: OfficialFact; subject: OfficialFactSubj
             </span>
           </div>
           <p className="mt-1 text-[11px] text-ink-3">
-            <Link href={methodHref} className="text-accent-ink underline-offset-2 hover:underline">
+            <FallbackLink
+              href={methodHref}
+              className="text-accent-ink underline-offset-2 hover:underline"
+            >
               Ver la regla en Método
-            </Link>
+            </FallbackLink>
           </p>
         </>
       );

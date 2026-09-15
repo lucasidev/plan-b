@@ -1,5 +1,5 @@
 import { ChevronRight } from 'lucide-react';
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { Pill } from '@/components/ui';
 import type { CareerPlan } from '../types';
 
@@ -28,7 +28,7 @@ export function PlanList({ plans }: { plans: CareerPlan[] }) {
         const isActive = plan.status === 'Active';
         return (
           <li key={plan.id}>
-            <Link
+            <FallbackLink
               href={`/plans/${plan.id}/subjects`}
               className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
             >
@@ -42,7 +42,7 @@ export function PlanList({ plans }: { plans: CareerPlan[] }) {
                 </Pill>
                 <ChevronRight size={16} className="shrink-0 text-ink-3" aria-hidden />
               </span>
-            </Link>
+            </FallbackLink>
           </li>
         );
       })}

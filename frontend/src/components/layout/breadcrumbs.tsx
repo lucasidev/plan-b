@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Fragment } from 'react';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import './planb.css';
 
 /**
@@ -59,9 +59,9 @@ export function Breadcrumbs({ items }: { items: ReadonlyArray<Crumb> }) {
                 {item.label}
               </b>
             ) : item.href ? (
-              <Link href={item.href} prefetch={false} className={className} title={title}>
+              <FallbackLink href={item.href} prefetch={false} className={className} title={title}>
                 {item.label}
-              </Link>
+              </FallbackLink>
             ) : (
               <span className={className} title={title}>
                 {item.label}

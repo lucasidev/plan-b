@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { ChairNearFloor } from '../api.server';
 
 /**
@@ -44,12 +44,12 @@ function Row({ chair, last }: { chair: ChairNearFloor; last: boolean }) {
           {chair.reviewCount === 1 ? 'reseña' : 'reseñas'}: con la tuya se publica
         </p>
       </div>
-      <Link
+      <FallbackLink
         href="/reviews/new"
         className="shrink-0 text-[12.5px] text-accent-ink underline-offset-2 hover:underline"
       >
         Reseñar
-      </Link>
+      </FallbackLink>
     </div>
   );
 }

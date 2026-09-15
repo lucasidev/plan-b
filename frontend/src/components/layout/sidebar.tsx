@@ -5,7 +5,7 @@ import { type MemberRoute, memberRoutes, memberSections } from '@/lib/member-she
 import type { Session } from '@/lib/session';
 import { cn } from '@/lib/utils';
 import './planb.css';
-import { ShellLink } from './shell-link';
+import { FallbackLink } from './fallback-link';
 
 type Props = {
   /** Slot rendered below the nav (see `<AvatarMenu />` / `<BackofficeFooterLink />` / `<AnonymousFooter />`). */
@@ -37,12 +37,12 @@ export function Sidebar({ footer, role }: Props) {
 
   return (
     <aside className="pb-sidebar hidden lg:flex">
-      <ShellLink href="/" aria-label="Ir a la entrada" prefetch={false} className="pb-brandrow">
+      <FallbackLink href="/" aria-label="Ir a la entrada" prefetch={false} className="pb-brandrow">
         <span className="pb-brand">
           plan-b
           <span style={{ color: 'var(--color-alarm)' }}>.</span>
         </span>
-      </ShellLink>
+      </FallbackLink>
 
       <nav>
         {memberSections.map((section) => (
@@ -113,7 +113,7 @@ function NavItem({
   active: boolean;
 }) {
   return (
-    <ShellLink
+    <FallbackLink
       href={path}
       // Sin prefetch: estos seis links viven montados en toda pantalla del área autenticada, y
       // el auto-prefetch en viewport le compite al router.push/refresh que sigue a guardar un
@@ -124,7 +124,7 @@ function NavItem({
     >
       <span>{label}</span>
       {shortcut && <span className="pb-sc">{shortcut}</span>}
-    </ShellLink>
+    </FallbackLink>
   );
 }
 

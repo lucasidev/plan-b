@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { CareerFacts } from '@/features/career-facts/types';
 
 /**
@@ -36,14 +36,14 @@ export function CareerCoverageCard({ facts }: { facts: CareerFacts }) {
 
         <p className="mt-2.5 text-[12px] leading-relaxed text-ink-3">{note(facts, remaining)}</p>
 
-        <Link
+        <FallbackLink
           href={`/careers/${facts.careerId}`}
           // Sin prefetch: ver el porqué en subject-grid.tsx.
           prefetch={false}
           className="mt-3 inline-block text-[12.5px] text-accent-ink underline-offset-2 hover:underline"
         >
           Ver la ficha de {facts.careerName}
-        </Link>
+        </FallbackLink>
       </div>
     </section>
   );

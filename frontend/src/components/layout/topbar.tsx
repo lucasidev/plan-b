@@ -9,7 +9,7 @@ import { reviewCtaHref } from '@/features/write-review/review-cta-href';
 import { displayNameFromEmail, genericCrumbs, getInitialsFromEmail } from '@/lib/member-shell';
 import type { ShellSession } from './app-shell';
 import './planb.css';
-import { ShellLink } from './shell-link';
+import { FallbackLink } from './fallback-link';
 
 type Props = {
   session: ShellSession;
@@ -51,7 +51,7 @@ type Props = {
  * en vez de seguir compitiendo por el espacio: las migas son las que ceden y bajan de línea
  * (`.pb-crumbs` ya trae `flex-wrap`).
  *
- * Los tres links propios (Explorar móvil, Escribir reseña, Ingresar) son `ShellLink`, no `Link`:
+ * Los tres links propios (Explorar móvil, Escribir reseña, Ingresar) son `FallbackLink`, no `Link`:
  * viven montados en toda pantalla y son los que el router puede descartar bajo una ráfaga de
  * acciones (issue #525); el fallback vive ahí. Las migas usan `Link` (contenido de página, no del
  * shell persistente).
@@ -79,13 +79,13 @@ export function Topbar({ session, crumbsSlot }: Props) {
  */
 function MobileExploreLink() {
   return (
-    <ShellLink
+    <FallbackLink
       href="/universities"
       prefetch={false}
       className="lg:hidden shrink-0 text-[13px] font-medium text-ink-2 hover:text-ink"
     >
       Explorar
-    </ShellLink>
+    </FallbackLink>
   );
 }
 
@@ -104,7 +104,7 @@ function MobileExploreLink() {
  */
 function WriteReviewButton({ session }: { session: ShellSession }) {
   return (
-    <ShellLink
+    <FallbackLink
       href={reviewCtaHref(session)}
       aria-label="Escribir reseña"
       // Mismo motivo que el sidebar: siempre montado, y su prefetch en viewport compite con la
@@ -113,7 +113,7 @@ function WriteReviewButton({ session }: { session: ShellSession }) {
       className="pb-write shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft"
     >
       + <span className="hidden md:inline">Escribir reseña</span>
-    </ShellLink>
+    </FallbackLink>
   );
 }
 
@@ -137,12 +137,12 @@ function SessionBadge({ email }: { email: string }) {
  */
 function SignInLink({ from }: { from: string }) {
   return (
-    <ShellLink
+    <FallbackLink
       href={`/sign-in?from=${encodeURIComponent(from)}`}
       prefetch={false}
       className="pb-signin"
     >
       Ingresar
-    </ShellLink>
+    </FallbackLink>
   );
 }

@@ -19,7 +19,7 @@ type Props = Omit<ComponentProps<typeof Link>, 'href'> & { href: string };
 const pendingHrefs = new Set<string>();
 
 /**
- * El plazo pendiente de toda la app: uno solo, no uno por click ni por instancia de `ShellLink`.
+ * El plazo pendiente de toda la app: uno solo, no uno por click ni por instancia de `FallbackLink`.
  * Vive a nivel de módulo por la misma razón que `pendingHrefs`, y porque el fallback (una
  * navegación completa) tiene sentido "al último click", no acumulado por cada click que hubo.
  */
@@ -68,7 +68,7 @@ function runFallbackCheck(href: string, originPathname: string, attempt: 1 | 2):
 
 /**
  * Hijo de `<Link>`: `useLinkStatus` sólo lee del contexto que `Link` les da a sus descendientes,
- * no al propio `ShellLink` que lo renderiza. No dibuja nada; solo publica el estado en
+ * no al propio `FallbackLink` que lo renderiza. No dibuja nada; solo publica el estado en
  * `pendingHrefs` y lo retira al desmontar, para no dejar un `true` colgado si el link se va antes
  * de que el plazo lo necesite.
  */
@@ -90,12 +90,13 @@ function LinkStatusProbe({ href }: { href: string }) {
 }
 
 /**
- * `<Link>` para el shell del alumno (sidebar, topbar, menú del avatar): los seis-siete links que
- * quedan montados en toda pantalla del área con cuenta, donde el fix del 2026-09-09 (apagar el
- * prefetch de esos mismos links, `prefetch={false}` en `sidebar.tsx` y `topbar.tsx`) no alcanzó
- * (issue #525, con #510 y #477 adentro). El backoffice (`admin-sidebar.tsx`, `admin-topbar.tsx`)
- * queda fuera a propósito: `admin/chairs.spec.ts` (#477) muestra la misma familia de falla, pero
- * el alcance de este fix es el shell del alumno, no cada lugar donde Next puede repetirla.
+ * `<Link>` para el shell del alumno (sidebar, topbar, menú del avatar), el catálogo público y Mis
+ * aportes. En el shell son los seis-siete links que quedan montados en toda pantalla del área con
+ * cuenta, donde el fix del 2026-09-09 (apagar el prefetch de esos mismos links, `prefetch={false}`
+ * en `sidebar.tsx` y `topbar.tsx`) no alcanzó (issue #525, con #510 y #477 adentro). El backoffice
+ * (`admin-sidebar.tsx`, `admin-topbar.tsx`) queda fuera a propósito: `admin/chairs.spec.ts` (#477)
+ * muestra la misma familia de falla, pero el alcance de este fix es el shell del alumno, el
+ * catálogo y Mis aportes, no cada lugar donde Next puede repetirla.
  *
  * La traza de una falla real de CI (2026-09-14, corrida 34803080787, `settings.spec.ts`) confirma
  * el mecanismo: el click en "Ajustes" dispara el fetch RSC real de `/settings` (sin el header
@@ -111,10 +112,16 @@ function LinkStatusProbe({ href }: { href: string }) {
  * puede montar un link sin `prefetch={false}` que compita con el click real. Por eso este
  * componente ataca el síntoma (la URL no cambió) en vez de perseguir cada fuente de ráfaga.
  *
+ * La corrida 35024385479 de CI (2026-09-15) mostró la misma falla en el catálogo: en
+ * `[mobile] e2e/public/soft-navigation.spec.ts:36`, el click en la primera fila de "En una sola
+ * institución" en `/careers` a los 287ms fue seguido a los 326ms por un prefetch de fondo de
+ * `/universities`, con el RSC real de `/careers/[id]` recién a los 367ms (200) y su chunk a los
+ * 444ms. La URL no cambió nunca: la aserción venció a los 10s.
+ *
  * El mecanismo: en `onClick` de un click primario sin modificadores hacia un href interno, se deja
  * que `Link` haga lo suyo y se arma un plazo a nivel de módulo (`scheduleFallback`), no en el
  * componente: el menú del avatar cierra su dropdown en el mismo click que dispara la navegación
- * (`onClick={onClose}` en `avatar-menu.tsx`), y un timer que viviera en un `useRef` de `ShellLink`
+ * (`onClick={onClose}` en `avatar-menu.tsx`), y un timer que viviera en un `useRef` de `FallbackLink`
  * se limpiaría al desmontar antes de tener la chance de disparar. El módulo no tiene ese problema.
  * Si al vencer el plazo el pathname sigue siendo el de origen y Next no reporta una navegación en
  * vuelo para ese href, se fuerza con `navigateAfterMutation` (la misma vía de escape que ya usan
@@ -131,10 +138,12 @@ function LinkStatusProbe({ href }: { href: string }) {
  * de la ráfaga fue de ~230ms, así que 2000ms deja margen de sobra sin alargar perceptiblemente un
  * click que hoy, cuando falla, no se recupera nunca (los 30s del timeout del test lo prueban).
  *
- * No reemplaza a `<Link>` en el resto de la app: el timer tiene un costo (un reload completo) que
- * no se paga sin la evidencia de esta falla, y hoy esa evidencia es del shell del alumno.
+ * Fuera de acá: autenticación, backoffice, landing y páginas de error. El backoffice ya tiene su
+ * propia evidencia de esta familia de falla (#477, arriba), pero queda afuera por disciplina de
+ * alcance; autenticación, landing y páginas de error no tienen ninguna todavía, y el timer tiene un
+ * costo (un reload completo) que no se paga sin ella.
  */
-export function ShellLink({ href, onClick, children, ...rest }: Props) {
+export function FallbackLink({ href, onClick, children, ...rest }: Props) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     onClick?.(event);
 

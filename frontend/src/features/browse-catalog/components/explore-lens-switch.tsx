@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 
 export type ExploreLens = 'careers' | 'universities';
 
@@ -17,9 +17,9 @@ export function ExploreLensSwitch({ active }: { active: ExploreLens }) {
   return (
     <div role="tablist" aria-label="Lente de exploración" className="pb-lens">
       {LENSES.map(({ lens, href, label }) => (
-        <Link key={lens} href={href} role="tab" aria-selected={lens === active}>
+        <FallbackLink key={lens} href={href} role="tab" aria-selected={lens === active}>
           {label}
-        </Link>
+        </FallbackLink>
       ))}
     </div>
   );

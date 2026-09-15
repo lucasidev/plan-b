@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { CareerCoverage } from '@/features/browse-catalog';
 import { describeCareerReviews } from '../lib/describe-institution-careers';
 
@@ -21,7 +21,7 @@ export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
       <div className="pb-eyebrow">Por dónde empezar</div>
       <div className="pb-list">
         {withReviews.map((career) => (
-          <Link
+          <FallbackLink
             key={career.careerId}
             href={`/careers/${career.careerId}`}
             // Sin prefetch: ver el porqué en subject-grid.tsx.
@@ -35,7 +35,7 @@ export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
             <span className="pb-right pb-muted" aria-hidden="true">
               →
             </span>
-          </Link>
+          </FallbackLink>
         ))}
       </div>
     </div>

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
 import { compareSubjectsByCode, type Subject } from '@/features/browse-catalog';
 import { formatRelativeDate } from '@/lib/format-date';
@@ -81,9 +81,9 @@ function Head({ facts, planYear }: { facts: SubjectFacts; planYear?: number }) {
     <>
       <div className="pb-eyebrow">
         Materia · {facts.yearInPlan}º año{planYearSuffix(planYear)} ·{' '}
-        <Link href={`/careers/${facts.careerId}`} prefetch={false}>
+        <FallbackLink href={`/careers/${facts.careerId}`} prefetch={false}>
           {facts.careerName}
-        </Link>
+        </FallbackLink>
       </div>
       <h1 className="pb-serif">{facts.subjectName}</h1>
       <p className="pb-h-sub">
@@ -213,7 +213,7 @@ function ChairRow({ chair }: { chair: SubjectChair }) {
   const footer = chairFooter(chair);
 
   return (
-    <Link
+    <FallbackLink
       href={`/chairs/${chair.chairId}`}
       // Sin prefetch: ver el porqué en subject-grid.tsx.
       prefetch={false}
@@ -229,7 +229,7 @@ function ChairRow({ chair }: { chair: SubjectChair }) {
       <span className="pb-right pb-muted" aria-hidden="true">
         →
       </span>
-    </Link>
+    </FallbackLink>
   );
 }
 
@@ -371,13 +371,13 @@ function TakenWithRow({ pair }: { pair: TakenWith }) {
     <div>
       <div className="pb-k">
         {pair.subjectCode && `${pair.subjectCode} · `}
-        <Link
+        <FallbackLink
           href={`/subjects/${pair.subjectId}`}
           // Sin prefetch: ver el porqué en subject-grid.tsx.
           prefetch={false}
         >
           {pair.subjectName}
-        </Link>
+        </FallbackLink>
       </div>
       {pair.isPublished ? (
         <>
@@ -408,7 +408,7 @@ function OtherSubjectsOfYear({ facts, subjects }: { facts: SubjectFacts; subject
           const isCurrent = subject.id === facts.subjectId;
           return (
             <li key={subject.id}>
-              <Link
+              <FallbackLink
                 href={`/subjects/${subject.id}`}
                 // Sin prefetch: ver el porqué en subject-grid.tsx.
                 prefetch={false}
@@ -423,7 +423,7 @@ function OtherSubjectsOfYear({ facts, subjects }: { facts: SubjectFacts; subject
                   )}
                   {subject.name}
                 </span>
-              </Link>
+              </FallbackLink>
             </li>
           );
         })}

@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import type { CurrentInstrument } from '@/components/instrument';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { deleteReviewAction } from '../actions';
 import type { MyReviewedChairTally } from '../api.server';
 import type { MyReview } from '../types';
@@ -57,13 +57,13 @@ export function MyReviewsList({
           Una cátedra publica sus conteos a partir de diez reseñas. Hasta ahí, lo que se sabe de
           ella queda en cero.
         </p>
-        <Link
+        <FallbackLink
           href="/reviews/new"
           className="inline-block rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
           style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
         >
           Reseñar una cursada
-        </Link>
+        </FallbackLink>
       </div>
     );
   }
@@ -209,14 +209,14 @@ function ReviewCard({
     <article className="rounded-xl border border-line bg-bg-card p-4">
       <div className="mb-1 flex items-baseline justify-between gap-3">
         <h2 className="font-serif text-[17px] font-semibold text-ink">
-          <Link
+          <FallbackLink
             href={`/subjects/${review.subjectId}`}
             // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="underline underline-offset-2"
           >
             {review.subjectName}
-          </Link>
+          </FallbackLink>
         </h2>
         <span
           className="shrink-0 text-[11px] text-ink-3"
@@ -228,14 +228,14 @@ function ReviewCard({
 
       <p className="mb-3 text-[12.5px] text-ink-3">
         {review.chairId && review.chairName ? (
-          <Link
+          <FallbackLink
             href={`/chairs/${review.chairId}`}
             // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="underline underline-offset-2"
           >
             Cátedra {review.chairName}
-          </Link>
+          </FallbackLink>
         ) : (
           'Sin cátedra declarada'
         )}
