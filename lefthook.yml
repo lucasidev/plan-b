@@ -87,7 +87,7 @@ pre-push:
     frontend-test:
       # Vitest unit/component (US-T01), ~30s medidos.
       # E2E (Playwright) ya NO corre en pre-push: vive en CI como un job del
-      # workflow `ci.yml` y corre siempre en cada PR. Si querés correrlo
+      # workflow `ci.yml`, según los cambios de producto o del entorno E2E. Para correrlo
       # local manualmente: `just frontend-test-e2e-show` (browser visible).
       glob:
         - "frontend/*.{ts,tsx}"

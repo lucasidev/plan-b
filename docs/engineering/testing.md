@@ -409,7 +409,7 @@ Reglas:
 - Helpers en `e2e/helpers/`: no copiar parsing de mail por test.
 - **Un spec crea lo que muta, nunca lo que otro lee.** Las personas sembradas (`LUCIA`, `PAULA`, `MARTIN`, `ADMIN`) son de solo lectura para toda la suite: sirven para login y gating de roles, nunca para reseñar, cambiar contraseña o cualquier cosa que sobreviva al request. Lo que un test necesita mutar (un alumno, una cátedra, una frase) lo crea (`createStudent`, `createChair`) y lo borra en `afterEach`/`finally`.
 - Locators robustos: `getByRole`, `getByLabel`. Evitar `getByText` salvo strings auténticamente únicos.
-- **E2E corre siempre en CI** en cada PR como gate antes de merge (job `e2e` en `.github/workflows/ci.yml`). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).
+- **E2E corre en CI cuando cambia el producto o una dependencia del job**, según la política de abajo (job `e2e` en `.github/workflows/ci.yml`). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).
 
 **Base efímera por corrida.** Los dos recipes locales levantan su propio backend + frontend contra una base `planb_e2e` que se dropea y recrea al arrancar (`scripts/run-e2e.ts`), o sea que el stack de dev tiene que estar **abajo**: si `just dev` está corriendo, el script corta con el puerto ocupado. Es el mismo aislamiento que CI ya tenía por usar un service container nuevo en cada corrida, y el mismo patrón que [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md) usa una capa más abajo.
 
@@ -451,13 +451,15 @@ tarea de orden del sprint siguiente lo arregla o lo borra.
 (`frontend/test-results/results.json`, solo CI), además lista los `status: "flaky"` de esa
 corrida sin romper el build.
 
-#### Política E2E: una sola regla
+#### Selección de checks en CI
 
-**E2E corre siempre en CI, en cada PR.** Sin labels, sin detectores custom, sin whitelists. Es el patrón estándar de la industria 2025: shift-left + gate consistente antes de merge. Para PRs 100% docs/config (sin código), aceptamos los ~7 min como costo de simplicidad.
+**E2E verifica cambios en `backend/**`, `frontend/**`, el workflow de CI y `scripts/check-flaky.ts`**, que consume el reporte de Playwright. Los cambios exclusivos de documentación, scripts locales o configuración de agentes no levantan el stack. `scripts/run-e2e.ts` prepara el entorno local; CI prepara el suyo en el workflow y no ejecuta ese runner.
+
+Los filtros de `.github/workflows/ci.yml` separan producto, herramientas y E2E. El job Frontend conserva su nombre y comparte la instalación de dependencias: para cambios de herramientas corre lint, typecheck, tests de scripts y validación de agentes; solo ejecuta lint, build, tests y cobertura de frontend cuando cambia frontend. `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/` y `.codex/` activan las verificaciones de herramientas. Si falla el detector se ejecutan todas las gates; una corrida cancelada no inicia jobs nuevos.
+
+`scripts/ci-selection.test.ts` prueba la selección sobre el YAML real: herramientas, docs, frontend, backend, dependencias de E2E, cambios mixtos y detector fallido. Agregar una dependencia al job exige revisar su filtro y su caso de prueba.
 
 **Pre-push hook NO corre E2E.** El hook se queda con gates rápidos (lint, typecheck, build, unit). Si el dev tocó código real y quiere validar antes de pushear, corre `just frontend-test-e2e-show` manualmente. La elección queda en el dev, no en el hook.
-
-**Cómo llegamos acá** (2026-05-24): probamos un régimen de zona E2E con detector custom (`check-e2e-zone.ts`), whitelist de paths, auto-labeler, escape hatches, detección de mocks. Funcionaba parcialmente pero acumulaba deuda combinatoria sin resolver el problema real (devs entregando "listo" sin verificar). Filosofía Musk: el peor error es optimizar algo que no debería existir. Reset al estándar industria.
 
 **Regla cultural** (vive en la disciplina del dev, no en tooling): cuando termines un slice que toque rutas reales (no mocks/ComingSoon), corré `just frontend-test-e2e-show <spec>` local con browser visible y verificá verde antes de declarar la US "lista" o pedir revisión. Esto vale especialmente para el asistente IA: el OK para commit/push viene después de mostrar el output del spec corrido, no antes.
 

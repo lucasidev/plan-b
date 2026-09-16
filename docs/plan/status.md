@@ -931,6 +931,8 @@ Todas Done al cierre del sprint.
 
 ### Scope cerrado en S2
 
+La política E2E mencionada en este cierre y su retrospectiva es histórica; la selección vigente de checks está en [testing.md](../engineering/testing.md#selección-de-checks-en-ci).
+
 - [US-037-f](../history/domain-v1/stories/US-037-f.md): **Onboarding frontend** 4 pasos (Bienvenida / Carrera / Historial / Listo). **Done.**
 - [US-044](../history/domain-v1/stories/US-044.md) + [US-044-a](../history/domain-v1/stories/US-044-a.md) + [US-044-b](../history/domain-v1/stories/US-044-b.md) + [US-044-c](../history/domain-v1/stories/US-044-c.md): **Inicio v2** port literal del mock V2Inicio. **Done.**
 - [US-045-a](../history/domain-v1/stories/US-045-a.md): **Mi carrera shell + 5 tabs** con stubs. **Done.**
