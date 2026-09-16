@@ -17,11 +17,15 @@ Desde la raíz: `bun scripts/run-check.ts --cwd frontend -- bun run test`.
 
 El wrapper ejecuta un único comando, sin shell intermedia, conserva stdout y stderr completos en un archivo temporal local y propaga el código de salida. Un éxito imprime comando, directorio, duración y ruta del log. Un fallo agrega solo el final del log; la causa puede estar antes y se busca en el archivo, no se supone ausente ni se pega entero. No impone timeout ni convierte corridas interrumpidas en éxito. Para scripts de shell, invocar el intérprete explícitamente.
 
+Ante SIGINT o SIGTERM cierra el árbol del comando y devuelve 130 o 143. La terminación forzada del propio wrapper (SIGKILL o equivalente del sistema operativo) no permite ejecutar esa limpieza; quien lo invoca debe terminar el árbol completo en ese caso.
+
 No reemplaza ningún check ni modifica CI. Lo usan tanto el principal como `test-runner`. Una suite verde se reutiliza solo si código, configuración, dependencias y estado relevante no cambiaron. Los E2E e integración requieren verificar también el entorno compartido.
 
 ## Revisiones acotadas
 
 Los workflows nativos de Claude conservan los tiers de revisión: opus/high para encontrar problemas, sonnet/medium para refutarlos. Cada invocación hace como máximo dos llamadas secuenciales a agentes: un pase y una verificación conjunta. Sin hallazgos, la segunda no corre. Los duplicados exactos se quitan antes de verificar.
+
+Alcance de la verificación del 2026-09-16: Claude Code 2.1.273 contiene un loader de workflows y validación de `meta`. Los tests del repo ejecutan la lógica con dobles de `agent`; no prueban el contrato de `schema`, la forma del retorno ni las interrupciones del motor real. Esa compatibilidad queda pendiente de una ejecución normal del workflow, sin generar una revisión facturada solo para medir consumo.
 
 Por default revisan el diff `main...HEAD`. Aceptan un rango como string o `{ "target": "origin/main...HEAD" }`. Una auditoría sin diff exige un alcance explícito, por ejemplo `{ "scope": "backend/modules/identity" }`. `doc-drift` no toma los documentos archivados como especificación vigente. Ninguna revisión declara limpio lo que no pudo recorrer: las áreas pendientes y los hallazgos sin evidencia suficiente se devuelven como incompletos. Otro pase necesita una pregunta pendiente concreta, no una votación automática por hallazgo.
 
