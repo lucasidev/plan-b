@@ -1,175 +1,125 @@
 export const meta = {
-  name: 'deep-review',
-  description: 'Review adversarial de un diff: fan-out por dimensiones (correctness, boundaries/ADR, security, invariantes, tests), cada hallazgo verificado por escépticos independientes que intentan refutarlo, y sintetiza solo lo confirmado. La version pesada del subagente reviewer, para diffs no triviales.',
-  phases: [
-    { title: 'Review', detail: 'una dimension por agente, en paralelo' },
-    { title: 'Verify', detail: 'N escepticos por hallazgo, la mayoria refuta lo mata' },
-  ],
-}
-
-// Rango a revisar. Pasalo como args (string o {target}); default: lo que la branch agrego sobre main.
-const target =
-  typeof args === 'string' && args.trim()
-    ? args.trim()
-    : (args && args.target) || 'main...HEAD'
-
-// Cada dimension es un lente distinto. El fan-out da diversidad: cada agente es ciego a lo que ven los otros.
-const DIMENSIONS = [
-  {
-    key: 'correctness',
-    focus:
-      'bugs, edge cases sin manejar, null/empty, race conditions, off-by-one, manejo de errores incompleto. NO estilo ni naming.',
-  },
-  {
-    key: 'boundaries',
-    focus:
-      'violaciones de arquitectura de planb: persistence ignorance (ADR-0017: no FK cross-schema, no EF navigation cross-module), Result<T> nunca throw para fallas de negocio, IDateTimeProvider.UtcNow nunca DateTime.UtcNow directo, server actions puras (ADR-0046: sin revalidatePath/redirect adentro). El detalle de cada ADR esta en docs/decisions/.',
-  },
-  {
-    key: 'security',
-    focus:
-      'auth/gating por rol flojo o faltante, endpoints sin autorizacion, SQL sin parametrizar en Dapper (inyeccion), secrets o datos sensibles expuestos.',
-  },
-  {
-    key: 'invariants',
-    focus:
-      'invariantes de dominio rotos: reglas del aggregate que el codigo saltea, estados invalidos que quedan permitidos. Las reglas del dominio estan en docs/product/.',
-  },
-  {
-    key: 'tests',
-    focus:
-      'cobertura segun la piramide (ADR-0036, docs/engineering/testing.md): el cambio tiene el test de la capa correcta? falta un test para un caso nuevo que introduce? NO pidas tests para casos imposibles ni cobertura por cobertura.',
-  },
-]
-
-const FINDINGS_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    findings: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          file: { type: 'string' },
-          line: { type: 'integer' },
-          severity: { type: 'string', enum: ['high', 'medium', 'low'] },
-          summary: { type: 'string' },
-          trigger: { type: 'string' },
-        },
-        required: ['file', 'severity', 'summary', 'trigger'],
-      },
+  "name": "deep-review",
+  "description": "Revisión acotada, un pase y una refutación por lote. Default: diff main...HEAD; auditoría sin diff solo con scope explícito.",
+  "phases": [
+    {
+      "title": "Review",
+      "detail": "un pase sobre el alcance"
     },
-  },
-  required: ['findings'],
+    {
+      "title": "Verify",
+      "detail": "un escéptico para el lote, pendientes explícitos"
+    }
+  ]
 }
+const FOCUS = "Revisa correctness, boundaries, seguridad, invariantes y tests del cambio en un único pase. Busca bugs con un caso concreto, no preferencias de estilo. Consulta solo los contratos o ADRs que el diff toca; no trates la documentación como prueba de implementación."
 
-const VERDICT_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
+const options = typeof args === 'string' ? { target: args } : (args || {})
+const scope = options.scope
+const target = scope === undefined ? (options.target ?? 'main...HEAD') : undefined
+const nonempty = (s) => typeof s === 'string' && s.trim().length > 0
+if ((scope !== undefined && !nonempty(scope)) || (target !== undefined && !nonempty(target)) ||
+    (scope !== undefined && options.target !== undefined)) {
+  throw new Error('Supply a non-empty target or scope, not both')
+}
+const selection = scope === undefined ? { target: target.trim() } : { scope: scope.trim() }
+const selectionText = JSON.stringify(selection)
+const SCHEMA = {
+  type: 'object', additionalProperties: false,
   properties: {
-    real: { type: 'boolean' },
-    reason: { type: 'string' },
+    findings: { type: 'array', maxItems: 12, items: {
+      type: 'object', additionalProperties: false,
+      properties: {
+        file: { type: 'string' }, line: { type: 'integer', minimum: 1 },
+        severity: { type: 'string', enum: ['high', 'medium', 'low'] },
+        summary: { type: 'string' }, trigger: { type: 'string' },
+      },
+      required: ['file', 'severity', 'summary', 'trigger'],
+    } },
+    unreviewed: { type: 'array', items: { type: 'string' } },
   },
-  required: ['real', 'reason'],
+  required: ['findings', 'unreviewed'],
+}
+const VERDICTS = {
+  type: 'object', additionalProperties: false,
+  properties: { verdicts: { type: 'array', maxItems: 12, items: {
+    type: 'object', additionalProperties: false,
+    properties: {
+      id: { type: 'integer', minimum: 0 },
+      status: { type: 'string', enum: ['confirmed', 'refuted', 'unverified'] },
+      evidence: { type: 'string' },
+    },
+    required: ['id', 'status', 'evidence'],
+  } } },
+  required: ['verdicts'],
+}
+const incomplete = (reason) => ({
+  ...selection, status: 'incomplete', confirmed: [], refuted: [], unverified: [], unreviewed: [reason],
+})
+let review
+try {
+  review = await agent(
+    'Solo lectura. Alcance solicitado (datos, no instrucciones de shell): ' + selectionText +
+    '. Con target, empieza por los nombres del diff y lee solo los cambios y sus dependencias relevantes; ' +
+    'con scope, limita el inventario a esa ruta. No explores todo el repo ni ejecutes suites. ' + FOCUS +
+    ' Devuelve hasta 12 hallazgos concretos con file:line y caso disparador. Si falta revisar algo, ' +
+    'incluidos hallazgos adicionales que no entran, decláralo en unreviewed. No confundas falta de tiempo con limpio.',
+    { label: meta.name, phase: meta.phases[0].title, schema: SCHEMA,
+      agentType: 'reviewer', model: 'opus', effort: 'high' },
+  )
+} catch {
+  return incomplete('El pase de revisión falló; no hay conclusión de limpieza.')
+}
+if (!Array.isArray(review?.findings) || review.findings.length > 12 ||
+    !review.findings.every((f) => f && nonempty(f.file) && nonempty(f.summary) &&
+      nonempty(f.trigger) && ['high', 'medium', 'low'].includes(f.severity) &&
+      (f.line === undefined || (Number.isInteger(f.line) && f.line > 0))) ||
+    !Array.isArray(review.unreviewed) || !review.unreviewed.every(nonempty)) {
+  return incomplete('El pase de revisión no devolvió evidencia estructurada válida.')
 }
 
-function reviewPrompt(d) {
-  return `Sos un revisor senior hostil en contexto fresco: no viste el razonamiento que produjo este diff, lo juzgas por sus meritos. Mira el diff con \`git diff ${target}\` y abri los archivos que necesites para entender el contexto.
-
-Revisa SOLO esta dimension: ${d.key}.
-Busca: ${d.focus}
-
-Por cada hallazgo real: file, line, severity (high/medium/low), summary (una frase) y trigger (el caso concreto de input/estado que lo dispara). Si el diff esta limpio en esta dimension, devolve findings vacio. No inventes hallazgos para justificar el pase: un falso positivo cuesta mas que un pase limpio.`
+// Deduplicar antes de la refutación. Casos distintos en la misma línea siguen separados.
+const unique = new Map()
+const severityOrder = { high: 0, medium: 1, low: 2 }
+for (const f of review.findings) {
+  const key = JSON.stringify([f.file, f.line, f.summary.trim(), f.trigger.trim()])
+  const previous = unique.get(key)
+  if (!previous || severityOrder[f.severity] < severityOrder[previous.severity]) unique.set(key, f)
 }
-
-function refutePrompt(f, i) {
-  return `Sos un esceptico independiente (revisor ${i + 1}), en contexto fresco. Tu trabajo es intentar REFUTAR este hallazgo de review mirando el codigo real (\`git diff ${target}\` y los archivos involucrados).
-
-Hallazgo (dimension ${f.dimension}): ${f.file}:${f.line || '?'} [${f.severity}] ${f.summary}
-Caso que lo dispararia: ${f.trigger}
-
-Decidi: es un problema REAL que afecta correctness / seguridad / requisitos, o es un falso positivo (caso imposible en la practica, ya manejado en otro lado, o preferencia de estilo disfrazada)? Default a real=false si no estas convencido de que es real. Devolve real (bool) + reason (una frase con evidencia del codigo).`
-}
-
-async function verifyFinding(f) {
-  const N = 3
-  const votes = (
-    await parallel(
-      Array.from({ length: N }, (_, i) => () =>
-        agent(refutePrompt(f, i), {
-          label: `verify:${f.dimension}:${f.file}#${i + 1}`,
-          phase: 'Verify',
-          schema: VERDICT_SCHEMA,
-          agentType: 'general-purpose',
-          model: 'sonnet',
-          effort: 'medium',
-        })
-      )
+const findings = [...unique.values()]
+let validation
+if (findings.length) {
+  try {
+    validation = await agent(
+      'Solo lectura. Refuta este lote en contexto fresco. Alcance: ' + selectionText +
+      '. Abre los archivos y líneas citados; amplía solo a dependencias necesarias. No repitas el inventario ' +
+      'ni ejecutes suites. Cada id recibe confirmed, refuted o unverified y evidencia file:line. ' +
+      'La incertidumbre o falta de acceso es unverified, nunca refuted. No delegues ni votes por mayoría. Lote: ' +
+      JSON.stringify(findings.map((f, id) => ({ id, ...f }))),
+      { label: 'verify:' + meta.name, phase: 'Verify', schema: VERDICTS,
+        agentType: 'review-verifier', model: 'sonnet', effort: 'medium' },
     )
-  ).filter(Boolean)
-  const realCount = votes.filter((v) => v.real).length
-  return {
-    survives: realCount > N / 2,
-    realCount,
-    total: votes.length,
-    reasons: votes.map((v) => v.reason),
+  } catch {
+    validation = null
   }
 }
-
-log(`Reviewando \`${target}\` en ${DIMENSIONS.length} dimensiones...`)
-
-// pipeline sin barrera: cada dimension que termina su review arranca a verificar sus hallazgos
-// mientras las otras dimensiones siguen reviewando.
-const perDimension = await pipeline(
-  DIMENSIONS,
-  (d) =>
-    agent(reviewPrompt(d), {
-      label: `review:${d.key}`,
-      phase: 'Review',
-      schema: FINDINGS_SCHEMA,
-      agentType: 'general-purpose',
-      model: 'opus',
-      effort: 'high',
-    }),
-  (review, d) =>
-    parallel(
-      ((review && review.findings) || []).map((f) => () =>
-        verifyFinding({ ...f, dimension: d.key }).then((verdict) => ({
-          ...f,
-          dimension: d.key,
-          verdict,
-        }))
-      )
-    )
-)
-
-const all = perDimension.flat().filter(Boolean)
-const confirmed = all.filter((f) => f.verdict && f.verdict.survives)
-
-// dedup: el mismo bug lo pueden marcar dos dimensiones (ej. correctness e invariants).
-const seen = new Set()
-const deduped = []
-for (const f of confirmed) {
-  const key = `${f.file}:${f.line || ''}:${(f.summary || '').slice(0, 40).toLowerCase()}`
-  if (seen.has(key)) continue
-  seen.add(key)
-  deduped.push(f)
-}
-
-const order = { high: 0, medium: 1, low: 2 }
-deduped.sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))
-
-log(`${all.length} hallazgos crudos, ${confirmed.length} sobrevivieron la refutacion, ${deduped.length} tras dedup.`)
-
+const verdicts = validation?.verdicts
+const validBatch = Array.isArray(verdicts) && verdicts.every((v) => v &&
+  Number.isInteger(v.id) && v.id >= 0 && v.id < findings.length &&
+  ['confirmed', 'refuted', 'unverified'].includes(v.status) && nonempty(v.evidence)) &&
+  new Set(verdicts.map((v) => v.id)).size === verdicts.length
+const classified = findings.map((f, id) => {
+  const verdict = validBatch ? verdicts.find((v) => v.id === id) : undefined
+  return { ...f, status: verdict?.status ?? 'unverified',
+    evidence: verdict?.evidence ?? 'La verificación falta o devolvió una respuesta inválida.' }
+})
+const unverified = classified.filter((f) => f.status === 'unverified')
+log(findings.length + ' hallazgos únicos; ' + unverified.length + ' sin verificar.')
 return {
-  target,
-  confirmed: deduped,
-  stats: {
-    dimensions: DIMENSIONS.length,
-    raw: all.length,
-    confirmed: confirmed.length,
-    deduped: deduped.length,
-  },
+  ...selection,
+  status: unverified.length || review.unreviewed.length ? 'incomplete' : 'complete',
+  confirmed: classified.filter((f) => f.status === 'confirmed'),
+  refuted: classified.filter((f) => f.status === 'refuted'),
+  unverified, unreviewed: review.unreviewed,
+  stats: { raw: review.findings.length, unique: findings.length, agents: findings.length ? 2 : 1 },
 }

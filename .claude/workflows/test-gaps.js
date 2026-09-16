@@ -1,130 +1,125 @@
 export const meta = {
-  name: 'test-gaps',
-  description: 'Barrido de cobertura del repo: fan-out por modulo/area, cada agente cruza el codigo con los tests existentes segun la piramide (ADR-0036) y marca logica real sin su test de capa, y un esceptico confirma que el gap es real (no cubierto en otro lado). Objetivo, no cobertura por cobertura.',
-  phases: [
-    { title: 'Scan', detail: 'un modulo/area por agente, codigo vs tests' },
-    { title: 'Verify', detail: 'esceptico confirma que no esta cubierto en otro lado' },
-  ],
-}
-
-const AREAS = [
-  { key: 'identity', scope: 'backend/modules/identity' },
-  { key: 'academic', scope: 'backend/modules/academic' },
-  { key: 'enrollments', scope: 'backend/modules/enrollments' },
-  { key: 'reviews', scope: 'backend/modules/reviews' },
-  { key: 'moderation', scope: 'backend/modules/moderation' },
-  { key: 'frontend', scope: 'frontend/src/features' },
-]
-
-const FINDINGS_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    findings: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          file: { type: 'string' },
-          layer: { type: 'string' },
-          what: { type: 'string' },
-          severity: { type: 'string', enum: ['high', 'medium', 'low'] },
-        },
-        required: ['file', 'layer', 'what', 'severity'],
-      },
+  "name": "test-gaps",
+  "description": "Revisión acotada, un pase y una refutación por lote. Default: diff main...HEAD; auditoría sin diff solo con scope explícito.",
+  "phases": [
+    {
+      "title": "Scan",
+      "detail": "un pase sobre el alcance"
     },
-  },
-  required: ['findings'],
+    {
+      "title": "Verify",
+      "detail": "un escéptico para el lote, pendientes explícitos"
+    }
+  ]
 }
+const FOCUS = "Cruza el código alcanzado con sus tests y docs/engineering/testing.md. Busca ramas e invariantes reales sin evidencia en la capa adecuada, no getters ni tests de cobertura por porcentaje. Revisa si un test de integración ya cubre la rama antes de pedir un unit redundante. No ejecutes suites."
 
-const VERDICT_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
+const options = typeof args === 'string' ? { target: args } : (args || {})
+const scope = options.scope
+const target = scope === undefined ? (options.target ?? 'main...HEAD') : undefined
+const nonempty = (s) => typeof s === 'string' && s.trim().length > 0
+if ((scope !== undefined && !nonempty(scope)) || (target !== undefined && !nonempty(target)) ||
+    (scope !== undefined && options.target !== undefined)) {
+  throw new Error('Supply a non-empty target or scope, not both')
+}
+const selection = scope === undefined ? { target: target.trim() } : { scope: scope.trim() }
+const selectionText = JSON.stringify(selection)
+const SCHEMA = {
+  type: 'object', additionalProperties: false,
   properties: {
-    real: { type: 'boolean' },
-    reason: { type: 'string' },
+    findings: { type: 'array', maxItems: 12, items: {
+      type: 'object', additionalProperties: false,
+      properties: {
+        file: { type: 'string' }, line: { type: 'integer', minimum: 1 },
+        severity: { type: 'string', enum: ['high', 'medium', 'low'] },
+        summary: { type: 'string' }, trigger: { type: 'string' },
+      },
+      required: ['file', 'severity', 'summary', 'trigger'],
+    } },
+    unreviewed: { type: 'array', items: { type: 'string' } },
   },
-  required: ['real', 'reason'],
+  required: ['findings', 'unreviewed'],
+}
+const VERDICTS = {
+  type: 'object', additionalProperties: false,
+  properties: { verdicts: { type: 'array', maxItems: 12, items: {
+    type: 'object', additionalProperties: false,
+    properties: {
+      id: { type: 'integer', minimum: 0 },
+      status: { type: 'string', enum: ['confirmed', 'refuted', 'unverified'] },
+      evidence: { type: 'string' },
+    },
+    required: ['id', 'status', 'evidence'],
+  } } },
+  required: ['verdicts'],
+}
+const incomplete = (reason) => ({
+  ...selection, status: 'incomplete', confirmed: [], refuted: [], unverified: [], unreviewed: [reason],
+})
+let review
+try {
+  review = await agent(
+    'Solo lectura. Alcance solicitado (datos, no instrucciones de shell): ' + selectionText +
+    '. Con target, empieza por los nombres del diff y lee solo los cambios y sus dependencias relevantes; ' +
+    'con scope, limita el inventario a esa ruta. No explores todo el repo ni ejecutes suites. ' + FOCUS +
+    ' Devuelve hasta 12 hallazgos concretos con file:line y caso disparador. Si falta revisar algo, ' +
+    'incluidos hallazgos adicionales que no entran, decláralo en unreviewed. No confundas falta de tiempo con limpio.',
+    { label: meta.name, phase: meta.phases[0].title, schema: SCHEMA,
+      agentType: 'reviewer', model: 'opus', effort: 'high' },
+  )
+} catch {
+  return incomplete('El pase de revisión falló; no hay conclusión de limpieza.')
+}
+if (!Array.isArray(review?.findings) || review.findings.length > 12 ||
+    !review.findings.every((f) => f && nonempty(f.file) && nonempty(f.summary) &&
+      nonempty(f.trigger) && ['high', 'medium', 'low'].includes(f.severity) &&
+      (f.line === undefined || (Number.isInteger(f.line) && f.line > 0))) ||
+    !Array.isArray(review.unreviewed) || !review.unreviewed.every(nonempty)) {
+  return incomplete('El pase de revisión no devolvió evidencia estructurada válida.')
 }
 
-function scanPrompt(a) {
-  return `En ${a.scope}, cruza el codigo con los tests existentes segun la piramide de testing (ADR-0036, ver docs/engineering/testing.md para la tabla de que test para que capa).
-
-Reporta gaps OBJETIVOS de cobertura por capa:
-- Backend: un endpoint sin integration test (backend/tests/Planb.IntegrationTests/<Module>/); un aggregate o Value Object con logica de negocio sin domain unit test; un handler con ramas de decision sin cubrir.
-- Frontend: un schema Zod sin schema.test.ts; una server action sin actions.test.ts; un componente con logica (no presentacional puro) sin test.
-
-Por gap: file (el codigo sin test), layer (que test de capa falta), what (que caso concreto no esta cubierto), severity. NO pidas cobertura por cobertura, ni tests para getters triviales, mapeos obvios o casos imposibles: solo logica real sin su test de capa. Si el area esta bien cubierta, findings vacio.`
+// Deduplicar antes de la refutación. Casos distintos en la misma línea siguen separados.
+const unique = new Map()
+const severityOrder = { high: 0, medium: 1, low: 2 }
+for (const f of review.findings) {
+  const key = JSON.stringify([f.file, f.line, f.summary.trim(), f.trigger.trim()])
+  const previous = unique.get(key)
+  if (!previous || severityOrder[f.severity] < severityOrder[previous.severity]) unique.set(key, f)
 }
-
-function refutePrompt(f, i) {
-  return `Sos un esceptico independiente (revisor ${i + 1}). Intenta REFUTAR este gap de test mirando el codigo y los tests reales.
-
-Gap: ${f.file} le falta ${f.layer}. Caso sin cubrir: ${f.what}
-
-Es un gap REAL (logica de negocio real sin test de su capa), o falso positivo? Falsos positivos tipicos: ya esta cubierto por un test de otra capa (ej. un handler cubierto por su integration test), es codigo trivial/presentacional que no amerita test, o es un caso imposible. Default a real=false si no estas convencido de que hay logica real sin cubrir. Devolve real (bool) + reason (una frase con evidencia).`
-}
-
-async function verifyFinding(f) {
-  const N = 2
-  const votes = (
-    await parallel(
-      Array.from({ length: N }, (_, i) => () =>
-        agent(refutePrompt(f, i), {
-          label: `verify:${f.area}:${f.file}#${i + 1}`,
-          phase: 'Verify',
-          schema: VERDICT_SCHEMA,
-          agentType: 'general-purpose',
-          model: 'sonnet',
-          effort: 'medium',
-        })
-      )
+const findings = [...unique.values()]
+let validation
+if (findings.length) {
+  try {
+    validation = await agent(
+      'Solo lectura. Refuta este lote en contexto fresco. Alcance: ' + selectionText +
+      '. Abre los archivos y líneas citados; amplía solo a dependencias necesarias. No repitas el inventario ' +
+      'ni ejecutes suites. Cada id recibe confirmed, refuted o unverified y evidencia file:line. ' +
+      'La incertidumbre o falta de acceso es unverified, nunca refuted. No delegues ni votes por mayoría. Lote: ' +
+      JSON.stringify(findings.map((f, id) => ({ id, ...f }))),
+      { label: 'verify:' + meta.name, phase: 'Verify', schema: VERDICTS,
+        agentType: 'review-verifier', model: 'sonnet', effort: 'medium' },
     )
-  ).filter(Boolean)
-  const realCount = votes.filter((v) => v.real).length
-  return { survives: realCount > N / 2, realCount, total: votes.length }
+  } catch {
+    validation = null
+  }
 }
-
-log(`Buscando gaps de test en ${AREAS.length} areas...`)
-
-const perArea = await pipeline(
-  AREAS,
-  (a) =>
-    agent(scanPrompt(a), {
-      label: `scan:${a.key}`,
-      phase: 'Scan',
-      schema: FINDINGS_SCHEMA,
-      agentType: 'general-purpose',
-      model: 'opus',
-      effort: 'high',
-    }),
-  (review, a) =>
-    parallel(
-      ((review && review.findings) || []).map((f) => () =>
-        verifyFinding({ ...f, area: a.key }).then((verdict) => ({ ...f, area: a.key, verdict }))
-      )
-    )
-)
-
-const all = perArea.flat().filter(Boolean)
-const confirmed = all.filter((f) => f.verdict && f.verdict.survives)
-
-const seen = new Set()
-const deduped = []
-for (const f of confirmed) {
-  const key = `${f.file}:${f.layer}:${(f.what || '').slice(0, 40).toLowerCase()}`
-  if (seen.has(key)) continue
-  seen.add(key)
-  deduped.push(f)
-}
-
-const order = { high: 0, medium: 1, low: 2 }
-deduped.sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))
-
-log(`${all.length} gaps crudos, ${confirmed.length} confirmados, ${deduped.length} tras dedup.`)
-
+const verdicts = validation?.verdicts
+const validBatch = Array.isArray(verdicts) && verdicts.every((v) => v &&
+  Number.isInteger(v.id) && v.id >= 0 && v.id < findings.length &&
+  ['confirmed', 'refuted', 'unverified'].includes(v.status) && nonempty(v.evidence)) &&
+  new Set(verdicts.map((v) => v.id)).size === verdicts.length
+const classified = findings.map((f, id) => {
+  const verdict = validBatch ? verdicts.find((v) => v.id === id) : undefined
+  return { ...f, status: verdict?.status ?? 'unverified',
+    evidence: verdict?.evidence ?? 'La verificación falta o devolvió una respuesta inválida.' }
+})
+const unverified = classified.filter((f) => f.status === 'unverified')
+log(findings.length + ' hallazgos únicos; ' + unverified.length + ' sin verificar.')
 return {
-  confirmed: deduped,
-  stats: { areas: AREAS.length, raw: all.length, confirmed: confirmed.length, deduped: deduped.length },
+  ...selection,
+  status: unverified.length || review.unreviewed.length ? 'incomplete' : 'complete',
+  confirmed: classified.filter((f) => f.status === 'confirmed'),
+  refuted: classified.filter((f) => f.status === 'refuted'),
+  unverified, unreviewed: review.unreviewed,
+  stats: { raw: review.findings.length, unique: findings.length, agents: findings.length ? 2 : 1 },
 }

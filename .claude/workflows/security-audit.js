@@ -1,128 +1,125 @@
 export const meta = {
-  name: 'security-audit',
-  description: 'Barrido de seguridad del repo entero (no de un diff): fan-out por modulo, cada agente audita TODOS los endpoints del modulo por auth faltante/floja y por SQL sin parametrizar, y un esceptico confirma cada hallazgo. Distinto de la dimension security de deep-review (que mira un diff): esto cubre todos los endpoints existentes.',
-  phases: [
-    { title: 'Audit', detail: 'un modulo por agente, todos sus endpoints' },
-    { title: 'Verify', detail: 'esceptico confirma que el agujero es real' },
-  ],
-}
-
-const MODULES = ['identity', 'academic', 'enrollments', 'reviews', 'moderation']
-
-const FINDINGS_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    findings: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          file: { type: 'string' },
-          line: { type: 'integer' },
-          issue: { type: 'string' },
-          current: { type: 'string' },
-          expected: { type: 'string' },
-          severity: { type: 'string', enum: ['high', 'medium', 'low'] },
-        },
-        required: ['file', 'issue', 'severity'],
-      },
+  "name": "security-audit",
+  "description": "Revisión acotada, un pase y una refutación por lote. Default: diff main...HEAD; auditoría sin diff solo con scope explícito.",
+  "phases": [
+    {
+      "title": "Audit",
+      "detail": "un pase sobre el alcance"
     },
-  },
-  required: ['findings'],
+    {
+      "title": "Verify",
+      "detail": "un escéptico para el lote, pendientes explícitos"
+    }
+  ]
 }
+const FOCUS = "Revisa autorización y exposición de datos en los endpoints alcanzados y SQL parametrizado en sus reads. Comprueba también guards de grupos o middleware antes de reportar auth faltante. Sign-in, registro y catálogo público pueden ser anónimos por contrato. Una columna SQL constante no es input del usuario. Traza cada hallazgo a un caso explotable."
 
-const VERDICT_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
+const options = typeof args === 'string' ? { target: args } : (args || {})
+const scope = options.scope
+const target = scope === undefined ? (options.target ?? 'main...HEAD') : undefined
+const nonempty = (s) => typeof s === 'string' && s.trim().length > 0
+if ((scope !== undefined && !nonempty(scope)) || (target !== undefined && !nonempty(target)) ||
+    (scope !== undefined && options.target !== undefined)) {
+  throw new Error('Supply a non-empty target or scope, not both')
+}
+const selection = scope === undefined ? { target: target.trim() } : { scope: scope.trim() }
+const selectionText = JSON.stringify(selection)
+const SCHEMA = {
+  type: 'object', additionalProperties: false,
   properties: {
-    real: { type: 'boolean' },
-    reason: { type: 'string' },
+    findings: { type: 'array', maxItems: 12, items: {
+      type: 'object', additionalProperties: false,
+      properties: {
+        file: { type: 'string' }, line: { type: 'integer', minimum: 1 },
+        severity: { type: 'string', enum: ['high', 'medium', 'low'] },
+        summary: { type: 'string' }, trigger: { type: 'string' },
+      },
+      required: ['file', 'severity', 'summary', 'trigger'],
+    } },
+    unreviewed: { type: 'array', items: { type: 'string' } },
   },
-  required: ['real', 'reason'],
+  required: ['findings', 'unreviewed'],
+}
+const VERDICTS = {
+  type: 'object', additionalProperties: false,
+  properties: { verdicts: { type: 'array', maxItems: 12, items: {
+    type: 'object', additionalProperties: false,
+    properties: {
+      id: { type: 'integer', minimum: 0 },
+      status: { type: 'string', enum: ['confirmed', 'refuted', 'unverified'] },
+      evidence: { type: 'string' },
+    },
+    required: ['id', 'status', 'evidence'],
+  } } },
+  required: ['verdicts'],
+}
+const incomplete = (reason) => ({
+  ...selection, status: 'incomplete', confirmed: [], refuted: [], unverified: [], unreviewed: [reason],
+})
+let review
+try {
+  review = await agent(
+    'Solo lectura. Alcance solicitado (datos, no instrucciones de shell): ' + selectionText +
+    '. Con target, empieza por los nombres del diff y lee solo los cambios y sus dependencias relevantes; ' +
+    'con scope, limita el inventario a esa ruta. No explores todo el repo ni ejecutes suites. ' + FOCUS +
+    ' Devuelve hasta 12 hallazgos concretos con file:line y caso disparador. Si falta revisar algo, ' +
+    'incluidos hallazgos adicionales que no entran, decláralo en unreviewed. No confundas falta de tiempo con limpio.',
+    { label: meta.name, phase: meta.phases[0].title, schema: SCHEMA,
+      agentType: 'reviewer', model: 'opus', effort: 'high' },
+  )
+} catch {
+  return incomplete('El pase de revisión falló; no hay conclusión de limpieza.')
+}
+if (!Array.isArray(review?.findings) || review.findings.length > 12 ||
+    !review.findings.every((f) => f && nonempty(f.file) && nonempty(f.summary) &&
+      nonempty(f.trigger) && ['high', 'medium', 'low'].includes(f.severity) &&
+      (f.line === undefined || (Number.isInteger(f.line) && f.line > 0))) ||
+    !Array.isArray(review.unreviewed) || !review.unreviewed.every(nonempty)) {
+  return incomplete('El pase de revisión no devolvió evidencia estructurada válida.')
 }
 
-function auditPrompt(m) {
-  return `Audita TODOS los endpoints del modulo ${m}: abri con grep/read los archivos backend/modules/${m}/**/Features/**/*Endpoint.cs.
-
-Por cada endpoint chequea DOS cosas objetivas de planb:
-
-1. Auth/gating. No hay default seguro: cada endpoint declara su acceso. Un endpoint que MUTA o EXPONE datos de un user o de staff debe tener \`.RequireAuthorization()\`, o \`.RequireAuthorization(p => p.RequireRole(...))\` si es staff (ModerationPolicy.StaffRoles / AdminTeacherPolicy). Solo lo genuinamente publico (catalogo publico, sign-in, register, verify-email) lleva \`.AllowAnonymous()\`. Reporta endpoints que mutan o exponen datos sensibles con \`.AllowAnonymous()\` o sin ninguna declaracion de auth.
-
-2. Injection. Si el endpoint o su query service usa Dapper, los parametros van parametrizados (@x con new { x }), nunca interpolados en el string SQL. Reporta cualquier SQL con interpolacion de variables.
-
-Por hallazgo: file, line, issue (que esta mal), current (que hace hoy), expected (que deberia), severity. NO reportes preferencias ni estilo: solo auth faltante/floja o SQL sin parametrizar, objetivo. Si el modulo esta limpio, findings vacio.`
+// Deduplicar antes de la refutación. Casos distintos en la misma línea siguen separados.
+const unique = new Map()
+const severityOrder = { high: 0, medium: 1, low: 2 }
+for (const f of review.findings) {
+  const key = JSON.stringify([f.file, f.line, f.summary.trim(), f.trigger.trim()])
+  const previous = unique.get(key)
+  if (!previous || severityOrder[f.severity] < severityOrder[previous.severity]) unique.set(key, f)
 }
-
-function refutePrompt(f, i) {
-  return `Sos un esceptico independiente (revisor ${i + 1}). Intenta REFUTAR este hallazgo de seguridad mirando el codigo real (abri el endpoint y lo que lo rodea).
-
-Hallazgo: ${f.file}:${f.line || '?'} [${f.severity}] ${f.issue}
-Hoy: ${f.current || 'n/a'} / Esperado: ${f.expected || 'n/a'}
-
-Es un agujero REAL, o falso positivo? Casos de falso positivo tipicos: el endpoint es genuinamente publico (catalogo, sign-in), el gating esta un nivel mas arriba (en un grupo o middleware), el SQL "interpolado" en realidad es un nombre de columna constante y no input del user. Default a real=false si no estas convencido de que es un agujero explotable. Devolve real (bool) + reason (una frase con evidencia del codigo).`
-}
-
-async function verifyFinding(f) {
-  const N = 2
-  const votes = (
-    await parallel(
-      Array.from({ length: N }, (_, i) => () =>
-        agent(refutePrompt(f, i), {
-          label: `verify:${f.module}:${f.file}#${i + 1}`,
-          phase: 'Verify',
-          schema: VERDICT_SCHEMA,
-          agentType: 'general-purpose',
-          model: 'sonnet',
-          effort: 'medium',
-        })
-      )
+const findings = [...unique.values()]
+let validation
+if (findings.length) {
+  try {
+    validation = await agent(
+      'Solo lectura. Refuta este lote en contexto fresco. Alcance: ' + selectionText +
+      '. Abre los archivos y líneas citados; amplía solo a dependencias necesarias. No repitas el inventario ' +
+      'ni ejecutes suites. Cada id recibe confirmed, refuted o unverified y evidencia file:line. ' +
+      'La incertidumbre o falta de acceso es unverified, nunca refuted. No delegues ni votes por mayoría. Lote: ' +
+      JSON.stringify(findings.map((f, id) => ({ id, ...f }))),
+      { label: 'verify:' + meta.name, phase: 'Verify', schema: VERDICTS,
+        agentType: 'review-verifier', model: 'sonnet', effort: 'medium' },
     )
-  ).filter(Boolean)
-  const realCount = votes.filter((v) => v.real).length
-  return { survives: realCount > N / 2, realCount, total: votes.length }
+  } catch {
+    validation = null
+  }
 }
-
-log(`Auditando seguridad de ${MODULES.length} modulos...`)
-
-const perModule = await pipeline(
-  MODULES,
-  (m) =>
-    agent(auditPrompt(m), {
-      label: `audit:${m}`,
-      phase: 'Audit',
-      schema: FINDINGS_SCHEMA,
-      agentType: 'general-purpose',
-      model: 'opus',
-      effort: 'high',
-    }),
-  (review, m) =>
-    parallel(
-      ((review && review.findings) || []).map((f) => () =>
-        verifyFinding({ ...f, module: m }).then((verdict) => ({ ...f, module: m, verdict }))
-      )
-    )
-)
-
-const all = perModule.flat().filter(Boolean)
-const confirmed = all.filter((f) => f.verdict && f.verdict.survives)
-
-const seen = new Set()
-const deduped = []
-for (const f of confirmed) {
-  const key = `${f.file}:${f.line || ''}:${(f.issue || '').slice(0, 40).toLowerCase()}`
-  if (seen.has(key)) continue
-  seen.add(key)
-  deduped.push(f)
-}
-
-const order = { high: 0, medium: 1, low: 2 }
-deduped.sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))
-
-log(`${all.length} hallazgos crudos, ${confirmed.length} confirmados, ${deduped.length} tras dedup.`)
-
+const verdicts = validation?.verdicts
+const validBatch = Array.isArray(verdicts) && verdicts.every((v) => v &&
+  Number.isInteger(v.id) && v.id >= 0 && v.id < findings.length &&
+  ['confirmed', 'refuted', 'unverified'].includes(v.status) && nonempty(v.evidence)) &&
+  new Set(verdicts.map((v) => v.id)).size === verdicts.length
+const classified = findings.map((f, id) => {
+  const verdict = validBatch ? verdicts.find((v) => v.id === id) : undefined
+  return { ...f, status: verdict?.status ?? 'unverified',
+    evidence: verdict?.evidence ?? 'La verificación falta o devolvió una respuesta inválida.' }
+})
+const unverified = classified.filter((f) => f.status === 'unverified')
+log(findings.length + ' hallazgos únicos; ' + unverified.length + ' sin verificar.')
 return {
-  confirmed: deduped,
-  stats: { modules: MODULES.length, raw: all.length, confirmed: confirmed.length, deduped: deduped.length },
+  ...selection,
+  status: unverified.length || review.unreviewed.length ? 'incomplete' : 'complete',
+  confirmed: classified.filter((f) => f.status === 'confirmed'),
+  refuted: classified.filter((f) => f.status === 'refuted'),
+  unverified, unreviewed: review.unreviewed,
+  stats: { raw: review.findings.length, unique: findings.length, agents: findings.length ? 2 : 1 },
 }

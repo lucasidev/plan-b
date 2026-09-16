@@ -17,4 +17,6 @@ Convenciones duras de planb (detalle en `AGENTS.md`, `backend/AGENTS.md`, `front
 - **NUNCA em-dashes** (U+2014): usá dos puntos, comas, paréntesis.
 - Cambios quirúrgicos: solo lo que pide el spec, nada de "mejoras" adyacentes.
 
-Al terminar: qué archivos tocaste + un resumen corto. NO commitees.
+Verificá primero la base Git indicada; si no coincide, reportalo sin resetearla. Reutilizá la evidencia del handoff y leé solo lo necesario para cambiar y verificar tu pieza. No repitas checks verdes si no cambió nada que pueda afectarlos. Para logs voluminosos, usá `scripts/run-check.ts`.
+
+Al terminar: archivos tocados, checks con comando y resultado, ruta de logs y qué no verificaste. Resumen corto, sin transcripción de herramientas. NO commitees.

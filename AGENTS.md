@@ -33,7 +33,7 @@ Cómo pensamos y decidimos en este proyecto. No son procesos a cumplir: son lent
 
 ## Reparto del trabajo
 
-El contexto principal orquesta: decide, especifica, integra, verifica lo entregado y reporta. Los roles son parte del contrato del proyecto; cada cliente de agentes los implementa con su configuración nativa y el modelo más barato que resuelva bien el trabajo.
+El contexto principal decide, especifica, integra, verifica lo entregado y reporta. Puede resolver directamente un cambio acotado o un check conocido: preservar su contexto no exige delegar cada operación. Los roles son parte del contrato del proyecto; cada cliente los implementa con su configuración nativa y el modelo más barato que resuelva bien el trabajo.
 
 | Trabajo | Rol | Contrato |
 |---|---|---|
@@ -41,12 +41,16 @@ El contexto principal orquesta: decide, especifica, integra, verifica lo entrega
 | Construir desde un spec con alcance y criterio de éxito | `implementer` | Una pieza por worktree aislado, sin rediseñar el pedido ni integrar por su cuenta. |
 | Correr build, lint o suites | `test-runner` | Ejecuta el comando exacto y devuelve verde/rojo más las fallas relevantes. |
 | Revisar un diff no trivial antes del commit | `reviewer` | Contexto fresco, solo correctness, seguridad, invariantes y cobertura faltante. |
+| Refutar un lote de hallazgos de revisión | `review-verifier` | Solo lectura, evidencia por hallazgo; lo no comprobado queda pendiente, nunca descartado por default. |
 | Reproducir o verificar un síntoma renderizado concreto | `browser-runner` | Solo lectura, usa explícitamente `browser-repro`, no edita y respeta su presupuesto. |
 | Investigar una cuestión ordinaria con fuentes públicas | `source-researcher` | Solo lectura, usa explícitamente `source-research`, no edita y respeta su presupuesto. |
 
 - No delegar por reflejo: delegar solo cuando aísla contexto, permite trabajo realmente paralelo o ejecuta una suite larga.
 - Máximo dos agentes simultáneos. Más concurrencia exige una razón explícita y tareas sin archivos ni estado compartidos; un workflow de revisión de solo lectura la declara en su propio script.
 - Toda delegación fija rol, alcance, entregable, criterio de éxito y archivos prohibidos. El agente no pushea, no mergea y no integra otros worktrees.
+- Pasar al agente rutas, hechos comprobados y la pregunta pendiente, no el historial entero. El principal no repite su exploración: verifica el diff y la evidencia relevante.
+- Checks conocidos con salida breve pueden correr en el principal. Para salida voluminosa, usar `bun scripts/run-check.ts [--cwd directorio] -- ejecutable argumentos`: conserva el log y el exit code; un verde devuelve solo el resumen. Delegar suites largas cuando permita avanzar en otra tarea útil.
+- No repetir un check verde si código, configuración, dependencias y estado relevante siguen iguales. Repetir ante cambios o sospecha concreta de flake; un fallo de infraestructura o una corrida parcial nunca cuenta como verde.
 - Los worktrees de subagentes quedan en detached HEAD cuando el cliente lo permite: no crean ramas `worktree-agent-*`. Si un cliente necesita una rama auxiliar, el contexto principal la borra después de integrar su commit y retirar el worktree. Terminar con una rama auxiliar ya integrada es trabajo incompleto.
 - `.agents/skills` contiene skills agnósticas útiles para Codex; `.claude/skills` conserva skills nativas o propias de Claude y no se sincroniza automáticamente.
 - Si una tarea coincide con un skill de `.agents/skills/`, ese skill se carga completo antes de actuar y se pasa explícitamente al subagente. Nombrarlo en prosa no reemplaza cargarlo.
@@ -56,7 +60,7 @@ El contexto principal orquesta: decide, especifica, integra, verifica lo entrega
 
 Al integrar trabajo auxiliar, el contexto principal verifica primero que no queden cambios sin commitear, retira el worktree y ejecuta `bun scripts/cleanup-agent-branches.ts --base HEAD --apply`. El script solo borra ramas `worktree-agent-*` inactivas sin parches únicos respecto de la base; una rama activa o con trabajo único nunca se borra automáticamente.
 
-La excepción histórica que originó este reparto y los controles específicos de Claude Code están en [ADR-0088](docs/decisions/0088-the-main-context-orchestrates-and-two-hooks-enforce-it.md).
+El origen histórico del reparto está en [ADR-0088](docs/decisions/0088-the-main-context-orchestrates-and-two-hooks-enforce-it.md). La operación vigente y cómo medirla están en [agent-workflow.md](docs/engineering/agent-workflow.md).
 
 ## Stack y estructura
 

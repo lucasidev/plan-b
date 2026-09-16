@@ -1,6 +1,6 @@
 # ADR-0088: The main context orchestrates, and two hooks enforce it
 
-- **Estado**: aceptado
+- **Estado**: parcialmente reemplazado el 2026-09-16: `guard-agent-tier` sigue vigente; se retiró la delegación forzada de `guard-main-context`. La política actual está en [Trabajo con agentes](../engineering/agent-workflow.md).
 - **Fecha**: 2026-09-02
 
 ## Contexto
