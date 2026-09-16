@@ -31,6 +31,12 @@ Cómo pensamos y decidimos en este proyecto. No son procesos a cumplir: son lent
 
 **Nota final:** estos mindsets son ellos mismos defaults, no mandamientos. Si en un caso concreto uno no aplica, lo anulás con una razón explícita. El único pecado es seguir o romper una regla por dogma en vez de por juicio.
 
+### Aplicación a agentes, CI/CD e infraestructura
+
+Este criterio también gobierna scripts, workflows, contenedores y configuración de agentes, tanto en Claude Code como en Codex. Antes de ajustar caches, concurrencia o límites, identificá el consumidor real y el costo observado; primero quitá trabajo innecesario dentro del alcance pedido. Un check se elige por lo que puede romper el cambio, no por compartir directorio o dependencias con otro check. Los filtros de CI deben conservar las verificaciones ante un detector fallido.
+
+Medí el resultado con trabajo real comparable. CPU, memoria, workers, pools y retención se ajustan con métricas y margen operativo: la ausencia de un límite no prueba que un valor arbitrario mejore el sistema. Una prueba con dobles no valida un runtime externo; un check verde solo respalda el contrato que ejercitó. Registrá qué se quitó o simplificó, la evidencia y lo que siga sin verificar, sin convertir esta guía en un proceso adicional.
+
 ## Reparto del trabajo
 
 El contexto principal decide, especifica, integra, verifica lo entregado y reporta. Puede resolver directamente un cambio acotado o un check conocido: preservar su contexto no exige delegar cada operación. Los roles son parte del contrato del proyecto; cada cliente los implementa con su configuración nativa y el modelo más barato que resuelva bien el trabajo.
