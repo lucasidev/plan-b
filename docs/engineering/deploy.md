@@ -120,6 +120,18 @@ Secuencia:
 
 El rojo del workflow es la señal operativa mínima del stage. No se interpreta una publicación exitosa de imágenes como un deploy exitoso.
 
+## Eficiencia y recursos
+
+Las imágenes tienen caches de BuildKit separadas: `planb-api` y `planb-web-<target>`. El scope por default es compartido y cada build sobrescribe el anterior ([Docker, GitHub Actions cache](https://docs.docker.com/build/cache/backends/gha/#scope)). `.dockerignore` excluye historia Git, configuración de agentes, secretos locales y artefactos de tests del contexto.
+
+La corrida de publicación [35056218332](https://github.com/lucasidev/plan-b/actions/runs/35056218332), del 2026-09-16, tardó 1m52s en web, 2m27s en API, 48s en escaneo y 9m39s en esperar CI. Es una observación previa al ajuste, no una medición de ahorro. La espera conserva la gate sobre el SHA que se va a desplegar.
+
+Integración y E2E conservan servicios aislados; compartir sus bases para ahorrar contenedores introduce estado entre suites. E2E compila el host y sus referencias, sin compilar proyectos de tests que ese job no ejecuta. Las imágenes conservan su build propio de producción y los checks de seguridad.
+
+CPU, memoria, reservas, workers, pools y políticas de reinicio del despliegue viven en los recursos de Dokploy, no en el Compose local. Antes de ajustarlos se necesitan las métricas del host y de cada servicio: picos de memoria y OOM, CPU y throttling, latencia, conexiones y crecimiento de disco/logs. El repo no prueba sus valores actuales. No se baja retención ni se borran volúmenes/imágenes desplegadas sin identificar qué debe conservarse para datos y rollback.
+
+La revisión del repo encontró dos escaneos Trivy por imagen (reporte HIGH/CRITICAL y gate CRITICAL) y un restore Docker de la solución backend completa. Son candidatos a medir y simplificar conservando la cobertura; este ajuste no modifica esa gate ni el codegen de Wolverine. Los scripts locales de infraestructura revisados tienen consumidores en el Justfile o en otros scripts; no se eliminan por nombre o por antigüedad.
+
 ## Promoción a producción
 
 Producción usa el mismo orden, pero el disparador es un GitHub Release y los recursos son los del ambiente productivo. No se promueve el tag móvil del stage porque no existe tal tag: se promueve un SHA.

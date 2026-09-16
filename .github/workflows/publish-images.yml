@@ -8,6 +8,7 @@ on:
       - 'frontend/**'
       - '.github/workflows/publish-images.yml'
       - 'scripts/deploy-dokploy-applications.ts'
+      - '.dockerignore'
   release:
     types: [published]
   workflow_dispatch:
@@ -166,8 +167,9 @@ jobs:
           build-args: GIT_SHA=${{ needs.resolve.outputs.sha }}
           provenance: true
           sbom: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Cada imagen conserva su caché; el scope default compartido se sobrescribe.
+          cache-from: type=gha,scope=planb-api
+          cache-to: type=gha,scope=planb-api,mode=max
 
   frontend:
     name: Frontend image
@@ -245,8 +247,8 @@ jobs:
           build-args: NEXT_PUBLIC_API_URL=${{ env.INTERNAL_API_URL }}
           provenance: true
           sbom: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=planb-web-${{ needs.resolve.outputs.target }}
+          cache-to: type=gha,scope=planb-web-${{ needs.resolve.outputs.target }},mode=max
 
   scan:
     name: Scan the images
