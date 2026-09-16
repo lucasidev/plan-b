@@ -16,10 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Path-based gate para backend / frontend: cambios que solo tocan docs/,
-  # workflows ajenos o config periférica skipean los jobs que no aplican.
-  # **E2E NO usa este gate**: corre siempre. Razón documentada en
-  # docs/engineering/testing.md.
+  # Producto, herramientas y E2E tienen alcances separados. Compartir la
+  # instalación de Bun no implica que scripts/ necesite compilar el producto.
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
@@ -27,6 +25,8 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
+      tooling: ${{ steps.filter.outputs.tooling }}
+      e2e: ${{ steps.filter.outputs.e2e }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -38,14 +38,28 @@ jobs:
             backend:
               - 'backend/**'
               - '.github/workflows/ci.yml'
+              - 'scripts/check-migrations.ts'
             frontend:
               - 'frontend/**'
               - '.github/workflows/ci.yml'
-              # scripts/ no es frontend, pero biome vive en las deps de frontend
-              # y este es el único job que las instala. El lint de scripts va
-              # acá para no montar un job entero con su propio bun install.
+            tooling:
               - 'scripts/**'
               - 'biome.json'
+              - '.agents/**'
+              - '.claude/**'
+              - '.codex/**'
+              - 'AGENTS.md'
+              - 'CLAUDE.md'
+              - 'frontend/package.json'
+              - 'frontend/bun.lock'
+              - '.github/workflows/ci.yml'
+            e2e:
+              - 'backend/**'
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+              # Este script consume el reporte de Playwright en este job.
+              # run-e2e.ts prepara el stack local; CI no lo invoca.
+              - 'scripts/check-flaky.ts'
 
   # Partido en dos a propósito (R4, #420): unit y arquitectura tardan segundos y no necesitan
   # contenedores, así que un error de dominio se ve en menos de dos minutos en vez de esperar a
@@ -233,7 +247,7 @@ jobs:
     # Sin esto un `changes` fallido deja el job en "skipped", y GitHub cuenta
     # skipped como aprobado para un required check: el PR podía mergear sin
     # haber corrido format, build ni tests.
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true') }}
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' || needs.changes.outputs.tooling == 'true') }}
     runs-on: ubuntu-latest
     # install+lint+typecheck+build+test local ≈ 3-5 min. 10 min de headroom.
     timeout-minutes: 10
@@ -250,6 +264,7 @@ jobs:
       - name: Install
         run: cd frontend && bun install --frozen-lockfile
       - name: Lint
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
         run: cd frontend && bun run lint
       - name: Lint scripts
         # El binario local, no `bunx biome`: desde la raíz no hay package.json y
@@ -263,33 +278,31 @@ jobs:
         # Cada agente de .claude/agents tiene su par en .codex/agents con el mismo cuerpo.
         run: bun scripts/check-agent-config.ts --strict
       - name: Typecheck
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
         run: cd frontend && bunx tsc --noEmit
       - name: Build
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
         run: cd frontend && bun run build
       - name: Test
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
         run: cd frontend && bun run test:coverage
       # Reporte de cobertura (v8), sin gate (ADR-0036): docs/engineering/testing.md#cobertura.
       - name: Upload coverage
-        if: always()
+        if: ${{ always() && (needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: frontend-coverage
           path: frontend/coverage/lcov.info
           retention-days: 14
 
-  # Suite Playwright. Corre SIEMPRE en cada PR (gate antes de merge).
-  # Decisión 2026-05-23 (reset post-overkill): la industria estándar corre E2E
-  # en CI en cada PR. Probamos antes con label-based + auto-labeler + detector
-  # local de "zona E2E" y derivó en deuda combinatoria sin resolver el problema
-  # real. Ahora: gate único, siempre activo, paralelizar con --shard si pasa
-  # de 10min. Ver docs/engineering/testing.md.
+  # Playwright verifica el producto y el entorno que este job usa realmente.
+  # Si falla el detector se ejecuta; una cancelación no inicia trabajo nuevo.
   e2e:
     name: E2E (Playwright)
     runs-on: ubuntu-latest
-    # Misma compuerta que backend y frontend: un PR que solo toca docs no levanta el stack. El
-    # check requerido queda en "skipped", que el ruleset acepta igual que a los otros dos.
+    # El check conserva su nombre requerido aunque no corresponda ejecutar el stack.
     needs: changes
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true') }}
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.e2e == 'true') }}
     # Local típico ≈ 1min para la suite actual (6 specs). Setup de servicios +
     # build backend + build frontend + install browsers + run = ~10-12min en
     # CI sin caches frías. 25 min absorbe el peor escenario.
@@ -364,8 +377,8 @@ jobs:
       - name: Restore + build backend
         working-directory: backend
         run: |
-          dotnet restore
-          dotnet build --no-restore --configuration Release
+          dotnet restore host/Planb.Api/Planb.Api.csproj
+          dotnet build host/Planb.Api/Planb.Api.csproj --no-restore --configuration Release
 
       - name: Start backend in background
         # En Development env, el host arranca con Wolverine ResourceAutoCreate

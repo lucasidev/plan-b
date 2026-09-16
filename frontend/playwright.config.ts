@@ -65,7 +65,7 @@ const SERIAL_SPECS = [
  *   - Localmente: `just frontend-test-e2e` levanta su propio stack contra una base efímera
  *     (`scripts/run-e2e.ts`, mismo patrón que el job de CI), así que el stack de dev tiene que
  *     estar ABAJO. Solo hace falta la infra: `just infra-up`.
- *   - CI: job `e2e` dentro de `.github/workflows/ci.yml` corre siempre en cada PR.
+ *   - CI: job `e2e` en `.github/workflows/ci.yml`, según los cambios de producto o del entorno E2E.
  *   - Cuatro proyectos (ver `projects`): `parallel` corre todo lo que no muta estado global;
  *     `serial` y `mobile` corren después de que `parallel` termina, y `mobile` repite
  *     `e2e/public/**` con un viewport de celular chico (#412). La regla de aislamiento completa
