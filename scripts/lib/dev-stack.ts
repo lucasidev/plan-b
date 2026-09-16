@@ -14,6 +14,8 @@ import { type ChildProcess, spawn, spawnSync } from 'node:child_process';
 import { createConnection } from 'node:net';
 import { resolve } from 'node:path';
 
+export { killTree } from './process-tree.ts';
+
 export const ROOT = resolve(import.meta.dirname, '../..');
 const BACKEND = resolve(ROOT, 'backend');
 export const FRONTEND = resolve(ROOT, 'frontend');
@@ -109,26 +111,6 @@ export function requireDevConnectionString(): string | undefined {
     );
   }
   return value;
-}
-
-/**
- * Mata el árbol de procesos. En Windows hace falta `taskkill /T`: matar el `dotnet run` o el `bun
- * dev` padre deja vivo al hijo real (`Planb.Api`, los workers de Next), y ese hijo se queda con el
- * puerto tomado y con los DLL bloqueados para el próximo build.
- */
-export function killTree(child: ChildProcess): void {
-  if (child.pid === undefined || child.exitCode !== null) {
-    return;
-  }
-  if (process.platform === 'win32') {
-    spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
-  } else {
-    try {
-      process.kill(-child.pid, 'SIGKILL');
-    } catch {
-      child.kill('SIGKILL');
-    }
-  }
 }
 
 export function psql(containerCmd: string, database: string, sql: string) {

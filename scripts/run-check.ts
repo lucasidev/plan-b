@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { closeSync, mkdtempSync, openSync, readSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { killTree } from './lib/process-tree.ts';
 
 export function readTail(path: string, maxBytes = 6_000): string {
   const fd = openSync(path, 'r');
@@ -17,28 +18,44 @@ export function readTail(path: string, maxBytes = 6_000): string {
   }
 }
 
-export async function runCheck(command: string[], cwd: string) {
+export async function runCheck(command: string[], cwd: string, signal?: AbortSignal) {
   if (!command[0]) throw new Error('Missing command');
   const logPath = join(mkdtempSync(join(tmpdir(), 'planb-check-')), 'output.log');
   const fd = openSync(logPath, 'w');
   const started = Date.now();
   let launchError: string | undefined;
   let exitCode: number;
+  let removeAbortListener = () => {};
   try {
     exitCode = await new Promise<number>((done) => {
+      if (signal?.aborted) {
+        done(signal.reason === 130 ? 130 : 143);
+        return;
+      }
       const child = spawn(command[0], command.slice(1), {
         cwd,
         shell: false,
         windowsHide: true,
+        // Un grupo propio permite cerrar también los nietos al cancelar en POSIX.
+        detached: process.platform !== 'win32',
         stdio: ['ignore', fd, fd],
       });
+      let interruptedCode: number | undefined;
+      const abort = () => {
+        if (child.exitCode !== null || child.signalCode !== null) return;
+        interruptedCode = signal?.reason === 130 ? 130 : 143;
+        killTree(child);
+      };
+      signal?.addEventListener('abort', abort, { once: true });
+      removeAbortListener = () => signal?.removeEventListener('abort', abort);
       child.once('error', (error) => {
         launchError = error.message;
-        done(127);
+        done(interruptedCode ?? 127);
       });
-      child.once('exit', (code) => done(code ?? 1));
+      child.once('exit', (code) => done(interruptedCode ?? code ?? 1));
     });
   } finally {
+    removeAbortListener();
     closeSync(fd);
   }
   return { exitCode, logPath, durationMs: Date.now() - started, launchError };
@@ -59,7 +76,18 @@ export async function main(args: string[]): Promise<number> {
     return 2;
   }
   const cwd = resolve(cwdArg ?? '.');
-  const result = await runCheck(command, cwd);
+  const controller = new AbortController();
+  const interrupt = () => controller.abort(130);
+  const terminate = () => controller.abort(143);
+  process.once('SIGINT', interrupt);
+  process.once('SIGTERM', terminate);
+  let result: Awaited<ReturnType<typeof runCheck>>;
+  try {
+    result = await runCheck(command, cwd, controller.signal);
+  } finally {
+    process.removeListener('SIGINT', interrupt);
+    process.removeListener('SIGTERM', terminate);
+  }
   console.log(
     `${result.exitCode === 0 ? 'VERDE' : 'ROJO'}: exit ${result.exitCode}, ${(result.durationMs / 1000).toFixed(1)}s\nComando: ${JSON.stringify(command)}\nDirectorio: ${cwd}\nLog completo: ${result.logPath}`,
   );
