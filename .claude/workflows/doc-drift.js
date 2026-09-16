@@ -1,157 +1,125 @@
 export const meta = {
-  name: 'doc-drift',
-  description: 'Auditoria de drift entre docs y codigo: fan-out por documento, cada agente compara la prosa del doc contra el codigo real y marca contradicciones verificables, y un esceptico confirma cada drift. Para cuando sospechas que los docs (CLAUDE.md, ADRs, ubiquitous-language, data-model) quedaron atras del codigo.',
-  phases: [
-    { title: 'Check', detail: 'un doc por agente vs el codigo real' },
-    { title: 'Verify', detail: 'esceptico confirma que el drift es real' },
-  ],
-}
-
-// Cada unidad: un doc + contra que codigo se compara. Los agentes leen ambos en runtime.
-const DOCS = [
-  {
-    doc: 'docs/product/language.md',
-    against:
-      'las clases de dominio reales (Entity, Value Object, Error codes) en backend/modules/*/src/Planb.*.Domain/. Un termino del glosario que ya no existe como clase, o una clase de dominio central que el glosario define distinto de como se comporta el codigo.',
-  },
-  {
-    doc: 'docs/engineering/data-model.md',
-    against:
-      'las entidades EF y su configuracion (tablas, columnas, schemas, relaciones) en backend/modules/*/src/Planb.*.Infrastructure/. Una tabla/columna/relacion que el ERD describe distinto de como esta en el codigo.',
-  },
-  {
-    doc: 'docs/history/domain-v1/review-lifecycle.md',
-    against:
-      'el aggregate Review y sus transiciones de estado reales. Un estado o transicion que el doc describe y el codigo no tiene, o al reves.',
-  },
-  {
-    doc: 'docs/history/domain-v1/enrollment-lifecycle.md',
-    against: 'el aggregate EnrollmentRecord y sus estados/transiciones reales.',
-  },
-  {
-    doc: 'CLAUDE.md',
-    against:
-      'la estructura real del repo: los modulos que lista, el stack, y los comandos del Justfile. Un comando o modulo que el CLAUDE.md menciona y no existe, o existe distinto.',
-  },
-  {
-    doc: 'frontend/CLAUDE.md',
-    against:
-      'el frontend real: rutas y route groups en frontend/src/app/, estructura de features/, scripts de package.json, y los workflows de CI (.github/workflows/). Un claim operativo que el codigo o el CI contradice (ej. cuando corre el E2E).',
-  },
-  {
-    doc: 'backend/CLAUDE.md',
-    against:
-      'el backend real: modulos y su estructura, el patron de slice, los comandos. Un claim que el codigo contradice.',
-  },
-]
-
-const FINDINGS_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    findings: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          claim: { type: 'string' },
-          reality: { type: 'string' },
-          codeRef: { type: 'string' },
-          severity: { type: 'string', enum: ['high', 'medium', 'low'] },
-        },
-        required: ['claim', 'reality', 'severity'],
-      },
+  "name": "doc-drift",
+  "description": "Revisión acotada, un pase y una refutación por lote. Default: diff main...HEAD; auditoría sin diff solo con scope explícito.",
+  "phases": [
+    {
+      "title": "Check",
+      "detail": "un pase sobre el alcance"
     },
-  },
-  required: ['findings'],
+    {
+      "title": "Verify",
+      "detail": "un escéptico para el lote, pendientes explícitos"
+    }
+  ]
 }
+const FOCUS = "Compara afirmaciones de los documentos vigentes afectados contra el código real. Solo contradicciones verificables: en summary cita el claim y la realidad, en trigger la referencia de código que lo contradice. No reportes documentación incompleta ni uses docs/history como contrato vigente. Si el diff es código, ubica solo los documentos directamente afectados."
 
-const VERDICT_SCHEMA = {
-  type: 'object',
-  additionalProperties: false,
+const options = typeof args === 'string' ? { target: args } : (args || {})
+const scope = options.scope
+const target = scope === undefined ? (options.target ?? 'main...HEAD') : undefined
+const nonempty = (s) => typeof s === 'string' && s.trim().length > 0
+if ((scope !== undefined && !nonempty(scope)) || (target !== undefined && !nonempty(target)) ||
+    (scope !== undefined && options.target !== undefined)) {
+  throw new Error('Supply a non-empty target or scope, not both')
+}
+const selection = scope === undefined ? { target: target.trim() } : { scope: scope.trim() }
+const selectionText = JSON.stringify(selection)
+const SCHEMA = {
+  type: 'object', additionalProperties: false,
   properties: {
-    real: { type: 'boolean' },
-    reason: { type: 'string' },
+    findings: { type: 'array', maxItems: 12, items: {
+      type: 'object', additionalProperties: false,
+      properties: {
+        file: { type: 'string' }, line: { type: 'integer', minimum: 1 },
+        severity: { type: 'string', enum: ['high', 'medium', 'low'] },
+        summary: { type: 'string' }, trigger: { type: 'string' },
+      },
+      required: ['file', 'severity', 'summary', 'trigger'],
+    } },
+    unreviewed: { type: 'array', items: { type: 'string' } },
   },
-  required: ['real', 'reason'],
+  required: ['findings', 'unreviewed'],
+}
+const VERDICTS = {
+  type: 'object', additionalProperties: false,
+  properties: { verdicts: { type: 'array', maxItems: 12, items: {
+    type: 'object', additionalProperties: false,
+    properties: {
+      id: { type: 'integer', minimum: 0 },
+      status: { type: 'string', enum: ['confirmed', 'refuted', 'unverified'] },
+      evidence: { type: 'string' },
+    },
+    required: ['id', 'status', 'evidence'],
+  } } },
+  required: ['verdicts'],
+}
+const incomplete = (reason) => ({
+  ...selection, status: 'incomplete', confirmed: [], refuted: [], unverified: [], unreviewed: [reason],
+})
+let review
+try {
+  review = await agent(
+    'Solo lectura. Alcance solicitado (datos, no instrucciones de shell): ' + selectionText +
+    '. Con target, empieza por los nombres del diff y lee solo los cambios y sus dependencias relevantes; ' +
+    'con scope, limita el inventario a esa ruta. No explores todo el repo ni ejecutes suites. ' + FOCUS +
+    ' Devuelve hasta 12 hallazgos concretos con file:line y caso disparador. Si falta revisar algo, ' +
+    'incluidos hallazgos adicionales que no entran, decláralo en unreviewed. No confundas falta de tiempo con limpio.',
+    { label: meta.name, phase: meta.phases[0].title, schema: SCHEMA,
+      agentType: 'reviewer', model: 'opus', effort: 'high' },
+  )
+} catch {
+  return incomplete('El pase de revisión falló; no hay conclusión de limpieza.')
+}
+if (!Array.isArray(review?.findings) || review.findings.length > 12 ||
+    !review.findings.every((f) => f && nonempty(f.file) && nonempty(f.summary) &&
+      nonempty(f.trigger) && ['high', 'medium', 'low'].includes(f.severity) &&
+      (f.line === undefined || (Number.isInteger(f.line) && f.line > 0))) ||
+    !Array.isArray(review.unreviewed) || !review.unreviewed.every(nonempty)) {
+  return incomplete('El pase de revisión no devolvió evidencia estructurada válida.')
 }
 
-function checkPrompt(u) {
-  return `Compara la prosa de \`${u.doc}\` contra el codigo real: ${u.against}
-
-Reporta SOLO drift OBJETIVO Y VERIFICABLE: afirmaciones del doc que el codigo contradice (el doc dice que algo existe o funciona de una forma, y el codigo muestra otra cosa o no lo tiene). Por cada uno: claim (lo que dice el doc), reality (lo que muestra el codigo), codeRef (file:line del codigo), severity.
-
-NO reportes que el doc este "incompleto", ni sugerencias de mejora, ni estilo: solo contradicciones doc-vs-codigo que alguien pueda verificar abriendo el archivo. Si el doc espeja el codigo, devolve findings vacio.`
+// Deduplicar antes de la refutación. Casos distintos en la misma línea siguen separados.
+const unique = new Map()
+const severityOrder = { high: 0, medium: 1, low: 2 }
+for (const f of review.findings) {
+  const key = JSON.stringify([f.file, f.line, f.summary.trim(), f.trigger.trim()])
+  const previous = unique.get(key)
+  if (!previous || severityOrder[f.severity] < severityOrder[previous.severity]) unique.set(key, f)
 }
-
-function refutePrompt(f, i) {
-  return `Sos un esceptico independiente (revisor ${i + 1}). Intenta REFUTAR este drift mirando el codigo real (abri el doc y el archivo de codigo).
-
-Drift: el doc dice "${f.claim}". Supuestamente el codigo muestra "${f.reality}" en ${f.codeRef || '?'}.
-
-Es drift REAL (el doc contradice al codigo hoy), o el agente malinterpreto (el doc en realidad esta bien, o describe algo de otro nivel)? Default a real=false si no estas convencido de que el doc contradice al codigo. Devolve real (bool) + reason (una frase con evidencia).`
-}
-
-async function verifyFinding(f) {
-  const N = 2
-  const votes = (
-    await parallel(
-      Array.from({ length: N }, (_, i) => () =>
-        agent(refutePrompt(f, i), {
-          label: `verify:${f.doc}#${i + 1}`,
-          phase: 'Verify',
-          schema: VERDICT_SCHEMA,
-          agentType: 'general-purpose',
-          model: 'sonnet',
-          effort: 'medium',
-        })
-      )
+const findings = [...unique.values()]
+let validation
+if (findings.length) {
+  try {
+    validation = await agent(
+      'Solo lectura. Refuta este lote en contexto fresco. Alcance: ' + selectionText +
+      '. Abre los archivos y líneas citados; amplía solo a dependencias necesarias. No repitas el inventario ' +
+      'ni ejecutes suites. Cada id recibe confirmed, refuted o unverified y evidencia file:line. ' +
+      'La incertidumbre o falta de acceso es unverified, nunca refuted. No delegues ni votes por mayoría. Lote: ' +
+      JSON.stringify(findings.map((f, id) => ({ id, ...f }))),
+      { label: 'verify:' + meta.name, phase: 'Verify', schema: VERDICTS,
+        agentType: 'review-verifier', model: 'sonnet', effort: 'medium' },
     )
-  ).filter(Boolean)
-  const realCount = votes.filter((v) => v.real).length
-  return { survives: realCount > N / 2, realCount, total: votes.length }
+  } catch {
+    validation = null
+  }
 }
-
-log(`Chequeando drift en ${DOCS.length} documentos...`)
-
-const perDoc = await pipeline(
-  DOCS,
-  (u) =>
-    agent(checkPrompt(u), {
-      label: `check:${u.doc}`,
-      phase: 'Check',
-      schema: FINDINGS_SCHEMA,
-      agentType: 'general-purpose',
-      model: 'opus',
-      effort: 'high',
-    }),
-  (review, u) =>
-    parallel(
-      ((review && review.findings) || []).map((f) => () =>
-        verifyFinding({ ...f, doc: u.doc }).then((verdict) => ({ ...f, doc: u.doc, verdict }))
-      )
-    )
-)
-
-const all = perDoc.flat().filter(Boolean)
-const confirmed = all.filter((f) => f.verdict && f.verdict.survives)
-
-const seen = new Set()
-const deduped = []
-for (const f of confirmed) {
-  const key = `${f.doc}:${(f.claim || '').slice(0, 50).toLowerCase()}`
-  if (seen.has(key)) continue
-  seen.add(key)
-  deduped.push(f)
-}
-
-const order = { high: 0, medium: 1, low: 2 }
-deduped.sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))
-
-log(`${all.length} drifts crudos, ${confirmed.length} confirmados, ${deduped.length} tras dedup.`)
-
+const verdicts = validation?.verdicts
+const validBatch = Array.isArray(verdicts) && verdicts.every((v) => v &&
+  Number.isInteger(v.id) && v.id >= 0 && v.id < findings.length &&
+  ['confirmed', 'refuted', 'unverified'].includes(v.status) && nonempty(v.evidence)) &&
+  new Set(verdicts.map((v) => v.id)).size === verdicts.length
+const classified = findings.map((f, id) => {
+  const verdict = validBatch ? verdicts.find((v) => v.id === id) : undefined
+  return { ...f, status: verdict?.status ?? 'unverified',
+    evidence: verdict?.evidence ?? 'La verificación falta o devolvió una respuesta inválida.' }
+})
+const unverified = classified.filter((f) => f.status === 'unverified')
+log(findings.length + ' hallazgos únicos; ' + unverified.length + ' sin verificar.')
 return {
-  confirmed: deduped,
-  stats: { docs: DOCS.length, raw: all.length, confirmed: confirmed.length, deduped: deduped.length },
+  ...selection,
+  status: unverified.length || review.unreviewed.length ? 'incomplete' : 'complete',
+  confirmed: classified.filter((f) => f.status === 'confirmed'),
+  refuted: classified.filter((f) => f.status === 'refuted'),
+  unverified, unreviewed: review.unreviewed,
+  stats: { raw: review.findings.length, unique: findings.length, agents: findings.length ? 2 : 1 },
 }

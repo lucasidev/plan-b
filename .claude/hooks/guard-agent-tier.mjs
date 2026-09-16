@@ -6,8 +6,8 @@
 // Los agentes de `.claude/agents/` traen su modelo en el frontmatter y ese manda: un `model`
 // que lo pise no pasa. Un built-in (Explore, Plan, claude-code-guide) pasa solo con `model`
 // haiku o sonnet. `general-purpose`, `fork` y sin tipo no pasan nunca.
-// Si el roster no se puede leer, deja pasar todo lo demás: fallar cerrado dejaría sin
-// test-runner, y sin test-runner no hay forma de correr las suites.
+// Si el roster no se puede leer, deja pasar todo lo demás: no se puede validar el tier
+// de un perfil cuya configuración está inaccesible.
 // Escape por sesión: PLANB_GUARD_OFF=1.
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
