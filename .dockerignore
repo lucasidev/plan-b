@@ -16,6 +16,23 @@ frontend/.env*
 # puntuales, nunca el contexto entero), mismo riesgo que frontend/.env* de arriba: un COPY que
 # algún día se vuelva más ancho lo horneaba con los secretos locales adentro.
 .env
+.env.*
+
+# Ningún Dockerfile consume historia Git, configuración de agentes ni documentación.
+.git
+.github
+.agents
+.claude
+.codex
+docs
+
+# Artefactos locales de verificación: no son entradas de ninguna imagen.
+frontend/coverage
+frontend/playwright-report
+frontend/test-results
+frontend/lighthouse-report
+backend/**/TestResults
+backend/**/StrykerOutput
 
 # dotnet restore los regenera: sin este ignore, el contexto carga cientos de MB de bin/obj del checkout.
 backend/**/bin
