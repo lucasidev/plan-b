@@ -231,15 +231,12 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
     public async Task<TeacherDetailItem?> GetTeacherByIdAsync(
         Guid teacherId, CancellationToken ct = default)
     {
-        // initcap() capitaliza la primera letra de cada palabra (unicode-aware en Postgres:
-        // "verónica ledesma" -> "Verónica Ledesma"). El storage queda en lowercase normalizado
-        // para dedup/búsqueda; la capitalización es responsabilidad del read, no del dominio.
         const string sql = @"
             SELECT
                 id                 AS Id,
                 university_id       AS UniversityId,
-                initcap(first_name) AS FirstName,
-                initcap(last_name)  AS LastName,
+                first_name          AS FirstName,
+                last_name           AS LastName,
                 title              AS Title,
                 bio                AS Bio,
                 photo_url          AS PhotoUrl,
@@ -336,14 +333,14 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         // El titular vigente es el chair_member con role = 'Lead' y until_term_id IS NULL: a lo
         // sumo uno por cátedra (invariante del aggregate, Chair.AddMember), así que el LEFT JOIN no
         // duplica filas. Sin titular nombrado, teacher_id sale null y con él los campos de nombre;
-        // la cátedra aparece igual. initcap pasa el nombre lowercase del storage a title case.
+        // la cátedra aparece igual.
         const string sql = @"
             SELECT
                 c.id                   AS Id,
                 c.name                 AS Name,
                 cm.teacher_id          AS LeadTeacherId,
-                initcap(t.first_name)  AS LeadFirstName,
-                initcap(t.last_name)   AS LeadLastName
+                t.first_name          AS LeadFirstName,
+                t.last_name           AS LeadLastName
             FROM academic.chairs c
             LEFT JOIN academic.chair_members cm
                 ON cm.chair_id = c.id AND cm.role = 'Lead' AND cm.until_term_id IS NULL
@@ -371,8 +368,8 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 s.name                 AS SubjectName,
                 s.code                 AS SubjectCode,
                 cm.teacher_id          AS LeadTeacherId,
-                initcap(t.first_name)  AS LeadFirstName,
-                initcap(t.last_name)   AS LeadLastName
+                t.first_name          AS LeadFirstName,
+                t.last_name           AS LeadLastName
             FROM academic.chairs c
             JOIN academic.subjects s ON s.id = c.subject_id
             LEFT JOIN academic.chair_members cm
@@ -501,8 +498,8 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         const string sql = @"
             SELECT
                 t.id                  AS Id,
-                initcap(t.first_name) AS FirstName,
-                initcap(t.last_name)  AS LastName
+                t.first_name         AS FirstName,
+                t.last_name          AS LastName
             FROM academic.teachers t
             JOIN academic.careers c ON c.university_id = t.university_id
             WHERE c.id = @CareerId;";

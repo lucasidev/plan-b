@@ -93,7 +93,7 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                 SELECT
                     'teacher'                                       AS type,
                     t.id                                            AS id,
-                    initcap(t.first_name || ' ' || t.last_name)     AS label,
+                    t.first_name || ' ' || t.last_name              AS label,
                     COALESCE(t.title, '')                           AS sublabel,
                     0                                               AS rank_exact,
                     (academic.immutable_unaccent(lower(t.first_name)) LIKE academic.immutable_unaccent(lower(@Term)) || '%'

@@ -4,7 +4,7 @@ namespace Planb.Academic.Application.Features.Search;
 /// Un resultado de la búsqueda global de catálogo (US-004, US-132). <see cref="Type"/> discrimina
 /// el tipo (<c>subject</c>, <c>teacher</c>, <c>chair</c>, <c>career</c> o <c>institution</c>). Para
 /// materia, Label = nombre y Sublabel = la sigla de la universidad y la carrera, con el código al
-/// final cuando la materia lo tiene (ADR-0097); para docente, Label = nombre completo (title case)
+/// final cuando la materia lo tiene (ADR-0097); para docente, Label = nombre completo
 /// y Sublabel = título (ej. "Profesora Titular"), nunca null (columna NOT NULL, cadena vacía cuando
 /// no hay título); para cátedra, Label = su nombre y Sublabel = la materia que dicta, que es lo que
 /// distingue a dos cátedras con el mismo apellido; para carrera, Label = su nombre y Sublabel = la

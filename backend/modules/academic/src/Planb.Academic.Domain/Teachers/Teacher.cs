@@ -8,13 +8,6 @@ namespace Planb.Academic.Domain.Teachers;
 /// Aggregate root del docente del catálogo (US-063). Pertenece a una <see cref="University"/>. Las
 /// reseñas lo referencian por <see cref="TeacherId"/> (cross-BC, sin FK; ADR-0017).
 ///
-/// <para>
-/// Normalización de nombre (decisión del data-model): se persiste en <b>lowercase</b> (storage),
-/// el display en title case lo decide la presentation layer. Así "JUAN PÉREZ" y "Juan Pérez" se
-/// guardan igual y se evitan duplicados por mayúsculas/minúsculas. La identidad real (claim) y la
-/// respuesta a reseñas (US-040) son verticales aparte; este aggregate es solo el catálogo.
-/// </para>
-///
 /// <para>Soft delete vía <see cref="IsActive"/>: una reseña ancla a <c>docente_reseñado_id</c>, así
 /// que hard-deletear dejaría reseñas colgadas. Desactivar preserva la integridad histórica.</para>
 /// </summary>
@@ -38,7 +31,7 @@ public sealed class Teacher : Entity<TeacherId>, IAggregateRoot
     private Teacher() { }
 
     /// <summary>
-    /// Crea un docente del catálogo. Nombres normalizados a lowercase; campos opcionales (title,
+    /// Crea un docente del catálogo. Nombres trimmeados; campos opcionales (title,
     /// bio, photoUrl) trimmeados y validados por longitud. Arranca activo.
     /// </summary>
     public static Result<Teacher> Create(
@@ -69,8 +62,8 @@ public sealed class Teacher : Entity<TeacherId>, IAggregateRoot
         {
             Id = TeacherId.New(),
             UniversityId = universityId,
-            FirstName = Normalize(firstName),
-            LastName = Normalize(lastName),
+            FirstName = firstName.Trim(),
+            LastName = lastName.Trim(),
             Title = TrimToNull(title),
             Bio = TrimToNull(bio),
             PhotoUrl = TrimToNull(photoUrl),
@@ -109,7 +102,7 @@ public sealed class Teacher : Entity<TeacherId>, IAggregateRoot
             UpdatedAt = updatedAt,
         };
 
-    /// <summary>Renombra (lowercase storage). Para corregir tipeos del backoffice.</summary>
+    /// <summary>Renombra. Para corregir tipeos del backoffice.</summary>
     public Result Rename(string firstName, string lastName, IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
@@ -120,8 +113,8 @@ public sealed class Teacher : Entity<TeacherId>, IAggregateRoot
             return namesResult.Error;
         }
 
-        FirstName = Normalize(firstName);
-        LastName = Normalize(lastName);
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
@@ -216,8 +209,6 @@ public sealed class Teacher : Entity<TeacherId>, IAggregateRoot
         }
         return Result.Success();
     }
-
-    private static string Normalize(string name) => name.Trim().ToLowerInvariant();
 
     private static string? TrimToNull(string? value)
     {

@@ -351,13 +351,11 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
 
         // El adjunto se distingue por nombre y rol de los dos ayudantes y del titular: es
         // exactamente el dato contra el que se compara un pedido de verificación de cargo.
-        // El storage normaliza el nombre a minúsculas (ver DapperCatalogSearchReader, que lo
-        // capitaliza recién al leer para búsqueda): la comparación es case-insensitive porque lo
-        // que importa acá es que el nombre distinga al adjunto, no su capitalización.
+        // El listado conserva la capitalización enviada al cargar el integrante.
         var associateMember = team.Single(m => m.Role == "Associate");
         associateMember.TeacherId.ShouldBe(associate);
-        associateMember.FirstName.ShouldBe("Elena", StringComparer.OrdinalIgnoreCase);
-        associateMember.LastName.ShouldBe("Suarez", StringComparer.OrdinalIgnoreCase);
+        associateMember.FirstName.ShouldBe("Elena");
+        associateMember.LastName.ShouldBe("Suarez");
 
         team.Single(m => m.Role == "Lead").TeacherId.ShouldBe(lead);
         team.Where(m => m.Role == "Assistant").Select(m => m.TeacherId)

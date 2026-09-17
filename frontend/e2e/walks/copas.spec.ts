@@ -204,6 +204,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     // titular se carga por API, contra los mismos endpoints que ese spec verifica.
     const chairName = `StageWalk${WALK_SUFFIX}`;
     await page.goto(`/admin/chairs?subjectId=${SUBJECT_211}`);
+    await expect(page.getByText('Sergio Ruiz', { exact: true })).toBeVisible({ timeout: 15_000 });
     await page.getByLabel(/nombre de la cátedra/i).fill(chairName);
     await page.getByRole('button', { name: /cargar cátedra/i }).click();
     const chairHeading = page.getByRole('heading', {
@@ -231,9 +232,8 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
 
     await page.reload();
     const chairCard = page.getByRole('listitem').filter({ has: chairHeading });
-    // El dominio guarda el nombre del docente en minúscula (`Teacher.Normalize`) y solo la lectura
-    // pública lo capitaliza con `initcap`; el backoffice lo muestra tal cual está guardado.
-    await expect(chairCard.getByText(new RegExp(teacherName, 'i'))).toBeVisible();
+    // La aserción exige el nombre completo con la capitalización enviada al crear el docente.
+    await expect(chairCard.getByText(`${teacherName} DeStage`, { exact: true })).toBeVisible();
     await expect(chairCard.getByText(/titular/i)).toBeVisible();
 
     // 7b. Curaduría: lee el texto libre que dejó la reseña del paso 6 y destila una frase nueva.

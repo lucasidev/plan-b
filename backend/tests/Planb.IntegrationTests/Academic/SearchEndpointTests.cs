@@ -178,7 +178,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         var teacher = body!.Items.FirstOrDefault(i => i.Id == Brandt);
         teacher.ShouldNotBeNull();
         teacher!.Type.ShouldBe("teacher");
-        teacher.Label.ShouldBe("Carlos Brandt"); // title case desde el storage lowercase
+        teacher.Label.ShouldBe("Carlos Brandt");
     }
 
     [Fact]
