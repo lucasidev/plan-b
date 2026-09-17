@@ -110,8 +110,7 @@ public interface IAcademicQueryService
 
     /// <summary>
     /// Devuelve la metadata completa de un docente por id, o <c>null</c> si no existe. Caller: la
-    /// página pública de docente (US-003). Los nombres vienen en title case listos para display
-    /// (el storage es lowercase normalizado).
+    /// página pública de docente (US-003).
     /// </summary>
     Task<TeacherDetailItem?> GetTeacherByIdAsync(Guid teacherId, CancellationToken ct = default);
 

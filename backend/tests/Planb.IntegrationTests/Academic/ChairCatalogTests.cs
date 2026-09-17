@@ -14,7 +14,7 @@ namespace Planb.IntegrationTests.Academic;
 /// El seed siembra tres cátedras con ids determinísticos (00000008-0000-4000-a000-0000000000NN)
 /// sobre Fundamentos de Control de Calidad (211, TUDCS UNSTA), cada una con su titular. Los tests
 /// resuelven por id sin crear data. Verifican el orden por nombre, el titular vigente y el
-/// title-casing (initcap) de nombres acentuados.
+/// los nombres con acentos del seed.
 /// </summary>
 public class ChairCatalogTests : IClassFixture<RegisterApiFixture>
 {

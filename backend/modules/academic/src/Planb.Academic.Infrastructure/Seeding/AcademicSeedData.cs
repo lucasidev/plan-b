@@ -3491,8 +3491,8 @@ public static class AcademicSeedData
     };
 
     // ====================================================================
-    // Teachers (UNSTA): catálogo docente de prueba (US-063). Nombres en lowercase
-    // (storage); el display los pasa a title case. Sin claim/verificación: son
+    // Teachers (UNSTA): catálogo docente de prueba (US-063). Nombres con el display de la
+    // fuente. Sin claim/verificación: son
     // del catálogo, no perfiles reclamados (eso es US-030/031, otro vertical).
     //
     // Convención de UUIDs:
@@ -3500,81 +3500,81 @@ public static class AcademicSeedData
     // ====================================================================
     public static IReadOnlyList<TeacherRecord> Teachers { get; } = new[]
     {
-        new TeacherRecord(Tid("01"), Unsta.Id, "carlos", "brandt", "Profesor Titular"),
-        new TeacherRecord(Tid("02"), Unsta.Id, "ana", "iturralde", "Profesora Adjunta"),
-        new TeacherRecord(Tid("03"), Unsta.Id, "marta", "reynoso", "Profesora Titular"),
-        new TeacherRecord(Tid("04"), Unsta.Id, "diego", "sosa", "Jefe de Trabajos Prácticos"),
-        new TeacherRecord(Tid("05"), Unsta.Id, "laura", "castellanos", "Profesora Adjunta"),
-        new TeacherRecord(Tid("06"), Unsta.Id, "jorge", "castro", "Profesor Titular"),
-        new TeacherRecord(Tid("07"), Unsta.Id, "silvia", "méndez", "Profesora Adjunta"),
-        new TeacherRecord(Tid("08"), Unsta.Id, "roberto", "páez", "Jefe de Trabajos Prácticos"),
-        new TeacherRecord(Tid("09"), Unsta.Id, "verónica", "ledesma", "Profesora Titular"),
-        new TeacherRecord(Tid("0a"), Unsta.Id, "hernán", "quiroga", "Profesor Adjunto"),
+        new TeacherRecord(Tid("01"), Unsta.Id, "Carlos", "Brandt", "Profesor Titular"),
+        new TeacherRecord(Tid("02"), Unsta.Id, "Ana", "Iturralde", "Profesora Adjunta"),
+        new TeacherRecord(Tid("03"), Unsta.Id, "Marta", "Reynoso", "Profesora Titular"),
+        new TeacherRecord(Tid("04"), Unsta.Id, "Diego", "Sosa", "Jefe de Trabajos Prácticos"),
+        new TeacherRecord(Tid("05"), Unsta.Id, "Laura", "Castellanos", "Profesora Adjunta"),
+        new TeacherRecord(Tid("06"), Unsta.Id, "Jorge", "Castro", "Profesor Titular"),
+        new TeacherRecord(Tid("07"), Unsta.Id, "Silvia", "Méndez", "Profesora Adjunta"),
+        new TeacherRecord(Tid("08"), Unsta.Id, "Roberto", "Páez", "Jefe de Trabajos Prácticos"),
+        new TeacherRecord(Tid("09"), Unsta.Id, "Verónica", "Ledesma", "Profesora Titular"),
+        new TeacherRecord(Tid("0a"), Unsta.Id, "Hernán", "Quiroga", "Profesor Adjunto"),
 
         // Titulares de las cátedras del seed (US-196, ver sección Chairs más abajo): ninguno de
         // los diez docentes de arriba tiene estos apellidos, así que se agregan acá.
-        new TeacherRecord(Tid("0b"), Unsta.Id, "martín", "pérez", "Profesor Titular"),
-        new TeacherRecord(Tid("0c"), Unsta.Id, "patricia", "gonzález", "Profesora Titular"),
-        new TeacherRecord(Tid("0d"), Unsta.Id, "sergio", "ruiz", "Profesor Titular"),
+        new TeacherRecord(Tid("0b"), Unsta.Id, "Martín", "Pérez", "Profesor Titular"),
+        new TeacherRecord(Tid("0c"), Unsta.Id, "Patricia", "González", "Profesora Titular"),
+        new TeacherRecord(Tid("0d"), Unsta.Id, "Sergio", "Ruiz", "Profesor Titular"),
 
         // Titulares de las cátedras nuevas de la Tecnicatura UNSTA: una por cada
         // materia del plan que hasta acá no tenía ninguna cátedra sembrada, más dos auxiliares.
         // Ningún docente real.
-        new TeacherRecord(Tid("0e"), Unsta.Id, "lucas", "ibáñez", "Profesor Titular"),
-        new TeacherRecord(Tid("0f"), Unsta.Id, "valeria", "vega", "Profesora Titular"),
-        new TeacherRecord(Tid("10"), Unsta.Id, "matías", "domínguez", "Profesor Titular"),
-        new TeacherRecord(Tid("11"), Unsta.Id, "sofía", "aráoz", "Profesora Titular"),
-        new TeacherRecord(Tid("12"), Unsta.Id, "nicolás", "bravo", "Profesor Titular"),
-        new TeacherRecord(Tid("13"), Unsta.Id, "camila", "fernández", "Profesora Titular"),
-        new TeacherRecord(Tid("14"), Unsta.Id, "federico", "molina", "Profesor Titular"),
-        new TeacherRecord(Tid("15"), Unsta.Id, "julieta", "aguirre", "Profesora Titular"),
-        new TeacherRecord(Tid("16"), Unsta.Id, "emiliano", "benítez", "Profesor Titular"),
-        new TeacherRecord(Tid("17"), Unsta.Id, "agustina", "correa", "Profesora Titular"),
-        new TeacherRecord(Tid("18"), Unsta.Id, "ezequiel", "romero", "Profesor Titular"),
-        new TeacherRecord(Tid("19"), Unsta.Id, "daniela", "acosta", "Profesora Titular"),
-        new TeacherRecord(Tid("1a"), Unsta.Id, "maximiliano", "herrera", "Profesor Titular"),
-        new TeacherRecord(Tid("1b"), Unsta.Id, "carolina", "godoy", "Profesora Titular"),
-        new TeacherRecord(Tid("1c"), Unsta.Id, "leandro", "juárez", "Profesor Titular"),
-        new TeacherRecord(Tid("1d"), Unsta.Id, "antonella", "morales", "Profesora Titular"),
-        new TeacherRecord(Tid("1e"), Unsta.Id, "gonzalo", "ortiz", "Profesor Titular"),
-        new TeacherRecord(Tid("1f"), Unsta.Id, "micaela", "luna", "Profesora Titular"),
-        new TeacherRecord(Tid("20"), Unsta.Id, "ramiro", "cabrera", "Profesor Titular"),
-        new TeacherRecord(Tid("21"), Unsta.Id, "tomás", "paz", "Profesor Titular"),
-        new TeacherRecord(Tid("22"), Unsta.Id, "belén", "silva", "Profesora Titular"),
-        new TeacherRecord(Tid("23"), Unsta.Id, "rocío", "franco", "Jefa de Trabajos Prácticos"),
-        new TeacherRecord(Tid("24"), Unsta.Id, "joaquín", "vera", "Jefe de Trabajos Prácticos"),
+        new TeacherRecord(Tid("0e"), Unsta.Id, "Lucas", "Ibáñez", "Profesor Titular"),
+        new TeacherRecord(Tid("0f"), Unsta.Id, "Valeria", "Vega", "Profesora Titular"),
+        new TeacherRecord(Tid("10"), Unsta.Id, "Matías", "Domínguez", "Profesor Titular"),
+        new TeacherRecord(Tid("11"), Unsta.Id, "Sofía", "Aráoz", "Profesora Titular"),
+        new TeacherRecord(Tid("12"), Unsta.Id, "Nicolás", "Bravo", "Profesor Titular"),
+        new TeacherRecord(Tid("13"), Unsta.Id, "Camila", "Fernández", "Profesora Titular"),
+        new TeacherRecord(Tid("14"), Unsta.Id, "Federico", "Molina", "Profesor Titular"),
+        new TeacherRecord(Tid("15"), Unsta.Id, "Julieta", "Aguirre", "Profesora Titular"),
+        new TeacherRecord(Tid("16"), Unsta.Id, "Emiliano", "Benítez", "Profesor Titular"),
+        new TeacherRecord(Tid("17"), Unsta.Id, "Agustina", "Correa", "Profesora Titular"),
+        new TeacherRecord(Tid("18"), Unsta.Id, "Ezequiel", "Romero", "Profesor Titular"),
+        new TeacherRecord(Tid("19"), Unsta.Id, "Daniela", "Acosta", "Profesora Titular"),
+        new TeacherRecord(Tid("1a"), Unsta.Id, "Maximiliano", "Herrera", "Profesor Titular"),
+        new TeacherRecord(Tid("1b"), Unsta.Id, "Carolina", "Godoy", "Profesora Titular"),
+        new TeacherRecord(Tid("1c"), Unsta.Id, "Leandro", "Juárez", "Profesor Titular"),
+        new TeacherRecord(Tid("1d"), Unsta.Id, "Antonella", "Morales", "Profesora Titular"),
+        new TeacherRecord(Tid("1e"), Unsta.Id, "Gonzalo", "Ortiz", "Profesor Titular"),
+        new TeacherRecord(Tid("1f"), Unsta.Id, "Micaela", "Luna", "Profesora Titular"),
+        new TeacherRecord(Tid("20"), Unsta.Id, "Ramiro", "Cabrera", "Profesor Titular"),
+        new TeacherRecord(Tid("21"), Unsta.Id, "Tomás", "Paz", "Profesor Titular"),
+        new TeacherRecord(Tid("22"), Unsta.Id, "Belén", "Silva", "Profesora Titular"),
+        new TeacherRecord(Tid("23"), Unsta.Id, "Rocío", "Franco", "Jefa de Trabajos Prácticos"),
+        new TeacherRecord(Tid("24"), Unsta.Id, "Joaquín", "Vera", "Jefe de Trabajos Prácticos"),
 
         // Titulares de las cátedras nuevas de R7 (cobertura del seed, ver sección Chairs más
         // abajo): una por cátedra, en la universidad de esa cátedra. Ningún apellido repite el de
         // los titulares de arriba (Pérez, González, Ruiz, Ibáñez, Vega, Domínguez, Aráoz, Bravo,
         // Fernández, Molina, Aguirre, Benítez, Correa, Acosta, Herrera, Godoy, Juárez, Morales,
         // Ortiz, Luna, Cabrera, Paz, Silva) ni el de las personas sembradas (Mansilla, Ledesma).
-        new TeacherRecord(Tid("25"), Unt.Id, "pablo", "sosa", "Profesor Titular"),
-        new TeacherRecord(Tid("26"), Unt.Id, "florencia", "medina", "Profesora Titular"),
-        new TeacherRecord(Tid("27"), Unt.Id, "ignacio", "ríos", "Profesor Titular"),
-        new TeacherRecord(Tid("28"), UtnFrt.Id, "malena", "castro", "Profesora Titular"),
-        new TeacherRecord(Tid("29"), UtnFrt.Id, "facundo", "rojas", "Profesor Titular"),
-        new TeacherRecord(Tid("2a"), Unse.Id, "cecilia", "navarro", "Profesora Titular"),
-        new TeacherRecord(Tid("2b"), Unse.Id, "esteban", "quiroga", "Profesor Titular"),
-        new TeacherRecord(Tid("2c"), Unsta.Id, "bruno", "villalba", "Profesor Titular"),
-        new TeacherRecord(Tid("2d"), Unsta.Id, "milagros", "figueroa", "Profesora Titular"),
-        new TeacherRecord(Tid("2e"), Unsta.Id, "franco", "carrizo", "Profesor Titular"),
-        new TeacherRecord(Tid("2f"), Unsta.Id, "lorena", "gómez", "Profesora Titular"),
+        new TeacherRecord(Tid("25"), Unt.Id, "Pablo", "Sosa", "Profesor Titular"),
+        new TeacherRecord(Tid("26"), Unt.Id, "Florencia", "Medina", "Profesora Titular"),
+        new TeacherRecord(Tid("27"), Unt.Id, "Ignacio", "Ríos", "Profesor Titular"),
+        new TeacherRecord(Tid("28"), UtnFrt.Id, "Malena", "Castro", "Profesora Titular"),
+        new TeacherRecord(Tid("29"), UtnFrt.Id, "Facundo", "Rojas", "Profesor Titular"),
+        new TeacherRecord(Tid("2a"), Unse.Id, "Cecilia", "Navarro", "Profesora Titular"),
+        new TeacherRecord(Tid("2b"), Unse.Id, "Esteban", "Quiroga", "Profesor Titular"),
+        new TeacherRecord(Tid("2c"), Unsta.Id, "Bruno", "Villalba", "Profesor Titular"),
+        new TeacherRecord(Tid("2d"), Unsta.Id, "Milagros", "Figueroa", "Profesora Titular"),
+        new TeacherRecord(Tid("2e"), Unsta.Id, "Franco", "Carrizo", "Profesor Titular"),
+        new TeacherRecord(Tid("2f"), Unsta.Id, "Lorena", "Gómez", "Profesora Titular"),
 
         // Titulares de las nueve cátedras que suman a las cinco carreras de R7 (ver sección
         // Chairs más abajo): una por cátedra, en la universidad de esa cátedra.
         // Ningún apellido repite el de un docente ya sembrado (ni los diez del arranque, ni los
         // titulares de 211, ni los de la Tecnicatura UNSTA, ni los once de R7 de arriba) ni el de
         // las personas sembradas (Mansilla, Ledesma).
-        new TeacherRecord(Tid("30"), Unt.Id, "walter", "moyano", "Profesor Titular"),
-        new TeacherRecord(Tid("31"), UtnFrt.Id, "valentina", "salazar", "Profesora Titular"),
-        new TeacherRecord(Tid("32"), UtnFrt.Id, "ricardo", "peralta", "Profesor Titular"),
-        new TeacherRecord(Tid("33"), Unse.Id, "gabriela", "toledo", "Profesora Titular"),
-        new TeacherRecord(Tid("34"), Unse.Id, "manuel", "escobar", "Profesor Titular"),
-        new TeacherRecord(Tid("35"), Unsta.Id, "ivana", "guzmán", "Profesora Titular"),
-        new TeacherRecord(Tid("36"), Unsta.Id, "santiago", "torres", "Profesor Titular"),
-        new TeacherRecord(Tid("37"), Unsta.Id, "brenda", "díaz", "Profesora Titular"),
-        new TeacherRecord(Tid("38"), Unsta.Id, "ariel", "núñez", "Profesor Titular"),
+        new TeacherRecord(Tid("30"), Unt.Id, "Walter", "Moyano", "Profesor Titular"),
+        new TeacherRecord(Tid("31"), UtnFrt.Id, "Valentina", "Salazar", "Profesora Titular"),
+        new TeacherRecord(Tid("32"), UtnFrt.Id, "Ricardo", "Peralta", "Profesor Titular"),
+        new TeacherRecord(Tid("33"), Unse.Id, "Gabriela", "Toledo", "Profesora Titular"),
+        new TeacherRecord(Tid("34"), Unse.Id, "Manuel", "Escobar", "Profesor Titular"),
+        new TeacherRecord(Tid("35"), Unsta.Id, "Ivana", "Guzmán", "Profesora Titular"),
+        new TeacherRecord(Tid("36"), Unsta.Id, "Santiago", "Torres", "Profesor Titular"),
+        new TeacherRecord(Tid("37"), Unsta.Id, "Brenda", "Díaz", "Profesora Titular"),
+        new TeacherRecord(Tid("38"), Unsta.Id, "Ariel", "Núñez", "Profesor Titular"),
     };
 
     private static TeacherId Tid(string nn) =>
@@ -3824,7 +3824,7 @@ public sealed record AcademicTermRecord(
     DateTimeOffset EnrollmentCloses);
 
 /// <summary>
-/// Docente del seed. Nombres en lowercase (storage). UUIDs determinísticos para referencias
+/// Docente del seed. Nombres con el display de la fuente. UUIDs determinísticos para referencias
 /// estables (las reseñas de prueba van a apuntar a estos ids cuando aterrice "docente real por reseña").
 /// </summary>
 public sealed record TeacherRecord(

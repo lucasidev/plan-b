@@ -352,14 +352,18 @@ Docente del catálogo de una universidad. Entidad precargada, independiente de s
 | --------------- | ----------- | ------------------------- | ----------------------------------------------------------------- |
 | `id`            | UUID        | PK                        |                                                                   |
 | `university_id` | UUID        | FK → University, NOT NULL |                                                                   |
-| `first_name`    | TEXT        | NOT NULL                  |                                                                   |
-| `last_name`     | TEXT        | NOT NULL                  |                                                                   |
-| `title`         | TEXT        | NULL                      | Lowercase en DB, title case en display (convención Laravel-style) |
+| `first_name`    | TEXT        | NOT NULL                  | Se guarda como se tipeó, con trim                                 |
+| `last_name`     | TEXT        | NOT NULL                  | Se guarda como se tipeó, con trim                                 |
+| `title`         | TEXT        | NULL                      |                                                                   |
 | `bio`           | TEXT        | NULL                      |                                                                   |
 | `photo_url`     | TEXT        | NULL                      |                                                                   |
 | `is_active`     | BOOLEAN     | NOT NULL, DEFAULT `true`  | Soft delete (US-063)                                              |
 | `created_at`    | TIMESTAMPTZ | NOT NULL                  |                                                                   |
 | `updated_at`    | TIMESTAMPTZ | NOT NULL                  |                                                                   |
+
+La migración de R7 conserva el display que los reads publicaban para las filas previas guardadas
+por completo en minúsculas. No recupera el casing original perdido: una corrección editorial futura
+requiere una fuente. Las altas y ediciones posteriores guardan el texto tipeado, salvo trim.
 
 Índice de búsqueda análogo al de Subject (`ix_teachers_search_trgm`), con una tercera expresión sobre `first_name || ' ' || last_name` para la búsqueda por nombre completo.
 

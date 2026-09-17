@@ -15,8 +15,7 @@ namespace Planb.IntegrationTests.Academic;
 ///
 /// El seed del catálogo siembra 10 docentes UNSTA con ids determinísticos
 /// (00000006-0000-4000-a000-0000000000NN), así que los tests resuelven por id sin crear data.
-/// Los nombres se guardan en lowercase y el read los devuelve en title case (initcap), incluso
-/// con acentos.
+/// Los nombres del seed usan el display que publica el catálogo, incluidos los acentos.
 /// </summary>
 public class TeacherCatalogTests : IClassFixture<RegisterApiFixture>
 {
@@ -32,16 +31,16 @@ public class TeacherCatalogTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid UnstaId =
         Guid.Parse("00000001-0000-4000-a000-000000000001");
 
-    // carlos brandt, Profesor Titular
+    // Carlos Brandt, Profesor Titular
     private static readonly Guid CarlosBrandtId =
         Guid.Parse("00000006-0000-4000-a000-000000000001");
 
-    // verónica ledesma, Profesora Titular (caso con acento, valida initcap unicode-aware)
+    // Verónica Ledesma, Profesora Titular
     private static readonly Guid VeronicaLedesmaId =
         Guid.Parse("00000006-0000-4000-a000-000000000009");
 
     [Fact]
-    public async Task GetTeacher_returns_seeded_teacher_with_title_cased_names()
+    public async Task GetTeacher_returns_seeded_teacher_with_display_names()
     {
         var response = await _client.GetAsync($"/api/academic/teachers/{CarlosBrandtId}");
 
@@ -58,7 +57,7 @@ public class TeacherCatalogTests : IClassFixture<RegisterApiFixture>
     }
 
     [Fact]
-    public async Task GetTeacher_title_cases_accented_names()
+    public async Task GetTeacher_preserves_accented_seed_names()
     {
         var response = await _client.GetAsync($"/api/academic/teachers/{VeronicaLedesmaId}");
 

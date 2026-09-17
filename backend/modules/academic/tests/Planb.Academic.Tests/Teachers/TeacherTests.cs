@@ -19,7 +19,7 @@ public class TeacherTests
     // -------------------------------------------------------------------
 
     [Fact]
-    public void Create_HappyPath_NormalizesNamesAndStartsActive()
+    public void Create_HappyPath_TrimsNamesAndStartsActive()
     {
         var result = Teacher.Create(
             AnyUni, "  JUAN  ", "Pérez", "  Profesor Adjunto  ", "  bio  ", "  url  ", Clock);
@@ -27,8 +27,8 @@ public class TeacherTests
         result.IsSuccess.ShouldBeTrue();
         var teacher = result.Value;
         teacher.UniversityId.ShouldBe(AnyUni);
-        teacher.FirstName.ShouldBe("juan");   // trim + lowercase
-        teacher.LastName.ShouldBe("pérez");   // lowercase preserva acento
+        teacher.FirstName.ShouldBe("JUAN");
+        teacher.LastName.ShouldBe("Pérez");
         teacher.Title.ShouldBe("Profesor Adjunto");
         teacher.Bio.ShouldBe("bio");
         teacher.PhotoUrl.ShouldBe("url");
@@ -118,7 +118,7 @@ public class TeacherTests
     // -------------------------------------------------------------------
 
     [Fact]
-    public void Rename_Valid_NormalizesAndBumpsUpdatedAt()
+    public void Rename_Valid_TrimsAndBumpsUpdatedAt()
     {
         var teacher = CreateValid();
         var later = new FixedClock(Clock.UtcNow.AddDays(1));
@@ -126,8 +126,8 @@ public class TeacherTests
         var result = teacher.Rename("MARÍA", "Gómez", later);
 
         result.IsSuccess.ShouldBeTrue();
-        teacher.FirstName.ShouldBe("maría");
-        teacher.LastName.ShouldBe("gómez");
+        teacher.FirstName.ShouldBe("MARÍA");
+        teacher.LastName.ShouldBe("Gómez");
         teacher.UpdatedAt.ShouldBe(later.UtcNow);
     }
 
@@ -140,7 +140,7 @@ public class TeacherTests
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(TeacherErrors.FirstNameRequired);
-        teacher.FirstName.ShouldBe("carlos");
+        teacher.FirstName.ShouldBe("Carlos");
     }
 
     // -------------------------------------------------------------------

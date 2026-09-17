@@ -6,8 +6,7 @@ namespace Planb.Academic.Infrastructure.Reading;
 
 /// <summary>
 /// Dapper implementation del listado admin de docentes (US-063). Trae activos e inactivos (a
-/// diferencia del read público del catálogo). Nombres en title case (initcap) para display; el
-/// storage es lowercase normalizado.
+/// diferencia del read público del catálogo).
 /// </summary>
 internal sealed class DapperAdminTeacherReader : IAdminTeacherReader
 {
@@ -24,8 +23,8 @@ internal sealed class DapperAdminTeacherReader : IAdminTeacherReader
                 t.id                  AS Id,
                 t.university_id       AS UniversityId,
                 u.name                AS UniversityName,
-                initcap(t.first_name) AS FirstName,
-                initcap(t.last_name)  AS LastName,
+                t.first_name          AS FirstName,
+                t.last_name           AS LastName,
                 t.title               AS Title,
                 t.is_active           AS IsActive,
                 t.created_at          AS CreatedAt

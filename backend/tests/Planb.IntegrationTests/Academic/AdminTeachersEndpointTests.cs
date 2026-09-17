@@ -40,15 +40,16 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
     {
         var admin = await AdminAsync();
 
-        var create = await admin.Client.PostAsJsonAsync("/api/academic/teachers", NewTeacherBody());
+        var create = await admin.Client.PostAsJsonAsync(
+            "/api/academic/teachers", NewTeacherBody(" De Stage ", " McDonald "));
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var list = await admin.Client.GetOkAsync<ListDto>("/api/academic/teachers");
         var row = list!.Items.SingleOrDefault(t => t.Id == created!.Id);
         row.ShouldNotBeNull();
-        row.FirstName.ShouldBe("Ada");        // storage lowercase, se devuelve title case
-        row.LastName.ShouldBe("Lovelace");
+        row.FirstName.ShouldBe("De Stage");
+        row.LastName.ShouldBe("McDonald");
         row.Title.ShouldBe("Titular");
         row.IsActive.ShouldBeTrue();
         row.UniversityId.ShouldBe(Unsta);
@@ -58,8 +59,14 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
         // GET público por id.
         var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/teachers/{created!.Id}");
+        detail.FirstName.ShouldBe("De Stage");
+        detail.LastName.ShouldBe("McDonald");
         detail.PhotoUrl.ShouldBe("https://cdn.planb.local/ada.jpg");
         detail.Bio.ShouldBe("Docente de referencia.");
+
+        using var anonymous = _fixture.Factory.CreateClient();
+        var search = await anonymous.GetOkAsync<SearchResponse>("/api/search?q=mcdonald");
+        search.Items.ShouldContain(item => item.Id == created.Id && item.Label == "De Stage McDonald");
     }
 
     [Fact]
@@ -74,8 +81,8 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
             $"/api/academic/teachers/{created!.Id}",
             new
             {
-                firstName = "Grace",
-                lastName = "Hopper",
+                firstName = " María ",
+                lastName = " de la Fuente ",
                 title = "Adjunta",
                 bio = "Actualizada.",
                 photoUrl = (string?)null,
@@ -84,9 +91,18 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
 
         var list = await admin.Client.GetOkAsync<ListDto>("/api/academic/teachers");
         var row = list!.Items.Single(t => t.Id == created.Id);
-        row.FirstName.ShouldBe("Grace");
-        row.LastName.ShouldBe("Hopper");
+        row.FirstName.ShouldBe("María");
+        row.LastName.ShouldBe("de la Fuente");
         row.Title.ShouldBe("Adjunta");
+
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
+            $"/api/academic/teachers/{created.Id}");
+        detail.FirstName.ShouldBe("María");
+        detail.LastName.ShouldBe("de la Fuente");
+
+        using var anonymous = _fixture.Factory.CreateClient();
+        var search = await anonymous.GetOkAsync<SearchResponse>("/api/search?q=maria");
+        search.Items.ShouldContain(item => item.Id == created.Id && item.Label == "María de la Fuente");
     }
 
     [Fact]
@@ -213,5 +229,15 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
     private sealed record AdminTeacherRow(
         Guid Id, Guid UniversityId, string UniversityName,
         string FirstName, string LastName, string? Title, bool IsActive, DateTime CreatedAt);
-    private sealed record DetailDto(Guid Id, string? Bio, string? PhotoUrl, bool IsActive);
+    private sealed record DetailDto(
+        Guid Id,
+        Guid UniversityId,
+        string FirstName,
+        string LastName,
+        string? Title,
+        string? Bio,
+        string? PhotoUrl,
+        bool IsActive);
+    private sealed record SearchResponse(IReadOnlyList<SearchItem> Items);
+    private sealed record SearchItem(string Type, Guid Id, string Label, string? Sublabel);
 }
