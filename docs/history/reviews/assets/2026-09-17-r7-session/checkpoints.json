@@ -1,0 +1,65 @@
+[
+  {
+    "at": "2026-09-17T03:26:55.813Z",
+    "elapsedSeconds": 1,
+    "path": "/reviews/mine",
+    "headingVisible": true,
+    "lifetimeSeconds": 900,
+    "remainingSeconds": 902,
+    "tokenRotated": false
+  },
+  {
+    "at": "2026-09-17T03:36:58.323Z",
+    "elapsedSeconds": 603,
+    "path": "/reviews/mine",
+    "headingVisible": true,
+    "lifetimeSeconds": 900,
+    "remainingSeconds": 300,
+    "tokenRotated": false
+  },
+  {
+    "at": "2026-09-17T03:46:59.581Z",
+    "elapsedSeconds": 1205,
+    "path": "/reviews/mine",
+    "headingVisible": true,
+    "lifetimeSeconds": 900,
+    "remainingSeconds": 902,
+    "tokenRotated": true
+  },
+  {
+    "at": "2026-09-17T03:56:58.182Z",
+    "elapsedSeconds": 1803,
+    "path": "/reviews/mine",
+    "headingVisible": true,
+    "lifetimeSeconds": 900,
+    "remainingSeconds": 304,
+    "tokenRotated": false
+  },
+  {
+    "at": "2026-09-17T04:06:58.251Z",
+    "elapsedSeconds": 2403,
+    "path": "/reviews/mine",
+    "headingVisible": true,
+    "lifetimeSeconds": 900,
+    "remainingSeconds": 903,
+    "tokenRotated": true
+  },
+  {
+    "at": "2026-09-17T04:16:58.214Z",
+    "elapsedSeconds": 3003,
+    "path": "/reviews/mine",
+    "headingVisible": true,
+    "lifetimeSeconds": 900,
+    "remainingSeconds": 303,
+    "tokenRotated": false
+  },
+  {
+    "at": "2026-09-17T04:26:58.220Z",
+    "elapsedSeconds": 3603,
+    "path": "/reviews/mine",
+    "headingVisible": true,
+    "lifetimeSeconds": 900,
+    "remainingSeconds": 903,
+    "tokenRotated": true
+  }
+]
