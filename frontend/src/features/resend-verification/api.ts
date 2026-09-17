@@ -7,6 +7,7 @@ import { apiFetch } from '@/lib/api-client';
 
 export type ResendVerificationRequestBody = {
   email: string;
+  returnTo?: string;
 };
 
 export function resendVerification(body: ResendVerificationRequestBody): Promise<Response> {

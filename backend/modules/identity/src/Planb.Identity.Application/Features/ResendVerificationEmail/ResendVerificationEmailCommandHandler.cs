@@ -64,7 +64,7 @@ public static class ResendVerificationEmailCommandHandler
         await DomainEventDispatcher.DispatchAsync([user], publisher, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
-        await emailSender.SendAsync(user.Email, rawToken, ct);
+        await emailSender.SendAsync(user.Email, rawToken, command.ReturnTo, ct);
 
         return Result.Success();
     }

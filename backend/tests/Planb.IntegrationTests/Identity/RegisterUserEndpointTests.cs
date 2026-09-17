@@ -87,6 +87,36 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         detail.Html.ShouldContain("token=");
     }
 
+    [Theory]
+    [InlineData("/reviews/new?subjectId=abc&chairId=def#context", true)]
+    [InlineData("https://evil.example/phish", false)]
+    [InlineData("//evil.example/phish", false)]
+    [InlineData("/\\evil.example", false)]
+    [InlineData("/\t/evil.example", false)]
+    public async Task Verification_mail_carries_only_internal_return_paths(string returnTo, bool allowed)
+    {
+        var email = FreshEmail("return-path");
+        var response = await _client.PostAsJsonAsync(
+            "/api/identity/register",
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerId, ValidCareerPlanId, returnTo));
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+
+        var summary = await _mailpit.WaitForMessageToAsync(email, TimeSpan.FromSeconds(10));
+        summary.ShouldNotBeNull();
+        var detail = await _mailpit.GetMessageDetailAsync(summary.Id);
+        detail.ShouldNotBeNull();
+        if (allowed)
+        {
+            detail.Text.ShouldContain("&from=" + Uri.EscapeDataString(returnTo));
+            detail.Html.ShouldContain("from=" + Uri.EscapeDataString(returnTo));
+        }
+        else
+        {
+            detail.Text.ShouldNotContain("from=");
+            detail.Html.ShouldNotContain("from=");
+        }
+    }
+
     [Fact]
     public async Task Registering_past_the_mailbox_limit_still_answers_202_and_does_not_leak()
     {

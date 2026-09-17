@@ -19,6 +19,19 @@ vi.mock('./api', () => ({
 import { resendVerification } from './api';
 
 describe('resendVerificationAction', () => {
+  it.each([
+    ['/reviews/new?subjectId=abc&chairId=def', '/reviews/new?subjectId=abc&chairId=def'],
+    ['https://evil.example', undefined],
+    ['//evil.example', undefined],
+  ])('conserva solo el retorno interno al reenviar: %s', async (raw, expected) => {
+    vi.mocked(resendVerification).mockResolvedValue(new Response(null, { status: 204 }));
+    const data = new FormData();
+    data.set('email', 'lucia@test.com');
+    data.set('from', raw);
+    await resendVerificationAction(initialResendVerificationState, data);
+    expect(vi.mocked(resendVerification).mock.lastCall?.[0].returnTo).toBe(expected);
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });

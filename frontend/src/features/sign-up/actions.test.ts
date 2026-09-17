@@ -132,6 +132,9 @@ describe('signUpAction', () => {
       '/reviews/new',
       expect.objectContaining({ httpOnly: true }),
     );
+    expect(registerUserMock).toHaveBeenCalledWith(
+      expect.objectContaining({ returnTo: '/reviews/new' }),
+    );
   });
 
   it('US-229: un from que apunta afuera del producto no viaja ni se guarda (cuidado con lo obvio)', async () => {
@@ -150,6 +153,7 @@ describe('signUpAction', () => {
     });
 
     expect(store.set).not.toHaveBeenCalled();
+    expect(registerUserMock.mock.calls[0][0]).not.toHaveProperty('returnTo');
   });
 
   it('400 con code career_plan_not_found aterriza en el campo careerPlanId', async () => {

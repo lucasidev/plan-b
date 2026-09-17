@@ -48,7 +48,7 @@ public sealed class ResendVerificationEmailEndpoint : ICarterModule
                     statusCode: StatusCodes.Status429TooManyRequests);
             }
 
-            var command = new ResendVerificationEmailCommand(request.Email);
+            var command = new ResendVerificationEmailCommand(request.Email, request.ReturnTo);
             try
             {
                 var result = await bus.InvokeAsync<Result>(command, ct);

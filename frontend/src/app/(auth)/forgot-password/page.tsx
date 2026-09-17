@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AuthShell } from '@/components/layout/auth-shell';
 import { ForgotPasswordForm } from '@/features/forgot-password';
 import { FlowSteps } from '@/features/forgot-password/components/flow-steps';
+import { redirectAuthenticatedUser } from '@/lib/redirect-authenticated-user';
 
 // Hoisted para no crear refs nuevas por render (regla react-doctor/jsx-no-jsx-as-prop).
 const LEFT_PANEL = <FlowSteps active={1} />;
@@ -23,7 +24,8 @@ const FOOT = (
  * éxito redirige a `/forgot-password/check-inbox`. Migración al canvas v2 en
  * US-059-f; el comportamiento no cambia.
  */
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  await redirectAuthenticatedUser();
   return (
     <AuthShell
       stepCode="03"

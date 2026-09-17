@@ -15,7 +15,7 @@ public interface IVerificationEmailSender
     /// raw value the user clicks on; the link the recipient sees points to the frontend's
     /// verify-email page.
     /// </summary>
-    Task SendAsync(EmailAddress recipient, string token, CancellationToken ct = default);
+    Task SendAsync(EmailAddress recipient, string token, string? returnTo, CancellationToken ct = default);
 
     /// <summary>
     /// Sends the password-reset message. The link points to the frontend's reset-password

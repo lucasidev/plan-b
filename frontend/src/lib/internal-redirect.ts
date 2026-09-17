@@ -1,7 +1,6 @@
 /**
- * Nombre de la cookie que hace de puente entre el registro y la verificación de mail (US-229):
- * el link del mail lo arma el backend sin conocer a dónde volver, así que es lo único que
- * sobrevive ese salto. Vida corta, igual que el link de verificación (24 hs, ver check-inbox).
+ * Retorno para quien vuelve por la puerta del mismo navegador (US-229).
+ * El mail lleva su propio destino. La cookie vive lo mismo que el link de verificación: 24 hs.
  */
 export const RETURN_TO_COOKIE = 'planb_from';
 export const RETURN_TO_COOKIE_MAX_AGE_SECONDS = 24 * 60 * 60;

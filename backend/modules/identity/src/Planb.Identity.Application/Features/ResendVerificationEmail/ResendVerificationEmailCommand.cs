@@ -1,3 +1,3 @@
 namespace Planb.Identity.Application.Features.ResendVerificationEmail;
 
-public sealed record ResendVerificationEmailCommand(string Email);
+public sealed record ResendVerificationEmailCommand(string Email, string? ReturnTo = null);

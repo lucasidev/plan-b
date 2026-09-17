@@ -6,8 +6,7 @@ type Props = {
   result: VerifyEmailOutcome;
   /**
    * Ruta interna sana a la que volver tras entrar (US-229): la persona ya la eligió antes de
-   * registrarse (el CTA que disparó el gate) y quedó en una cookie porque el link de este mail
-   * no la conoce. Ya viene sanitizada por la página.
+   * registrarse (el CTA que disparó el gate) y viaja en el mail. Ya viene sanitizada por la página.
    */
   from?: string | null;
 };

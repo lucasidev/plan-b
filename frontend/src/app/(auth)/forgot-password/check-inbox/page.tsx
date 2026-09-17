@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AuthShell } from '@/components/layout/auth-shell';
 import { FlowSteps } from '@/features/forgot-password/components/flow-steps';
+import { redirectAuthenticatedUser } from '@/lib/redirect-authenticated-user';
 
 type Props = {
   searchParams: Promise<{ email?: string }>;
@@ -29,6 +30,7 @@ const FOOT = (
  * el mail salió a una cuenta puntual, solo "si tenés una cuenta con...".
  */
 export default async function CheckInboxPage({ searchParams }: Props) {
+  await redirectAuthenticatedUser();
   const { email } = await searchParams;
 
   const sub = email

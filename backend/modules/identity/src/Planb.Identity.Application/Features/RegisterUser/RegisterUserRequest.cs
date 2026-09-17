@@ -7,4 +7,4 @@ namespace Planb.Identity.Application.Features.RegisterUser;
 /// handler sigue derivando el career id del plan (el <see cref="CareerId"/> del request no se usa
 /// en ese camino, ya validado).
 /// </summary>
-public sealed record RegisterUserRequest(string Email, string Password, Guid CareerId, Guid? CareerPlanId);
+public sealed record RegisterUserRequest(string Email, string Password, Guid CareerId, Guid? CareerPlanId, string? ReturnTo = null);

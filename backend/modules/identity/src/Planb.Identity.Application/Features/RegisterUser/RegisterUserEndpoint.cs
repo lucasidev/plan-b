@@ -38,7 +38,7 @@ public sealed class RegisterUserEndpoint : ICarterModule
             CancellationToken ct) =>
         {
             var command = new RegisterUserCommand(
-                request.Email, request.Password, request.CareerId, request.CareerPlanId);
+                request.Email, request.Password, request.CareerId, request.CareerPlanId, request.ReturnTo);
 
             // La key del rate limiter hashea Email: un body sin mail (o vacio) lo deja null y
             // explota antes de validar. Validar el shape primero evita eso, devuelve el mismo 400

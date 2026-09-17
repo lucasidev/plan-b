@@ -91,7 +91,7 @@ public class ResendVerificationEmailCommandHandlerTests
         await deps.Users.DidNotReceive().FindByEmailAsync(
             Arg.Any<EmailAddress>(), Arg.Any<CancellationToken>());
         await deps.EmailSender.DidNotReceive().SendAsync(
-            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class ResendVerificationEmailCommandHandlerTests
 
         result.IsSuccess.ShouldBeTrue();
         await deps.EmailSender.DidNotReceive().SendAsync(
-            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
         await deps.UnitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -137,7 +137,7 @@ public class ResendVerificationEmailCommandHandlerTests
 
         result.IsSuccess.ShouldBeTrue();
         await deps.EmailSender.DidNotReceive().SendAsync(
-            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
         await deps.UnitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
@@ -162,7 +162,7 @@ public class ResendVerificationEmailCommandHandlerTests
 
         result.IsSuccess.ShouldBeTrue();
         await deps.EmailSender.DidNotReceive().SendAsync(
-            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
+            Arg.Any<EmailAddress>(), Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -200,6 +200,7 @@ public class ResendVerificationEmailCommandHandlerTests
         await deps.EmailSender.Received(1).SendAsync(
             user.Email,
             "regenerated-token",
+            null,
             Arg.Any<CancellationToken>());
     }
 }

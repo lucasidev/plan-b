@@ -14,6 +14,7 @@ export type RegisterRequestBody = {
   password: string;
   careerId: string;
   careerPlanId: string | null;
+  returnTo?: string;
 };
 
 export function registerUser(body: RegisterRequestBody): Promise<Response> {

@@ -1,5 +1,9 @@
 import { expect, type Page, test } from '@playwright/test';
-import { extractTokenFromLatestMail } from '../helpers/mailpit';
+import {
+  extractTokenFromLatestMail,
+  verificationLinkFromMail,
+  waitForMail,
+} from '../helpers/mailpit';
 import { deleteStudent } from '../helpers/students';
 
 /**
@@ -113,6 +117,55 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await page.getByRole('button', { name: /^entrar$/i }).click();
     await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
   });
+
+  for (const resend of [false, true]) {
+    test(
+      'US-229: el mail ' +
+        (resend ? 'reenviado' : 'inicial') +
+        ' vuelve a la reseña desde otro navegador',
+      async ({ page, browser }) => {
+        const email = uniqueEmail('e2e-return');
+        const password = 'e2e-test-pw-1234';
+        createdStudent = { email, password };
+        const from =
+          '/reviews/new?subjectId=00000004-0000-4000-a000-000000000012&chairId=00000008-0000-4000-a000-000000000003';
+        await page.goto(`/sign-up?from=${encodeURIComponent(from)}`);
+        await page.getByLabel(/tu email/i).fill(email);
+        await page.getByLabel(/^contraseña$/i).fill(password);
+        await page.getByLabel(/repetí la contraseña/i).fill(password);
+        await fillCareerCascade(page);
+        await page.getByRole('button', { name: /crear mi cuenta/i }).click();
+        await expect(page).toHaveURL(/\/sign-up\/check-inbox/, { timeout: 15_000 });
+
+        let mail = await waitForMail(email);
+        if (resend) {
+          const originalId = mail.ID;
+          await page.getByRole('button', { name: /reenviar el link/i }).click();
+          await expect(page.getByRole('status')).toContainText('te mandamos otro link');
+          mail = await waitForMail(email);
+          expect(mail.ID).not.toBe(originalId);
+        }
+        const link = verificationLinkFromMail(mail);
+        expect(new URL(link).searchParams.get('from')).toBe(from);
+
+        const otherDevice = await browser.newContext({ baseURL: new URL(page.url()).origin });
+        try {
+          expect(await otherDevice.cookies()).toEqual([]);
+          const otherPage = await otherDevice.newPage();
+          await otherPage.goto(link);
+          await expect(otherPage.getByRole('heading', { name: /^¡listo!$/i })).toBeVisible();
+          await otherPage.getByRole('link', { name: /^iniciar sesión$/i }).click();
+          await expect(otherPage).toHaveURL(/\/sign-in\?from=/);
+          await otherPage.getByLabel(/tu email/i).fill(email);
+          await otherPage.getByLabel(/^contraseña$/i).fill(password);
+          await otherPage.getByRole('button', { name: /^entrar$/i }).click();
+          await expect(otherPage).toHaveURL(new URL(from, link).href, { timeout: 15_000 });
+        } finally {
+          await otherDevice.close();
+        }
+      },
+    );
+  }
 
   test('email duplicado en sign-up responde igual que uno libre (ADR-0076)', async ({ page }) => {
     // Reusamos LUCIA: su email ya existe en el seed. La pantalla NO puede decirlo:

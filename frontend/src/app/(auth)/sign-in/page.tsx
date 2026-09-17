@@ -5,6 +5,7 @@ import { HowItWorksPanel } from '@/features/sign-in/components/how-it-works-pane
 import { ResetSuccessBanner } from '@/features/sign-in/components/reset-success-banner';
 import { SignInForm } from '@/features/sign-in/components/sign-in-form';
 import { resolveSignInGate } from '@/features/sign-in/reason';
+import { redirectAuthenticatedUser } from '@/lib/redirect-authenticated-user';
 
 type Props = {
   searchParams: Promise<{ reset?: string; 'account-deactivated'?: string; from?: string }>;
@@ -32,6 +33,7 @@ export default async function SignInPage({ searchParams }: Props) {
   const resetSuccess = params.reset === 'success';
   const accountDeactivated = params['account-deactivated'] === '1';
   const { from, reason } = resolveSignInGate(params.from);
+  await redirectAuthenticatedUser(from);
 
   const signUpHref = from ? `/sign-up?from=${encodeURIComponent(from)}` : '/sign-up';
   const foot = (

@@ -35,9 +35,19 @@ public sealed class SmtpVerificationEmailSender : IVerificationEmailSender
         _logger = logger;
     }
 
-    public async Task SendAsync(EmailAddress recipient, string token, CancellationToken ct = default)
+    public async Task SendAsync(EmailAddress recipient, string token, string? returnTo, CancellationToken ct = default)
     {
         var link = $"{_verification.LinkBaseUrl}?token={Uri.EscapeDataString(token)}";
+        // El destino viaja en el mail para sobrevivir al cambio de dispositivo. Solo admite
+        // rutas internas; el frontend vuelve a validar el valor antes de navegar.
+        if (returnTo is { Length: > 0 and <= 2048 }
+            && returnTo.StartsWith('/')
+            && !returnTo.StartsWith("//", StringComparison.Ordinal)
+            && !returnTo.Contains('\\')
+            && !returnTo.Any(char.IsControl))
+        {
+            link += $"&from={Uri.EscapeDataString(returnTo)}";
+        }
 
         var message = BuildMessage(
             recipient,
