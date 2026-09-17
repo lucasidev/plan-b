@@ -108,12 +108,12 @@ No copiar `planb-stage-api-7mmcdb` como si fuera patrón. Es evidencia de una in
 
 **Autorización:** un reset requiere una decisión explícita. No se infiere de un seed fallido, un deploy fallido ni un cutover exitoso.
 
-**Preparación de una demo (R7, #526):** los recorridos con cuenta (`just walk lucia`, `just walk matias` y `just walk copas`) se ejecutan antes del reset final. Escriben reseñas, cuentas y frases, así que nunca corren sobre el corpus que se deja para mostrar. Primero se corrigen sus hallazgos y se verifica el SHA desplegado; después se hace el backup, reset y seed autorizado de ese mismo SHA.
+**Preparación de una demo (R7, #526):** los recorridos con cuenta (`just walk lucia`, `just walk matias`, `just walk copas` y `just walk sofia`) se ejecutan antes del reset final. Escriben reseñas, cuentas, cátedras o frases, así que nunca corren sobre el corpus que se deja para mostrar. Primero se corrigen sus hallazgos y se verifica el SHA desplegado; después se hace el reset y seed autorizado de ese mismo SHA, con el respaldo que corresponda a los datos que se deben conservar.
 
 **Acción:**
 
 1. Confirmar nombre, id y ambiente de la PostgreSQL Database. Tiene que ser stage.
-2. Hacer un backup y guardar su ubicación antes de borrar datos.
+2. Hacer un backup y guardar su ubicación si hay datos que conservar. Para preparar una demo con datos de prueba recreables, puede omitirse cuando la autorización del reset incluye descartarlos; registrar esa decisión. No hace falta agregar infraestructura de backups para ese caso.
 3. Detener o bloquear escrituras.
 4. Vaciar o recrear la Database desde Dokploy.
 5. Si cambió el endpoint, actualizar API y Migrate.
@@ -123,7 +123,7 @@ No copiar `planb-stage-api-7mmcdb` como si fuera patrón. Es evidencia de una in
 
 No hay comando Compose de reset: los Compose de stage y producción fueron retirados del repo.
 
-**Después del seed para la demo:** importar la AGN desde `/admin/universities` y caminar solo los recorridos sin cuenta (`just walk valentina` y `just walk sofia`). Confirmar Ruiz con 6 reseñas, Bravo con 9, la fama en Ibáñez, la comparación de Pérez calculada solo con hermanas que publican, el corte de Aráoz y Método sin frases de prueba. Registrar el SHA servido y el resultado en el [guion de la demo](../plan/demo-script.md), y poner el tag narrativo sobre ese SHA cuando la aceptación termine. Si una corrección requiere escribir con una cuenta, se repite esta preparación antes de dejar el stage listo.
+**Después del seed para la demo:** importar la AGN desde `/admin/universities`, ejecutar `just walk valentina` sin cuenta y revisar el backoffice en modo lectura con administración. Confirmar Ruiz con 6 reseñas, Bravo con 9, la fama en Ibáñez, la comparación de Pérez calculada solo con hermanas que publican, el corte de Aráoz y Método sin frases de prueba. Registrar el SHA servido y el resultado en el [guion de la demo](../plan/demo-script.md), y poner el tag narrativo sobre ese SHA cuando la aceptación termine. Si una corrección requiere escribir con una cuenta, se repite esta preparación antes de dejar el stage listo.
 
 ### 8. PostgreSQL perdió o corrompió datos
 
