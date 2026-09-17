@@ -554,91 +554,105 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
     });
 
     await step(4, 'Que nadie sepa que fue él (US-148, US-159, tesis)', async () => {
-      const needles = [SUFFIX, MATIAS_EMAIL, 'Matías', 'seis clases seguidas en abril'];
+      // La identidad de la propia sesión en el shell no es una publicación de la reseña.
+      const publicContext = await browser.newContext({
+        baseURL: new URL(page.url()).origin,
+        storageState: { cookies: [], origins: [] },
+      });
+      try {
+        const publicPage = await publicContext.newPage();
+        const needles = [SUFFIX, MATIAS_EMAIL, 'Matías', 'seis clases seguidas en abril'];
 
-      async function leaksAt(url: string): Promise<string[]> {
-        await page.goto(url, { timeout: 15_000 });
-        await page.waitForLoadState('networkidle').catch(() => {});
-        const text = await page.locator('body').innerText();
-        return needles.filter((n) => text.includes(n));
-      }
+        async function leaksAt(url: string): Promise<string[]> {
+          await publicPage.goto(url, { timeout: 15_000 });
+          await publicPage.waitForLoadState('networkidle').catch(() => {});
+          const text = await publicPage.locator('body').innerText();
+          return needles.filter((n) => text.includes(n));
+        }
 
-      const surfaces: Array<{ url: string; label: string }> = [
-        { url: `/chairs/${CHAIR_PEREZ_ID}`, label: 'ficha de Pérez' },
-        { url: `/subjects/${SUBJECT_FUNDAMENTOS_ID}`, label: 'ficha de la materia 211' },
-        { url: '/', label: 'entrada' },
-        { url: '/method', label: 'Método' },
-      ];
-      const findings: string[] = [];
-      for (const surface of surfaces) {
-        const leaked = await leaksAt(surface.url);
+        const surfaces: Array<{ url: string; label: string }> = [
+          { url: `/chairs/${CHAIR_PEREZ_ID}`, label: 'ficha de Pérez' },
+          { url: `/subjects/${SUBJECT_FUNDAMENTOS_ID}`, label: 'ficha de la materia 211' },
+          { url: '/', label: 'entrada' },
+          { url: '/method', label: 'Método' },
+        ];
+        const findings: string[] = [];
+        for (const surface of surfaces) {
+          const leaked = await leaksAt(surface.url);
+          expect
+            .soft(leaked.length, `${surface.label} no debe contener ningún rastro de Matías`)
+            .toBe(0);
+          findings.push(
+            `${surface.label}: ${leaked.length === 0 ? 'sin rastro' : `filtró [${leaked.join(', ')}]`}`,
+          );
+        }
+
+        // /api/search devuelve { items: [] } para lo que no matchea nada (confirmado explorando el
+        // stage): que dé cero resultados es la prueba de que el sufijo no quedó indexado en ningún
+        // lado, no solo que no aparece en el texto de una respuesta cualquiera.
+        const searchRes = await publicPage.request.get(
+          `/api/search?q=${encodeURIComponent(SUFFIX)}`,
+        );
+        const searchBody = (await searchRes.json()) as { items: unknown[] };
+        const searchRaw = JSON.stringify(searchBody);
+        const searchLeak = needles.some((n) => searchRaw.includes(n));
         expect
-          .soft(leaked.length, `${surface.label} no debe contener ningún rastro de Matías`)
+          .soft(
+            searchBody.items.length,
+            'el buscador no debe devolver resultados para el sufijo de Matías',
+          )
           .toBe(0);
         findings.push(
-          `${surface.label}: ${leaked.length === 0 ? 'sin rastro' : `filtró [${leaked.join(', ')}]`}`,
+          `/api/search?q=${SUFFIX}: ${searchBody.items.length} resultado(s)${searchLeak ? ', con datos personales' : ''}`,
         );
+
+        await publicPage.goto(`/teachers/${TEACHER_PEREZ_ID}`, { timeout: 15_000 });
+        await publicPage.waitForLoadState('networkidle').catch(() => {});
+        const teacherText = await publicPage.locator('body').innerText();
+        const teacherLeak = needles.filter((n) => teacherText.includes(n));
+        expect
+          .soft(teacherLeak.length, 'la página de Martín Pérez no debe contener rastro de Matías')
+          .toBe(0);
+        findings.push(
+          `página de Martín Pérez: ${teacherLeak.length === 0 ? 'sin rastro' : `filtró [${teacherLeak.join(', ')}]`}`,
+        );
+
+        record({
+          step: 4,
+          story: 'US-148',
+          expected:
+            'Cero apariciones del sufijo, el mail, "Matías" o el texto del campo libre en cualquier superficie pública.',
+          observed: findings.join('. '),
+          verdict: findings.some((f) => f.includes('filtró') || / [1-9]\d* resultado/.test(f))
+            ? 'no cumple'
+            : 'cumple',
+          screenshot: '09-privacy-search.png',
+        });
+        await shot(publicPage, '09-privacy-search.png');
+
+        await publicPage.goto(`/chairs/${CHAIR_PEREZ_ID}`, { timeout: 15_000 });
+        await publicPage.waitForLoadState('networkidle').catch(() => {});
+        const chairBodyText = await publicPage.locator('body').innerText();
+        const hasForbiddenWord = /puntaje|promedio|estrella|★|\/5\b/i.test(chairBodyText);
+        const hasStudentName = /alumno/i.test(chairBodyText);
+        expect
+          .soft(hasForbiddenWord, 'la ficha de Pérez no debe mostrar puntaje, promedio ni estrella')
+          .toBe(false);
+        expect
+          .soft(hasStudentName, 'la ficha de Pérez no debe nombrar a ningún alumno')
+          .toBe(false);
+        record({
+          step: 4,
+          story: 'US-159 / tesis',
+          expected:
+            'La ficha de Pérez no muestra ninguna reseña individual ni cómo terminó nadie: solo conteos agregados.',
+          observed: `Menciones a puntaje/promedio/estrella: ${hasForbiddenWord ? 'aparece' : 'no aparece'}. Menciones a "alumno": ${hasStudentName ? 'aparece' : 'no aparece'}. Reseñas individuales visibles: ninguna.`,
+          verdict: !hasForbiddenWord && !hasStudentName ? 'cumple' : 'no cumple',
+          screenshot: '09-privacy-search.png',
+        });
+      } finally {
+        await publicContext.close();
       }
-
-      // /api/search devuelve { items: [] } para lo que no matchea nada (confirmado explorando el
-      // stage): que dé cero resultados es la prueba de que el sufijo no quedó indexado en ningún
-      // lado, no solo que no aparece en el texto de una respuesta cualquiera.
-      const searchRes = await page.request.get(`/api/search?q=${encodeURIComponent(SUFFIX)}`);
-      const searchBody = (await searchRes.json()) as { items: unknown[] };
-      const searchRaw = JSON.stringify(searchBody);
-      const searchLeak = needles.some((n) => searchRaw.includes(n));
-      expect
-        .soft(
-          searchBody.items.length,
-          'el buscador no debe devolver resultados para el sufijo de Matías',
-        )
-        .toBe(0);
-      findings.push(
-        `/api/search?q=${SUFFIX}: ${searchBody.items.length} resultado(s)${searchLeak ? ', con datos personales' : ''}`,
-      );
-
-      await page.goto(`/teachers/${TEACHER_PEREZ_ID}`, { timeout: 15_000 });
-      await page.waitForLoadState('networkidle').catch(() => {});
-      const teacherText = await page.locator('body').innerText();
-      const teacherLeak = needles.filter((n) => teacherText.includes(n));
-      expect
-        .soft(teacherLeak.length, 'la página de Martín Pérez no debe contener rastro de Matías')
-        .toBe(0);
-      findings.push(
-        `página de Martín Pérez: ${teacherLeak.length === 0 ? 'sin rastro' : `filtró [${teacherLeak.join(', ')}]`}`,
-      );
-
-      record({
-        step: 4,
-        story: 'US-148',
-        expected:
-          'Cero apariciones del sufijo, el mail, "Matías" o el texto del campo libre en cualquier superficie pública.',
-        observed: findings.join('. '),
-        verdict: findings.some((f) => f.includes('filtró') || / [1-9]\d* resultado/.test(f))
-          ? 'no cumple'
-          : 'cumple',
-        screenshot: '09-privacy-search.png',
-      });
-      await shot(page, '09-privacy-search.png');
-
-      await page.goto(`/chairs/${CHAIR_PEREZ_ID}`, { timeout: 15_000 });
-      await page.waitForLoadState('networkidle').catch(() => {});
-      const chairBodyText = await page.locator('body').innerText();
-      const hasForbiddenWord = /puntaje|promedio|estrella|★|\/5\b/i.test(chairBodyText);
-      const hasStudentName = /alumno/i.test(chairBodyText);
-      expect
-        .soft(hasForbiddenWord, 'la ficha de Pérez no debe mostrar puntaje, promedio ni estrella')
-        .toBe(false);
-      expect.soft(hasStudentName, 'la ficha de Pérez no debe nombrar a ningún alumno').toBe(false);
-      record({
-        step: 4,
-        story: 'US-159 / tesis',
-        expected:
-          'La ficha de Pérez no muestra ninguna reseña individual ni cómo terminó nadie: solo conteos agregados.',
-        observed: `Menciones a puntaje/promedio/estrella: ${hasForbiddenWord ? 'aparece' : 'no aparece'}. Menciones a "alumno": ${hasStudentName ? 'aparece' : 'no aparece'}. Reseñas individuales visibles: ninguna.`,
-        verdict: !hasForbiddenWord && !hasStudentName ? 'cumple' : 'no cumple',
-        screenshot: '09-privacy-search.png',
-      });
     });
 
     await step(5, 'El campo libre no se publica (ADR-0084)', async () => {
