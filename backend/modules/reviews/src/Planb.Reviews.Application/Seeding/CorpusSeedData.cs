@@ -18,7 +18,7 @@ namespace Planb.Reviews.Application.Seeding;
 ///     ¿Salías entendiendo?              7 casi nunca      · 5 a veces          · 2 casi siempre
 ///
 ///   Cátedra González  12 voces  publica
-///     ¿Se dictaron las clases?          9 casi todas      · 2 faltaron algunas · 1 faltaron muchas
+///     ¿Se dictaron las clases?         10 casi todas      · 2 faltaron algunas · 0 faltaron muchas
 ///     ¿Contestaba en clase?             8 siempre         · 3 a veces          · 1 casi nunca
 ///     ¿Salías entendiendo?              7 casi siempre    · 4 a veces          · 1 casi nunca
 ///
@@ -337,7 +337,9 @@ public static class CorpusSeedData
             outcomes: [(1, 6), (2, 3), (3, 2), (4, 3)]);
 
         next = AddChair(reviews, next, ChairGonzalez, voices: 12,
-            classesHeld: [(1, 9), (2, 2), (3, 1)],
+            // La comparación de Pérez excluye a Ruiz por el piso: cero negativas sobre las doce
+            // voces publicables de González conserva el contraste de demostración con Wilson.
+            classesHeld: [(1, 10), (2, 2)],
             answersInClass: [(1, 8), (2, 3), (3, 1)],
             understood: [(1, 7), (2, 4), (3, 1)],
             outcomes: [(1, 9), (2, 2), (4, 1)]);

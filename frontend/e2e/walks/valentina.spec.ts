@@ -637,7 +637,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
 
     const comparisonHeading = page.getByText('Comparada con las otras cátedras de la materia');
     const comparisonSignal = page.getByText(
-      /Faltaron\s+muchas:\s+56\s+%\s+acá,\s+11\s+%\s+en\s+las\s+otras\.\s+de\s+16\s+y\s+18\s+voces/,
+      /Faltaron\s+muchas:\s+56\s+%\s+acá,\s+0\s+%\s+en\s+las\s+otras\.\s+de\s+16\s+y\s+12\s+voces/,
     );
     const sisterLink = page.getByRole('link', { name: /^Cátedra González/ });
     const secondSisterLink = page.getByRole('link', { name: /^Cátedra Ruiz/ });
@@ -661,7 +661,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       step: 7,
       story: 'US-130',
       expected:
-        'Pérez muestra comparación real contra sus cátedras hermanas: Faltaron muchas, 56 % acá contra 11 % en las otras, con 16 y 18 voces.',
+        'Pérez muestra comparación real contra sus cátedras hermanas: Faltaron muchas, 56 % acá contra 0 % en las otras, con 16 y 12 voces.',
       observed: `Encabezado: "${await textOf(comparisonHeading)}". Señal: "${await textOf(comparisonSignal)}". Hermanas: "${await textOf(sisterLink)}" y "${await textOf(secondSisterLink)}".`,
       verdict: combineVerdict([
         hasComparisonHeading,
