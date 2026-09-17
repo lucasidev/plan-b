@@ -48,6 +48,135 @@ function renderSheet(f: SubjectFacts) {
 }
 
 describe('SubjectFactsSheet', () => {
+  /** US-134, #519: la cobertura usa los conteos del contrato, incluidas las cátedras sin reseñas. */
+  describe('US-134: cobertura de cátedras', () => {
+    it('muestra publicadas y bajo el piso, incluso con una cátedra sin reseñas', () => {
+      renderSheet(
+        facts({
+          publishingChairs: 2,
+          chairsBelowFloor: 2,
+          totalVoices: 22,
+          chairs: [
+            chair({ chairId: 'c1', reviewCount: 12, isPublished: true }),
+            chair({ chairId: 'c2', reviewCount: 10, isPublished: true }),
+            chair({
+              chairId: 'c3',
+              reviewCount: 3,
+              isPublished: false,
+              reviewsMissingToPublish: 7,
+            }),
+            chair({
+              chairId: 'c4',
+              reviewCount: 0,
+              isPublished: false,
+              reviewsMissingToPublish: 10,
+            }),
+          ],
+        }),
+      );
+
+      expect(
+        screen.getByText(
+          'Cobertura: 2 de 4 cátedras con datos publicados. 2 todavía no llegan al piso.',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('dice que todas llegaron al piso cuando todas publican', () => {
+      renderSheet(
+        facts({
+          publishingChairs: 2,
+          chairsBelowFloor: 0,
+          totalVoices: 22,
+          chairs: [
+            chair({ chairId: 'c1', reviewCount: 12, isPublished: true }),
+            chair({ chairId: 'c2', reviewCount: 10, isPublished: true }),
+          ],
+        }),
+      );
+
+      expect(
+        screen.getByText(
+          'Cobertura: 2 de 2 cátedras con datos publicados. Todas llegaron al piso.',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('con una sola cátedra publicada conserva numerador y denominador', () => {
+      renderSheet(
+        facts({
+          publishingChairs: 1,
+          chairsBelowFloor: 0,
+          totalVoices: 10,
+          chairs: [chair({ chairId: 'c1', reviewCount: 10, isPublished: true })],
+        }),
+      );
+
+      expect(
+        screen.getByText('Cobertura: 1 de 1 cátedra con datos publicados. Todas llegaron al piso.'),
+      ).toBeInTheDocument();
+    });
+
+    it('muestra cero publicadas cuando hay cátedras cargadas pero ninguna llega al piso', () => {
+      renderSheet(
+        facts({
+          isPublished: false,
+          publishingChairs: 0,
+          chairsBelowFloor: 1,
+          totalVoices: 0,
+          chairs: [
+            chair({
+              chairId: 'c1',
+              reviewCount: 0,
+              isPublished: false,
+              reviewsMissingToPublish: 10,
+            }),
+          ],
+        }),
+      );
+
+      expect(
+        screen.getByText(
+          'Cobertura: 0 de 1 cátedra con datos publicados. 1 todavía no llega al piso.',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('explica que no hay cátedras para medir sin mostrar 0 de 0', () => {
+      renderSheet(facts({ publishingChairs: 0, chairsBelowFloor: 0, chairs: [] }));
+
+      expect(
+        screen.getByText('Todavía no hay cátedras cargadas para medir cobertura.'),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/0 de 0/)).not.toBeInTheDocument();
+    });
+
+    it('usa singular cuando queda una cátedra bajo el piso', () => {
+      renderSheet(
+        facts({
+          publishingChairs: 1,
+          chairsBelowFloor: 1,
+          totalVoices: 10,
+          chairs: [
+            chair({ chairId: 'c1', reviewCount: 10, isPublished: true }),
+            chair({
+              chairId: 'c2',
+              reviewCount: 4,
+              isPublished: false,
+              reviewsMissingToPublish: 6,
+            }),
+          ],
+        }),
+      );
+
+      expect(
+        screen.getByText(
+          'Cobertura: 1 de 2 cátedras con datos publicados. 1 todavía no llega al piso.',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
   /**
    * SC-007, estado "vacía" (US-136 aplicado a la ficha de materia): sin ninguna cátedra cargada,
    * la ficha dice que no hay nada publicado y por qué (no hay cátedras, no que la materia esté
@@ -403,8 +532,9 @@ describe('SubjectFactsSheet', () => {
       }),
     );
 
-    expect(screen.getByText('3 reseñas, todavía sin conclusiones.')).toBeInTheDocument();
-    expect(screen.queryByText(/publica|piso/i)).not.toBeInTheDocument();
+    const row = screen.getByText('3 reseñas, todavía sin conclusiones.').closest('a');
+    expect(row).not.toBeNull();
+    expect(within(row as HTMLElement).queryByText(/publica|piso/i)).not.toBeInTheDocument();
   });
 
   /** El denominador de la conclusión pluraliza: "1 reseña" y no "1 reseñas". */
