@@ -4,6 +4,7 @@
  * the FAQ accordion that keeps the open-item state locally.
  */
 
+import { PageFrame } from '@/components/layout/page-frame';
 import { ContactCard } from './contact-card';
 import { FaqList } from './faq-list';
 import { HelpHero } from './help-hero';
@@ -11,23 +12,15 @@ import { ResourcesCard } from './resources-card';
 
 export function HelpShell() {
   return (
-    <div className="py-6">
-      <HelpHero />
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.6fr) minmax(0, 1fr)',
-          gap: 20,
-          alignItems: 'start',
-        }}
-      >
-        <FaqList />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <PageFrame
+      head={<HelpHero />}
+      main={<FaqList />}
+      aside={
+        <div className="flex min-w-0 flex-col gap-4">
           <ContactCard />
           <ResourcesCard />
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 }

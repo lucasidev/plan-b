@@ -51,10 +51,10 @@ export function ChangePasswordModal({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Cambiar contraseña</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[10px] border-line bg-bg-card text-ink sm:max-w-md">
+        <DialogHeader className="text-left">
+          <DialogTitle className="font-serif text-2xl">Cambiar contraseña</DialogTitle>
+          <DialogDescription className="text-ink-2">
             Después de confirmar vas a tener que iniciar sesión de nuevo en este dispositivo y en
             cualquier otro.
           </DialogDescription>
@@ -96,14 +96,19 @@ export function ChangePasswordModal({ open, onOpenChange }: Props) {
           />
 
           {state.status === 'error' && state.kind === 'unknown' && (
-            <p className="text-sm text-danger" role="alert">
+            <p className="text-sm text-ink-2" role="alert">
               {state.message}
             </p>
           )}
         </form>
 
         <DialogFooter>
-          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            variant="secondary"
+            className="rounded-[6px]"
+            onClick={() => onOpenChange(false)}
+          >
             Cancelar
           </Button>
           <SubmitButton formId={formId} />
@@ -116,7 +121,7 @@ export function ChangePasswordModal({ open, onOpenChange }: Props) {
 function SubmitButton({ formId }: { formId: string }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" form={formId} disabled={pending}>
+    <Button type="submit" form={formId} disabled={pending} className="rounded-[6px]">
       {pending ? 'Cambiando…' : 'Cambiar contraseña'}
     </Button>
   );

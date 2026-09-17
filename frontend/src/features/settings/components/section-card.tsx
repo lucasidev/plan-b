@@ -12,12 +12,12 @@ type Props = {
 
 export function SectionCard({ title, description, children }: Props) {
   return (
-    <section className="bg-bg border border-line rounded-lg overflow-hidden">
-      <header className="px-6 py-4 border-b border-line">
-        <h2 className="text-base font-semibold text-ink-1">{title}</h2>
+    <section className="overflow-hidden rounded-[10px] border border-line bg-bg-card">
+      <header className="border-b border-line px-4 py-4 sm:px-5">
+        <h2 className="font-serif text-xl font-semibold text-ink">{title}</h2>
         {description && <p className="mt-1 text-sm text-ink-3">{description}</p>}
       </header>
-      <div className="px-6 divide-y divide-line">{children}</div>
+      <div className="divide-y divide-line-2 px-4 sm:px-5">{children}</div>
     </section>
   );
 }

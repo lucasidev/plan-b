@@ -12,13 +12,17 @@ type Props = {
   description?: string;
   control: ReactNode;
   htmlFor?: string;
+  /** Los selects y las acciones pasan debajo del texto cuando no entra una fila. */
+  stackOnMobile?: boolean;
 };
 
-export function SettingRow({ label, description, control, htmlFor }: Props) {
+export function SettingRow({ label, description, control, htmlFor, stackOnMobile = false }: Props) {
   return (
-    <div className="flex items-center justify-between gap-6 py-3">
+    <div
+      className={`flex justify-between gap-4 py-4 ${stackOnMobile ? 'flex-col items-start sm:flex-row sm:items-center' : 'items-center'}`}
+    >
       <div className="flex-1 min-w-0">
-        <label htmlFor={htmlFor} className="block text-sm font-medium text-ink-1">
+        <label htmlFor={htmlFor} className="block text-sm font-medium text-ink">
           {label}
         </label>
         {description && <p className="mt-0.5 text-sm text-ink-3">{description}</p>}

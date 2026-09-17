@@ -1,5 +1,4 @@
-import { DisplayHeading } from '@/components/ui/display-heading';
-import { Lede } from '@/components/ui/lede';
+import { PageFrame } from '@/components/layout/page-frame';
 import { fetchMySettings, SettingsForm } from '@/features/settings';
 
 export const metadata = {
@@ -25,12 +24,15 @@ export default async function SettingsPage() {
   const settings = await fetchMySettings();
 
   return (
-    <div className="flex flex-col gap-8 py-6">
-      <header>
-        <DisplayHeading>Ajustes</DisplayHeading>
-        <Lede>Configurá notificaciones, privacidad, idioma y tema visual.</Lede>
-      </header>
-      <SettingsForm initialSettings={settings} />
-    </div>
+    <PageFrame
+      head={
+        <header>
+          <p className="pb-eyebrow">Tu cuenta</p>
+          <h1 className="font-serif text-ink">Ajustes</h1>
+          <p className="pb-h-sub">Configurá notificaciones, privacidad, idioma y tema visual.</p>
+        </header>
+      }
+      main={<SettingsForm initialSettings={settings} />}
+    />
   );
 }

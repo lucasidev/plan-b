@@ -11,16 +11,13 @@ export function OpenSourceCard() {
   return (
     <Card>
       <p className="text-ink-2" style={{ fontSize: 14, lineHeight: 1.55, margin: 0 }}>
-        <span className="text-ink-1" style={{ fontFamily: 'var(--font-display)', fontWeight: 600 }}>
-          plan-b
-        </span>{' '}
-        es código abierto.
+        <span className="text-ink font-semibold">plan-b</span> es código abierto.
       </p>
       <Link
         href={ABOUT_REPO_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent hover:text-accent-hover"
+        className="break-all text-ink underline underline-offset-4 hover:text-ink-2"
         style={{
           fontSize: 13.5,
           marginTop: 8,

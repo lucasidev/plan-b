@@ -10,16 +10,8 @@ import { HELP_RESOURCES, type ResourceLink } from '../data/resources';
 
 export function ResourcesCard() {
   return (
-    <section
-      className="bg-bg-card border border-line"
-      style={{ padding: 18, borderRadius: 10 }}
-      aria-labelledby="resources-heading"
-    >
-      <h2
-        id="resources-heading"
-        className="text-ink-1"
-        style={{ fontSize: 14, fontWeight: 600, margin: '0 0 12px' }}
-      >
+    <section className="pb-card" aria-labelledby="resources-heading">
+      <h2 id="resources-heading" className="mb-3 font-serif text-xl font-semibold text-ink">
         Recursos
       </h2>
       <ul
@@ -48,7 +40,7 @@ function ResourceRow({ resource }: { resource: ResourceLink }) {
 
   return (
     <div
-      className={isPending ? 'text-ink-3' : 'text-ink-2 hover:text-ink-1'}
+      className="text-ink-3"
       style={{
         padding: '10px 0',
         fontSize: 13.5,
@@ -56,13 +48,13 @@ function ResourceRow({ resource }: { resource: ResourceLink }) {
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 8,
-        borderBottom: '1px solid var(--line)',
+        borderBottom: '1px solid var(--color-line-2)',
       }}
       title={isPending ? 'Próximamente' : undefined}
     >
       <span>{resource.label}</span>
-      {isOk && <Check size={14} aria-label="OK" className="text-st-approved-fg" />}
-      {isPending && <ArrowUpRight size={14} aria-hidden style={{ opacity: 0.4 }} />}
+      {isOk && <Check size={14} aria-label="OK" className="shrink-0 text-ink-2" />}
+      {isPending && <ArrowUpRight size={14} aria-hidden className="shrink-0" />}
     </div>
   );
 }

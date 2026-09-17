@@ -18,7 +18,7 @@ type Props = {
  */
 export function SettingsForm({ initialSettings }: Props) {
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex max-w-3xl flex-col gap-6">
       <NotificationsSection settings={initialSettings} />
       <PrivacySection settings={initialSettings} />
       <LanguageSection settings={initialSettings} />

@@ -1,27 +1,8 @@
 'use client';
 
 import { ChevronRight } from 'lucide-react';
-import { type CSSProperties, useState } from 'react';
+import { useState } from 'react';
 import { FAQ, type FaqEntry } from '../data/faq';
-
-// Style of the accordion trigger. Module-scope to avoid a new ref per render and so
-// the `no-inline-exhaustive-style` rule does not fire for the 13 props (it is a
-// clickable pill button; no compact Tailwind classes cover this shape).
-const TRIGGER_STYLE: CSSProperties = {
-  appearance: 'none',
-  background: 'transparent',
-  border: 0,
-  width: '100%',
-  padding: '16px 18px',
-  fontSize: 14,
-  fontWeight: 500,
-  textAlign: 'left',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: 12,
-  cursor: 'pointer',
-};
 
 /**
  * FAQ list with accordions (US-073). Each item is a `<button>` that opens/closes the
@@ -35,16 +16,7 @@ export function FaqList() {
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
-    <ul
-      style={{
-        listStyle: 'none',
-        padding: 0,
-        margin: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10,
-      }}
-    >
+    <ul className="flex min-w-0 flex-col gap-3">
       {FAQ.map((entry) => (
         <li key={entry.id}>
           <FaqItem
@@ -70,25 +42,22 @@ function FaqItem({
   const panelId = `faq-panel-${entry.id}`;
   const buttonId = `faq-button-${entry.id}`;
   return (
-    <div className="bg-bg-card border border-line" style={{ borderRadius: 10, overflow: 'hidden' }}>
+    <div className="overflow-hidden rounded-[10px] border border-line bg-bg-card">
       <button
         id={buttonId}
         type="button"
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={panelId}
-        className="text-ink-1 hover:bg-bg-elev"
-        style={TRIGGER_STYLE}
+        className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left text-sm font-medium text-ink hover:bg-bg-elev focus-visible:-outline-offset-2"
       >
         <span>{entry.question}</span>
         <ChevronRight
           size={16}
           aria-hidden
-          className="text-ink-3"
+          className="shrink-0 text-ink-3 motion-safe:transition-transform motion-safe:duration-150"
           style={{
             transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
-            transition: 'transform 120ms ease',
-            flexShrink: 0,
           }}
         />
       </button>
@@ -99,14 +68,7 @@ function FaqItem({
         <section
           id={panelId}
           aria-labelledby={buttonId}
-          className="text-ink-2"
-          style={{
-            padding: '0 18px 16px',
-            fontSize: 13.5,
-            lineHeight: 1.6,
-            borderTop: '1px solid var(--line)',
-            paddingTop: 14,
-          }}
+          className="border-t border-line px-4 py-4 text-sm leading-relaxed text-ink-2"
         >
           {entry.answer}
         </section>
