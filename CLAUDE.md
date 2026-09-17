@@ -7,7 +7,7 @@ Adaptador del contrato de `AGENTS.md` ("Reparto del trabajo") para este cliente.
 Dos hooks cableados en `.claude/settings.json` limitan el costo de las delegaciones y herramientas:
 
 - `guard-agent-tier` (`.claude/hooks/`), en cualquier contexto: niega `general-purpose`, `fork`, un `Agent` sin tipo, un built-in sin modelo barato y un `model` que pise el frontmatter.
-- `guard-tool-budget` ([`.agents/hooks/`](.agents/hooks), compartido con Codex): cuenta por sesión y subagente las llamadas de browser (Playwright, Chrome) y de web (`WebSearch`, `WebFetch`) y niega al agotar el presupuesto, 12 y 6 por default.
+- `guard-tool-budget` ([`.agents/hooks/`](.agents/hooks), compartido con Codex): cuenta por sesión y subagente las llamadas de browser (Playwright, Chrome) y de web (`WebSearch`, `WebFetch`). Browser emite un recordatorio de progreso cada 12 llamadas, sin bloquear ni medir tokens. `PLANB_BROWSER_TOOL_LIMIT` define el intervalo, y `0` avisa en cada llamada. Web conserva el bloqueo al agotar 6 llamadas por default.
 
 Escape por sesión, decisión del usuario: `PLANB_GUARD_OFF=1` apaga el de modelos y `PLANB_TOOL_BUDGET_OFF=1` el de herramientas; topes con `PLANB_BROWSER_TOOL_LIMIT` y `PLANB_WEB_TOOL_LIMIT`. No hay bloqueo por cantidad de ediciones ni por correr tests en el principal: rige el criterio de delegación de `AGENTS.md`.
 
