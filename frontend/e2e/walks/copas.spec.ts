@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
+import { readChairReviewState } from '../helpers/chair-review-state';
 import { waitForMail } from '../helpers/mailpit';
 import { ADMIN } from '../helpers/personas';
 
@@ -122,23 +123,8 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
 
   test('6. Reseña la Cátedra Ruiz y la ficha suma la voz', async ({ page }) => {
     await page.goto(`/chairs/${CHAIR_RUIZ}`);
-    const belowFloor = page.getByText(/^Junta \d+ reseñas?: con \d+ más se publica\.$/);
-    // Espera acotada y no el expect a 30 s de siempre: si esto no aparece porque la cátedra ya
-    // publica, un timeout mudo no dice por qué. Ruiz siembra con 6 voces y el piso es 10
-    // (CorpusSeedData.cs), así que un stage recién sembrado siempre arranca bajo el piso.
-    await belowFloor.waitFor({ state: 'visible', timeout: 15_000 }).catch(() => {});
-    if ((await belowFloor.count()) === 0) {
-      throw new Error(
-        'La Cátedra Ruiz ya publica: el recorrido arranca sobre el stage recién sembrado (runbook.md, casos 7 y 6: reset y seed-db).',
-      );
-    }
-    const beforeText = (await belowFloor.textContent()) ?? '';
-    const beforeMatch = beforeText.match(/Junta (\d+) reseñas?: con (\d+) más se publica\./);
-    if (!beforeMatch) {
-      throw new Error(`No se pudo leer el conteo de la ficha de Ruiz: "${beforeText}"`);
-    }
-    const reviewCount = Number(beforeMatch[1]);
-    const missing = Number(beforeMatch[2]);
+    // Los recorridos con cuenta se ejecutan antes del reset final y pueden encontrar voces previas.
+    const { count: reviewCount, missing } = await readChairReviewState(page);
 
     await signIn(page, copasEmail, copasPassword);
     await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 20_000 });
@@ -172,17 +158,11 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     await expect(page.getByRole('link', { name: /cátedra ruiz/i })).toBeVisible();
 
     await page.goto(`/chairs/${CHAIR_RUIZ}`);
-    if (missing === 1) {
-      // Esta reseña completa el piso: la línea de abajo del piso deja de existir
-      // (chair-facts-sheet.tsx:44-45) y hay que leer el branch publicado. "Qué hizo la cátedra" es
-      // una marca fija de ese branch (chair-facts-sheet.tsx:33), a diferencia de la fama o los
-      // contrastes, que son condicionales.
-      await expect(page.getByText('Qué hizo la cátedra')).toBeVisible({ timeout: 30_000 });
-    } else {
-      await expect(
-        page.getByText(`Junta ${reviewCount + 1} reseñas: con ${missing - 1} más se publica.`),
-      ).toBeVisible({ timeout: 30_000 });
-    }
+    const afterReview = await readChairReviewState(page);
+    expect(afterReview.count, 'la nueva reseña suma exactamente una al conteo').toBe(
+      reviewCount + 1,
+    );
+    expect(afterReview.missing).toBe(Math.max(missing - 1, 0));
 
     console.log(`6: Ruiz pasó de ${reviewCount} a ${reviewCount + 1}`);
   });

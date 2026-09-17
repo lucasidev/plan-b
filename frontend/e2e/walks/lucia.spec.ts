@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { expect, type Locator, type Page, test } from '@playwright/test';
+import { readChairReviewState } from '../helpers/chair-review-state';
 import { verificationLinkFromMail, waitForMail } from '../helpers/mailpit';
 
 /**
@@ -198,17 +199,6 @@ async function pickUnusedTerm(page: Page, exclude: string[]): Promise<string> {
   throw new Error(`No se encontró un período distinto de: ${exclude.join(', ')}`);
 }
 
-/** Lee "Junta N reseñas: con M más se publica." de la ficha de Ruiz. Null si ya publica. */
-async function readFloorState(page: Page): Promise<{ count: number; missing: number } | null> {
-  const floorLine = page.getByText(/^Junta \d+ reseñas?: con \d+ más se publica\.$/);
-  const visible = await isVisible(floorLine, 8000);
-  if (!visible) return null;
-  const text = (await floorLine.textContent()) ?? '';
-  const m = text.match(/Junta (\d+) reseñas?: con (\d+) más se publica\./);
-  if (!m) return null;
-  return { count: Number(m[1]), missing: Number(m[2]) };
-}
-
 /** Fila de un aporte en Mis aportes que contenga todos los textos dados. */
 async function findContributionRow(page: Page, mustContain: string[]): Promise<Locator> {
   let row = page.getByRole('listitem');
@@ -242,6 +232,7 @@ async function step(n: number, title: string, fn: () => Promise<void>): Promise<
         verdict: 'no cumple',
         screenshot: '(sin captura: el paso no llegó a completarse)',
       });
+      expect.soft(false, `El paso ${n} (${title}) no terminó: ${message}`).toBe(true);
     }
   });
 }
@@ -288,7 +279,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       await page.goto(`/chairs/${CHAIR_RUIZ_ID}`, { timeout: 15_000 });
       await page.waitForLoadState('networkidle').catch(() => {});
 
-      const floor = await readFloorState(page);
+      const floor = await readChairReviewState(page);
       if (floor) {
         reviewCountBefore = floor.count;
         missingBefore = floor.missing;
@@ -328,8 +319,8 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
             : 'No se encontró ningún texto con "necesitás una cuenta" en la pantalla de Ingresar.'
         } Estado de Ruiz antes de reseñar: ${
           baselineKnown
-            ? `Junta ${reviewCountBefore} reseñas, con ${missingBefore} más se publica.`
-            : 'ya publica (no se leyó el estado bajo el piso).'
+            ? `${reviewCountBefore} reseñas; ${missingBefore === 0 ? 'ya publica' : `faltan ${missingBefore} para publicar`}.`
+            : 'no se pudo leer el conteo.'
         }`,
         verdict: combineVerdict([hasCta, wentToSignIn, hasReason]),
         screenshot: '01-sign-in-gate.png',
@@ -643,7 +634,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       await page.waitForLoadState('networkidle').catch(() => {});
       await shot(page, '04-chair-after-review.png');
 
-      const floorAfter = await readFloorState(page);
+      const floorAfter = await readChairReviewState(page);
       const expectedCount = reviewCountBefore + 1;
       const expectedMissing = Math.max(missingBefore - 1, 0);
       const matches =
@@ -655,11 +646,11 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
         step: 4,
         story: 'US-231 / US-159',
         expected: baselineKnown
-          ? `El conteo de Ruiz sube una unidad respecto de antes de reseñar (de "Junta ${reviewCountBefore}, con ${missingBefore} más se publica" a "Junta ${expectedCount}, con ${expectedMissing} más se publica").`
-          : 'El conteo de Ruiz sube una unidad respecto de antes de reseñar (no se pudo leer el estado bajo el piso en el paso 1).',
+          ? `El conteo de Ruiz sube de ${reviewCountBefore} a ${expectedCount} reseñas; faltan ${expectedMissing} para publicar.`
+          : 'El conteo de Ruiz sube una unidad respecto de antes de reseñar (no se pudo leer el conteo en el paso 1).',
         observed: floorAfter
-          ? `Ahora dice: Junta ${floorAfter.count} reseñas, con ${floorAfter.missing} más se publica.`
-          : 'La ficha ya no muestra el estado bajo el piso (puede haber cruzado a publicar).',
+          ? `${floorAfter.count} reseñas; ${floorAfter.missing === 0 ? 'ya publica' : `faltan ${floorAfter.missing} para publicar`}.`
+          : 'No se pudo leer el conteo de la ficha.',
         verdict: baselineKnown ? (matches ? 'cumple' : 'no cumple') : 'parcial',
         screenshot: '04-chair-after-review.png',
       });
@@ -693,8 +684,14 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       const saveButton = page.getByRole('button', { name: /guardar/i });
       const hasSaveButton = await isVisible(saveButton, 4000);
       if (hasSaveButton) {
-        await saveButton.click({ timeout: 15_000 });
-        await page.waitForLoadState('networkidle').catch(() => {});
+        // Guardar recarga el documento: la siguiente navegación espera ese commit y su resultado.
+        await Promise.all([
+          page.waitForEvent('load', { timeout: 15_000 }),
+          saveButton.click({ timeout: 15_000 }),
+        ]);
+        const savedRow = await findContributionRow(page, [SUBJECT_NAME, FIRST_TERM_LABEL]);
+        await expect(savedRow).toBeVisible();
+        await expect(savedRow).toContainText('Cómo terminó: Me quedó regular.');
       }
       await shot(page, '05-edit-saved.png');
 
@@ -840,7 +837,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
     await step(8, 'Borrar', async () => {
       await page.goto(`/chairs/${CHAIR_RUIZ_ID}`, { timeout: 15_000 });
       await page.waitForLoadState('networkidle').catch(() => {});
-      const floorBeforeDelete = await readFloorState(page);
+      const floorBeforeDelete = await readChairReviewState(page);
 
       await page.goto('/reviews/mine', { timeout: 15_000 });
       await page.waitForLoadState('networkidle').catch(() => {});
@@ -877,7 +874,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
 
       await page.goto(`/chairs/${CHAIR_RUIZ_ID}`, { timeout: 15_000 });
       await page.waitForLoadState('networkidle').catch(() => {});
-      const floorAfterDelete = await readFloorState(page);
+      const floorAfterDelete = await readChairReviewState(page);
       await shot(page, '08-chair-after-delete.png');
 
       const decreasedByOne = Boolean(
@@ -892,7 +889,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
         story: 'US-165 / US-231',
         expected:
           'Al borrar la reseña del paso 3, la ficha de Ruiz vuelve al conteo anterior: una menos que justo antes de borrar.',
-        observed: `Antes de borrar: ${floorBeforeDelete ? `Junta ${floorBeforeDelete.count} reseñas, con ${floorBeforeDelete.missing} más se publica.` : 'ya publicaba.'} Después: ${floorAfterDelete ? `Junta ${floorAfterDelete.count} reseñas, con ${floorAfterDelete.missing} más se publica.` : 'ya publica.'}`,
+        observed: `Antes de borrar: ${floorBeforeDelete.count} reseñas. Después: ${floorAfterDelete.count} reseñas.`,
         verdict: decreasedByOne ? 'cumple' : 'no cumple',
         screenshot: '08-chair-after-delete.png',
       });
