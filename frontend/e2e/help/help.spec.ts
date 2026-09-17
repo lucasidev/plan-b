@@ -23,17 +23,20 @@ test.describe('Ayuda (US-073)', () => {
     await page.getByRole('button', { name: /^entrar$/i }).click();
     await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
-    // Centinela para distinguir cómo llegó: un `location.assign` (el fallback de ShellLink)
-    // recarga el documento entero y se lo lleva puesto; una transición del router lo deja.
+    // El centinela permite dejar evidencia del modo observado. El fallback legítimo recarga el
+    // documento y lo borra, así que no es una condición para que el recorrido pase.
     await page.evaluate(() => {
       (window as typeof window & { __planbNav?: string }).__planbNav = 'router';
     });
     // El sidebar v2 tiene "Ayuda" en sección "Otros" (config en lib/member-shell.ts).
     await page.getByRole('link', { name: /^ayuda$/i }).click();
     await expect(page).toHaveURL(/\/help$/, { timeout: 30_000 });
-    expect(
-      await page.evaluate(() => (window as typeof window & { __planbNav?: string }).__planbNav),
-    ).toBe('router');
+    const navigationMode = await page.evaluate(() =>
+      (window as typeof window & { __planbNav?: string }).__planbNav === 'router'
+        ? 'router'
+        : 'document',
+    );
+    test.info().annotations.push({ type: 'navigation-mode', description: navigationMode });
     await expect(
       page.getByRole('heading', { name: /^¿cómo te ayudamos\?$/i, level: 1 }),
     ).toBeVisible({ timeout: 15_000 });

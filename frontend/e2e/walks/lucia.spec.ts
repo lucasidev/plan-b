@@ -736,11 +736,12 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       await page.goto('/reviews/mine', { timeout: 15_000 });
       await page.waitForLoadState('networkidle').catch(() => {});
       const rowsForFirstTerm = page
-        .getByRole('listitem')
+        .getByRole('article')
         .filter({ hasText: SUBJECT_NAME })
         .filter({ hasText: FIRST_TERM_LABEL });
       const countForFirstTerm = await rowsForFirstTerm.count();
-      const stillOnlyOne = countForFirstTerm <= 1;
+      const stillOnlyOne = countForFirstTerm === 1;
+      expect.soft(countForFirstTerm, 'el intento duplicado conserva un solo aporte').toBe(1);
 
       record({
         step: 6,
@@ -854,11 +855,10 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       const hasConfirmText = await isVisible(confirmText, 5000);
       await shot(page, '08-delete-confirm.png');
 
-      const confirmButton = page.getByRole('button', { name: /^borrar$/i }).last();
-      if (await isVisible(confirmButton, 3000)) {
-        await confirmButton.click({ timeout: 15_000 });
-        await page.waitForLoadState('networkidle').catch(() => {});
-      }
+      const confirmButton = row.getByRole('button', { name: /^sí, borrarla$/i });
+      await expect(confirmButton).toBeVisible();
+      await confirmButton.click({ timeout: 15_000 });
+      await expect(row, 'el aporte confirmado debe desaparecer de Mis aportes').toHaveCount(0);
 
       record({
         step: 8,
@@ -882,6 +882,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
           floorAfterDelete &&
           floorAfterDelete.count === floorBeforeDelete.count - 1,
       );
+      expect.soft(decreasedByOne, 'borrar el aporte resta una reseña al conteo de Ruiz').toBe(true);
 
       record({
         step: 8,
