@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "node \"$(git rev-parse --show-toplevel)/.agents/hooks/guard-tool-budget.mjs\"",
-            "commandWindows": "powershell -NoProfile -Command \"$root = (git rev-parse --show-toplevel).Trim(); & node (Join-Path $root '.agents/hooks/guard-tool-budget.mjs')\"",
+            "commandWindows": "& node (Join-Path (git rev-parse --show-toplevel).Trim() '.agents/hooks/guard-tool-budget.mjs')",
             "timeout": 5
           }
         ]
@@ -19,7 +19,7 @@
           {
             "type": "command",
             "command": "bun \"$(git rev-parse --show-toplevel)/scripts/cleanup-agent-branches.ts\" --hook",
-            "commandWindows": "powershell -NoProfile -Command \"$root = (git rev-parse --show-toplevel).Trim(); & bun (Join-Path $root 'scripts/cleanup-agent-branches.ts') --hook\"",
+            "commandWindows": "& bun (Join-Path (git rev-parse --show-toplevel).Trim() 'scripts/cleanup-agent-branches.ts') --hook",
             "timeout": 10
           }
         ]
