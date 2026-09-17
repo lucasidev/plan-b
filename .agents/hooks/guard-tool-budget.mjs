@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-// Este guard comparte presupuesto entre llamadas de una misma sesión y, si existe, subagente.
+// Browser recibe recordatorios de progreso; web conserva su presupuesto bloqueante.
+// Los contadores se comparten por sesión y, si existe, subagente.
 // Ante input o estado ilegible deja pasar para no bloquear una herramienta por fallas del guard.
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -53,6 +54,17 @@ function deny(reason) {
   );
 }
 
+function remindBrowser(used) {
+  process.stdout.write(
+    JSON.stringify({
+      hookSpecificOutput: {
+        hookEventName: 'PreToolUse',
+        additionalContext: `Browser progress checkpoint: ${used} calls in this session. Review progress against the current task, keep output focused, and avoid repeating actions without new evidence. Continue if the next step advances the task. This is a reminder, not a token measurement or a permission decision.`,
+      },
+    }),
+  );
+}
+
 const category = categoryFor(toolName);
 if (category === null || sessionId === '') {
   process.exit(0);
@@ -77,12 +89,16 @@ try {
     if (error?.code !== 'ENOENT') throw error;
   }
 
-  if (used >= limit) {
+  if (category === 'web' && used >= limit) {
     deny(`Tool budget exhausted: ${category} ${used}/${limit} for this session.`);
     process.exit(0);
   }
 
   writeFileSync(file, String(used + 1), 'utf8');
+  // Recordar por intervalos evita llenar el contexto después del primer aviso.
+  if (category === 'browser' && used >= limit && used % Math.max(limit, 1) === 0) {
+    remindBrowser(used);
+  }
 } catch {
   process.exit(0);
 }
