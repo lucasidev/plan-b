@@ -91,8 +91,22 @@ function Head({ facts, planYear }: { facts: SubjectFacts; planYear?: number }) {
           ? 'Todavía sin reseñas.'
           : `${totalReviews} ${totalReviews === 1 ? 'reseña' : 'reseñas'} en ${chairsWithReviews} ${chairsWithReviews === 1 ? 'cátedra' : 'cátedras'}${subjectSpanSuffix(facts)}.${hasComparison ? ' Depende de cuál te toque: acá está cada una por separado.' : ''}`}
       </p>
+      <p className="pb-h-sub">{coverageLine(facts)}</p>
     </>
   );
+}
+
+/** US-134, #519: la cobertura cuenta todas las cátedras del contrato, también las sin reseñas. */
+function coverageLine(facts: SubjectFacts): string {
+  const totalChairs = facts.publishingChairs + facts.chairsBelowFloor;
+
+  if (totalChairs === 0) return 'Todavía no hay cátedras cargadas para medir cobertura.';
+  const chairLabel = totalChairs === 1 ? 'cátedra' : 'cátedras';
+  const publishedLabel = `${facts.publishingChairs} de ${totalChairs} ${chairLabel} con datos publicados`;
+
+  if (facts.chairsBelowFloor === 0) return `Cobertura: ${publishedLabel}. Todas llegaron al piso.`;
+
+  return `Cobertura: ${publishedLabel}. ${facts.chairsBelowFloor} todavía no ${facts.chairsBelowFloor === 1 ? 'llega' : 'llegan'} al piso.`;
 }
 
 /** " del plan {año}", o vacío si el pedido del plan falló: el eyebrow no promete un dato que no llegó. */

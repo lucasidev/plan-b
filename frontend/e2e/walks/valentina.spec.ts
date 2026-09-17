@@ -21,6 +21,9 @@ const CAREER_SOFTWARE_QUALITY_ID = '00000002-0000-4000-a000-000000000003';
 const SUBJECT_FUNDAMENTOS_ID = '00000004-0000-4000-a000-000000000012';
 const CHAIR_PEREZ_ID = '00000008-0000-4000-a000-000000000001';
 const CHAIR_RUIZ_ID = '00000008-0000-4000-a000-000000000003';
+const CHAIR_IBANEZ_ID = '00000008-0000-4000-a000-000000000004';
+const CHAIR_ARAOZ_ID = '00000008-0000-4000-a000-000000000007';
+const CHAIR_BRAVO_ID = '00000008-0000-4000-a000-000000000008';
 
 // Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
 const WALK_DATE = process.env.WALK_DATE ?? new Date().toISOString().slice(0, 10);
@@ -231,6 +234,18 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       .catch(() => false);
     await page.waitForLoadState('networkidle').catch(() => {});
     expect.soft(onUnstaCareers, 'debe llegar al listado de carreras de esa universidad').toBe(true);
+
+    // El URL puede cambiar antes de que termine la navegación de Next: la evidencia del paso es
+    // la lista real de carreras, no el skeleton transitorio.
+    const careerLink = page
+      .getByRole('link', {
+        name: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+      })
+      .first();
+    await checkVisible(
+      careerLink,
+      'el listado de la universidad debe terminar de mostrar sus carreras antes de capturarlo',
+    );
     await shot(page, '02-explore-university.png');
 
     record({
@@ -245,15 +260,6 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
 
     // .first(): "Facultades y carreras" siempre lista la carrera; si además junta reseñas
     // suficientes para "Por dónde empezar", el mismo nombre aparece ahí también.
-    const careerLink = page
-      .getByRole('link', {
-        name: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
-      })
-      .first();
-    await checkVisible(
-      careerLink,
-      'desde la universidad, debe poder llegar a la carrera sin buscar nada',
-    );
     await careerLink.click();
     const onCareerPage = await page
       .waitForURL(new RegExp(`/careers/${CAREER_SOFTWARE_QUALITY_ID}$`), { timeout: 10_000 })
@@ -474,26 +480,46 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       voicesLine,
       'debe decir sobre cuántas reseñas y en cuántas cátedras se calcula',
     );
-    const coverageWord = page.getByText(/cobertura/i);
-    const hasCoverageWord = await isVisible(coverageWord, 2000);
+    const coverageLine = page.getByText(
+      /Cobertura:\s*\d+ de \d+ cátedras con datos publicados\.\s*\d+ todavía no llega al piso\./,
+    );
+    const hasCoverageLine = await checkVisible(
+      coverageLine,
+      'debe decir cuántas cátedras publican sobre el total y cuántas todavía no llegan al piso',
+    );
+    const coverageMatch = (await textOf(coverageLine)).match(
+      /Cobertura:\s*(\d+) de (\d+) cátedras con datos publicados\.\s*(\d+) todavía no llega al piso\./,
+    );
+    const hasRealCoverage =
+      coverageMatch !== null &&
+      Number(coverageMatch[1]) === 2 &&
+      Number(coverageMatch[2]) === 3 &&
+      Number(coverageMatch[3]) === 1;
+    expect
+      .soft(hasRealCoverage, 'la cobertura debe ser 2 de 3 cátedras publicadas y 1 bajo el piso')
+      .toBe(true);
     record({
       step: 6,
       story: 'US-134',
-      expected: 'Sobre cuántas reseñas se calcula la materia, y su cobertura.',
-      observed: `"${await textOf(voicesLine)}". La palabra "cobertura" ${hasCoverageWord ? 'sí aparece' : 'no aparece'} en esta ficha (a diferencia de la ficha de carrera, que sí la nombra): lo que hay es esa línea, con en cuántas cátedras hay datos.`,
-      verdict: hasVoicesLine ? (hasCoverageWord ? 'cumple' : 'parcial') : 'no cumple',
+      expected:
+        'Sobre cuántas reseñas se calcula la materia, y cobertura real: 2 de 3 cátedras publican y 1 todavía no llega al piso.',
+      observed: `"${await textOf(voicesLine)}". Cobertura: "${await textOf(coverageLine)}".`,
+      verdict: combineVerdict([hasVoicesLine, hasCoverageLine, hasRealCoverage]),
       screenshot: '06-subject-fiche.png',
     });
 
-    const coCursadaSoftware = page.getByText(
-      '12 la llevaron junto con esta. 3 dejaron alguna de las dos.',
-    );
+    const coCursadaSoftware = page.getByText('12 la llevaron junto con esta.');
+    const coCursadaSoftwareDropped = page.getByText('3 dejaron alguna de las dos.');
     const coCursadaBackend = page.getByText(
       '5 la llevaron junto con esta: con 5 más se publica cómo les fue.',
     );
     const hasCoSoftware = await checkVisible(
       coCursadaSoftware,
-      'co-cursada con Desarrollo de Software: "12 la llevaron junto con esta, 3 dejaron alguna de las dos"',
+      'co-cursada con Desarrollo de Software: 12 la llevaron junto con esta',
+    );
+    const hasCoSoftwareDropped = await checkVisible(
+      coCursadaSoftwareDropped,
+      'co-cursada con Desarrollo de Software: 3 dejaron alguna de las dos',
     );
     const hasCoBackend = await checkVisible(
       coCursadaBackend,
@@ -503,13 +529,13 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       step: 6,
       story: 'US-143',
       expected: 'Con qué materias se puede llevar junta (co-cursada), con sus números reales.',
-      observed: `Desarrollo de Software: "${await textOf(coCursadaSoftware)}". Desarrollo Back End: "${await textOf(coCursadaBackend)}"`,
-      verdict: combineVerdict([hasCoSoftware, hasCoBackend]),
+      observed: `Desarrollo de Software: "${await textOf(coCursadaSoftware)} ${await textOf(coCursadaSoftwareDropped)}". Desarrollo Back End: "${await textOf(coCursadaBackend)}"`,
+      verdict: combineVerdict([hasCoSoftware, hasCoSoftwareDropped, hasCoBackend]),
       screenshot: '06-subject-fiche.png',
     });
 
     const explainer = page.getByText(
-      'Sale de quienes reseñaron las dos en el mismo período. No dice que una cause la otra: dice cuántos las llevaron juntas y a cuántos se les cayó alguna.',
+      'Sale de quienes reseñaron las dos en el mismo período. No dice que una cause la otra.',
     );
     const hasExplainer = await checkVisible(
       explainer,
@@ -532,22 +558,23 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     await page.goto(`/chairs/${CHAIR_PEREZ_ID}`);
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    const topLine = page.getByText('Cómo termina la cursada acá');
+    const completionHeading = page.getByText('Cómo termina la cursada acá');
     const completion = page.getByText('De cada 10 que la cursan, llegan 6.');
-    const hasTopLine = await checkVisible(
-      topLine,
-      'arriba de la ficha debe leerse la fama por convergencia, en dos segundos',
+    const hasCompletionHeading = await checkVisible(
+      completionHeading,
+      'arriba de la ficha debe leerse cómo termina la cursada, en dos segundos',
     );
     const hasCompletion = await checkVisible(
       completion,
-      'y esa síntesis nunca puede ser un puntaje',
+      'la tasa de finalización debe mostrar cuántos llegan de cada 10, nunca un puntaje',
     );
     record({
       step: 7,
-      story: 'US-130',
-      expected: 'Arriba de la ficha, en dos segundos: la fama por convergencia (nunca un puntaje).',
-      observed: `Justo debajo del título aparece "${await textOf(topLine)}" con "${await textOf(completion)}" y una barra visual. No usa la palabra "fama": es el resumen que se lee primero, después del título.`,
-      verdict: combineVerdict([hasTopLine, hasCompletion]),
+      story: 'US-154',
+      expected:
+        'Arriba de la ficha, en dos segundos: cómo termina la cursada, con la tasa agregada y nunca un puntaje.',
+      observed: `Justo debajo del título aparece "${await textOf(completionHeading)}" con "${await textOf(completion)}" y una barra visual.`,
+      verdict: combineVerdict([hasCompletionHeading, hasCompletion]),
       screenshot: '07-chair-publishing.png',
     });
 
@@ -608,17 +635,40 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       screenshot: '07-chair-publishing.png',
     });
 
-    const siblingCompare = page.getByText(/comparad|hermana|más que|menos que|a diferencia de/i);
-    const siblingCount = await siblingCompare.count();
+    const comparisonHeading = page.getByText('Comparada con las otras cátedras de la materia');
+    const comparisonSignal = page.getByText(
+      /Faltaron\s+muchas:\s+56\s+%\s+acá,\s+11\s+%\s+en\s+las\s+otras\.\s+de\s+16\s+y\s+18\s+voces/,
+    );
+    const sisterLink = page.getByRole('link', { name: /^Cátedra González/ });
+    const secondSisterLink = page.getByRole('link', { name: /^Cátedra Ruiz/ });
+    const hasComparisonHeading = await checkVisible(
+      comparisonHeading,
+      'Pérez debe mostrar el encabezado de comparación contra cátedras hermanas',
+    );
+    const hasComparisonSignal = await checkVisible(
+      comparisonSignal,
+      'Pérez debe mostrar una diferencia sustantiva contra sus cátedras hermanas, con los dos denominadores',
+    );
+    const hasSisterLink = await checkVisible(
+      sisterLink,
+      'Pérez debe identificar a González como cátedra hermana de la misma materia',
+    );
+    const hasSecondSisterLink = await checkVisible(
+      secondSisterLink,
+      'Pérez debe identificar también a Ruiz como cátedra hermana de la misma materia',
+    );
     record({
       step: 7,
       story: 'US-130',
-      expected: 'Si aparece una comparación, es solo contra las cátedras hermanas (misma materia).',
-      observed:
-        siblingCount > 0
-          ? `Aparece algo de comparación: "${await textOf(siblingCompare)}"`
-          : 'No aparece ninguna comparación con otras cátedras en esta ficha. El Método explica que esa comparación es condicional (solo se publica si los intervalos de Wilson no se tocan): no se puede afirmar desde acá si esta es la razón puntual.',
-      verdict: 'cumple',
+      expected:
+        'Pérez muestra comparación real contra sus cátedras hermanas: Faltaron muchas, 56 % acá contra 11 % en las otras, con 16 y 18 voces.',
+      observed: `Encabezado: "${await textOf(comparisonHeading)}". Señal: "${await textOf(comparisonSignal)}". Hermanas: "${await textOf(sisterLink)}" y "${await textOf(secondSisterLink)}".`,
+      verdict: combineVerdict([
+        hasComparisonHeading,
+        hasComparisonSignal,
+        hasSisterLink,
+        hasSecondSisterLink,
+      ]),
       screenshot: '07-chair-publishing.png',
     });
 
@@ -688,6 +738,136 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     });
 
     await shot(page, '08-chair-below-floor.png');
+  });
+
+  await test.step('8b. Ficha de cátedra con fama: Ibáñez', async () => {
+    await page.goto(`/chairs/${CHAIR_IBANEZ_ID}`);
+    await page.waitForLoadState('networkidle').catch(() => {});
+
+    const fameHeading = page.getByText('3 respuestas distintas apuntan al mismo lado.');
+    const fameEvidence = [
+      page.getByText(
+        /¿Se dictaron las clases\?\s+Faltaron\s+muchas,\s+el\s+63\s+%\s+de\s+16\s+voces\./,
+      ),
+      page.getByText(
+        /¿Contestaba las preguntas que le hacían en clase\?\s+Casi\s+nunca,\s+el\s+63\s+%\s+de\s+16\s+voces\./,
+      ),
+      page.getByText(
+        /¿Salías de la clase entendiendo el tema\?\s+Casi\s+nunca,\s+el\s+56\s+%\s+de\s+16\s+voces\./,
+      ),
+    ];
+    const hasFameHeading = await checkVisible(
+      fameHeading,
+      'Ibáñez debe declarar la convergencia de tres respuestas distintas',
+    );
+    const fameChecks = await Promise.all(
+      fameEvidence.map((evidence, index) =>
+        checkVisible(evidence, `Ibáñez debe mostrar el sustento convergente ${index + 1}`),
+      ),
+    );
+    record({
+      step: 8,
+      story: 'US-130',
+      expected:
+        'Ibáñez muestra fama real: 3 respuestas distintas convergen, con 63 %, 63 % y 56 % sobre 16 voces.',
+      observed: `"${await textOf(fameHeading)}". Sustentos visibles: ${fameChecks.filter(Boolean).length}/3.`,
+      verdict: combineVerdict([hasFameHeading, ...fameChecks]),
+      screenshot: '08b-chair-fame.png',
+    });
+
+    await shot(page, '08b-chair-fame.png');
+  });
+
+  await test.step('8c. Ficha de cátedra con corte de serie: Aráoz', async () => {
+    await page.goto(`/chairs/${CHAIR_ARAOZ_ID}`);
+    await page.waitForLoadState('networkidle').catch(() => {});
+
+    const currentQuestion = page.getByText(
+      '¿Tuviste el programa completo antes de terminar la primera semana de clases?',
+    );
+    const seriesRow = currentQuestion.locator(
+      'xpath=ancestor::div[.//span[normalize-space()="¿Entregó el programa al inicio?"]][1]',
+    );
+    const previousQuestion = seriesRow.getByText('¿Entregó el programa al inicio?');
+    const seriesCut = seriesRow.getByText(/acá cambió la pregunta.*los tramos no se comparan/);
+    const currentSegment = currentQuestion.locator('xpath=../following-sibling::p[1]');
+    const previousSegment = previousQuestion.locator('xpath=../following-sibling::p[1]');
+    const hasCurrentQuestion = await checkVisible(
+      currentQuestion,
+      'Aráoz debe mostrar la pregunta vigente después del corte',
+    );
+    const hasPreviousQuestion = await checkVisible(
+      previousQuestion,
+      'Aráoz debe conservar visible la pregunta del tramo anterior',
+    );
+    const hasSeriesCut = await checkVisible(
+      seriesCut,
+      'Aráoz debe avisar que cambió la pregunta y que los tramos no se comparan',
+    );
+    const hasCurrentSegment = await checkVisible(
+      currentSegment.filter({ hasText: /de 6 voces/ }),
+      'el tramo vigente de Aráoz debe conservar sus 6 voces',
+    );
+    const hasPreviousSegment = await checkVisible(
+      previousSegment.filter({ hasText: /de 7 voces/ }),
+      'el tramo anterior de Aráoz debe conservar sus 7 voces',
+    );
+    record({
+      step: 8,
+      story: 'US-198',
+      expected:
+        'Aráoz muestra los dos tramos de la serie, con 7 y 6 voces, y el aviso explícito de corte no comparable.',
+      observed: `Pregunta vigente: "${await textOf(currentQuestion)}". Anterior: "${await textOf(previousQuestion)}". Aviso: "${await textOf(seriesCut)}".`,
+      verdict: combineVerdict([
+        hasCurrentQuestion,
+        hasPreviousQuestion,
+        hasSeriesCut,
+        hasCurrentSegment,
+        hasPreviousSegment,
+      ]),
+      screenshot: '08c-chair-series-cut.png',
+    });
+
+    await shot(page, '08c-chair-series-cut.png');
+  });
+
+  await test.step('8d. Ficha de cátedra a una del piso: Bravo', async () => {
+    await page.goto(`/chairs/${CHAIR_BRAVO_ID}`);
+    await page.waitForLoadState('networkidle').catch(() => {});
+
+    const floorLine = page.getByText('Junta 9 reseñas: con 1 más se publica.');
+    const hasFloorLine = await checkVisible(
+      floorLine,
+      'Bravo debe decir que junta 9 reseñas y que le falta 1 para publicar',
+    );
+    const bodyText = await page.locator('body').innerText();
+    const hasPublishedBlocks =
+      /Qué hizo la cátedra|Qué les pasó a los que cursaron|de cada 10 que la cursan/i.test(
+        bodyText,
+      );
+    const hasLeakedPublishedData = /\d+\s*%|de\s+\d+\s+voces/i.test(bodyText);
+    expect
+      .soft(
+        hasPublishedBlocks,
+        'Bravo todavía no debe mostrar conclusiones ni conteos publicados bajo el piso',
+      )
+      .toBe(false);
+    expect
+      .soft(
+        hasLeakedPublishedData,
+        'Bravo no debe filtrar porcentajes ni denominadores de voces bajo el piso',
+      )
+      .toBe(false);
+    record({
+      step: 8,
+      story: 'US-136',
+      expected: 'Bravo junta 9 reseñas, le falta 1 para el piso y todavía no publica conclusiones.',
+      observed: `"${await textOf(floorLine)}". Bloques publicados: ${hasPublishedBlocks ? 'sí' : 'no'}. Porcentajes o denominadores filtrados: ${hasLeakedPublishedData ? 'sí' : 'no'}.`,
+      verdict: combineVerdict([hasFloorLine, !hasPublishedBlocks, !hasLeakedPublishedData]),
+      screenshot: '08d-chair-below-floor.png',
+    });
+
+    await shot(page, '08d-chair-below-floor.png');
   });
 
   await test.step('9. Docente: el nombre lleva a su página (SC-035)', async () => {
