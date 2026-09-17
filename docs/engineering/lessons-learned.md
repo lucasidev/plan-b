@@ -12,6 +12,18 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-16 · El test rechazaba la recuperación de navegación que el producto necesitaba
+
+**Síntoma**: la [corrida 35174536230](https://github.com/lucasidev/plan-b/actions/runs/35174536230) llegó a Ajustes, pero `settings.spec.ts` falló porque una propiedad temporal de `window` desapareció.
+
+**Causa raíz**: el test exigía conservar el documento aunque `FallbackLink` permite reemplazarlo para recuperar una transición colgada. La traza registra el click, un RSC de Ajustes que responde 200 en 18 ms sin cambiar la URL y la carga del documento cuatro segundos después: actuó el segundo plazo de la defensa existente.
+
+**Fix**: Ajustes y Ayuda registran si llegaron por router o por documento, y siguen exigiendo URL, contenido e interacciones. Un E2E retiene el RSC hasta que observa la carga del documento y comprueba que Ajustes abre con la sesión vigente.
+
+**Prevención**: la evidencia del mecanismo se registra aparte del criterio de éxito del producto. Una defensa que permite recuperar la navegación requiere un test que la fuerce y otro que compruebe que no se activa cuando el router ya navegó.
+
+---
+
 ## 2026-09-15 · El click en una fila del catálogo se perdía en CI como el del shell
 
 **Síntoma**: con el catálogo adentro de planb (#536), `soft-navigation.spec.ts:36` falló en el proyecto de celular de CI: el click en la primera fila de "En una sola institución" (`/careers`) no navegó y la URL siguió en `/careers` hasta que venció el `expect`. Contra el build local no falló.

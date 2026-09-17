@@ -108,6 +108,8 @@ No copiar `planb-stage-api-7mmcdb` como si fuera patrón. Es evidencia de una in
 
 **Autorización:** un reset requiere una decisión explícita. No se infiere de un seed fallido, un deploy fallido ni un cutover exitoso.
 
+**Preparación de una demo (R7, #526):** los recorridos con cuenta (`just walk lucia`, `just walk matias` y `just walk copas`) se ejecutan antes del reset final. Escriben reseñas, cuentas y frases, así que nunca corren sobre el corpus que se deja para mostrar. Primero se corrigen sus hallazgos y se verifica el SHA desplegado; después se hace el backup, reset y seed autorizado de ese mismo SHA.
+
 **Acción:**
 
 1. Confirmar nombre, id y ambiente de la PostgreSQL Database. Tiene que ser stage.
@@ -120,6 +122,8 @@ No copiar `planb-stage-api-7mmcdb` como si fuera patrón. Es evidencia de una in
 8. Ejecutar `seed-db` solo si una persona decide cargar el corpus.
 
 No hay comando Compose de reset: los Compose de stage y producción fueron retirados del repo.
+
+**Después del seed para la demo:** importar la AGN desde `/admin/universities` y caminar solo los recorridos sin cuenta (`just walk valentina` y `just walk sofia`). Confirmar Ruiz con 6 reseñas, Bravo con 9, la fama en Ibáñez, la comparación de Pérez calculada solo con hermanas que publican, el corte de Aráoz y Método sin frases de prueba. Registrar el SHA servido y el resultado en el [guion de la demo](../plan/demo-script.md), y poner el tag narrativo sobre ese SHA cuando la aceptación termine. Si una corrección requiere escribir con una cuenta, se repite esta preparación antes de dejar el stage listo.
 
 ### 8. PostgreSQL perdió o corrompió datos
 
