@@ -7,7 +7,7 @@ import { LUCIA } from '../helpers/personas';
  * Cubre:
  *  - Login Lucía + navegar a /my-profile desde el AvatarMenu (footer del sidebar).
  *  - Render del header con avatar de iniciales + email + "miembro desde".
- *  - Edit mode: cambiar displayName + yearOfStudy + regularStudent y verificar persistencia.
+ *  - Editar el nombre y verificar persistencia sin los campos retirados del planificador.
  *  - Click "Dar de baja mi cuenta" abre el modal de deactivate con copy correcto.
  *  - Modal pide retype del email (botón disabled hasta match).
  *  - Cancel del modal lo cierra sin tocar nada.
@@ -49,9 +49,8 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
 
   test('view mode muestra datos académicos en read-only', async ({ page }) => {
     await expect(page.getByRole('heading', { name: /datos académicos/i })).toBeVisible();
-    await expect(page.getByText(/año cursando/i).first()).toBeVisible();
-    await expect(page.getByText(/legajo/i).first()).toBeVisible();
-    await expect(page.getByText(/estado/i).first()).toBeVisible();
+    await expect(page.getByText('Año de ingreso', { exact: true })).toBeVisible();
+    await expect(page.getByText(/año cursando|legajo|^estado$/i)).toHaveCount(0);
     await expect(page.getByRole('button', { name: /editar/i })).toBeVisible();
   });
 
@@ -65,8 +64,7 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     const savedName = `Lucía Mansilla ${test.info().repeatEachIndex + 1}`;
     await nameInput.fill(savedName);
 
-    const yearSelect = page.getByLabel(/año cursando/i);
-    await yearSelect.selectOption('3');
+    await expect(page.getByLabel(/año cursando|legajo|regular/i)).toHaveCount(0);
 
     await page.getByRole('button', { name: /^guardar$/i }).click();
 
@@ -76,7 +74,7 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     await expect(page.getByRole('heading', { name: savedName, level: 2 })).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByText(/3° año/i)).toBeVisible();
+    await expect(page.getByText('Año de ingreso', { exact: true })).toBeVisible();
   });
 
   test('cancelar el edit no persiste cambios', async ({ page }) => {

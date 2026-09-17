@@ -13,9 +13,6 @@ export type MyProfile = {
   enrollmentYear: number | null;
   status: string;
   displayName: string | null;
-  yearOfStudy: number | null;
-  legajo: string | null;
-  regularStudent: boolean;
   updatedAt: string | null;
   email: string;
   memberSince: string;

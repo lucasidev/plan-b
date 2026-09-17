@@ -35,9 +35,6 @@ function profile(over: Partial<MyProfile> = {}): MyProfile {
     enrollmentYear: 2023,
     status: 'Active',
     displayName: 'Lucía Mansilla',
-    yearOfStudy: 2,
-    legajo: '12345',
-    regularStudent: true,
     updatedAt: null,
     email: 'lucia@unsta.edu.ar',
     memberSince: '2023-03-01T00:00:00Z',
@@ -50,6 +47,20 @@ beforeEach(() => {
 });
 
 describe('MyProfileForm: guardar', () => {
+  it('conserva el año de ingreso y retira los campos del planificador en vista y edición', async () => {
+    const user = userEvent.setup();
+    actionMock.mockResolvedValue({ status: 'success' });
+    render(<MyProfileForm profile={profile()} />);
+    expect(screen.getByText('Año de ingreso')).toBeInTheDocument();
+    expect(screen.getByText('2023')).toBeInTheDocument();
+    expect(screen.queryByText(/legajo|año cursando|^estado$/i)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /^editar$/i }));
+    expect(screen.queryByLabelText(/legajo|año cursando|regular/i)).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /^guardar$/i }));
+    expect(actionMock).toHaveBeenCalledWith({ status: 'idle' }, { displayName: 'Lucía Mansilla' });
+  });
+
   it('espera al action y recién después cierra el form y recarga', async () => {
     let resolveAction: (value: { status: 'success' }) => void = () => {};
     actionMock.mockImplementation(
