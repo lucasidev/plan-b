@@ -5,11 +5,11 @@ Lo que se muestra y en qué orden, sobre el stage (`https://planb.olisar.com.ar`
 ## Antes de arrancar (jueves a la tarde, en este orden)
 
 1. Todo lo de R7 mergeado y el stage sirviendo ese SHA: `/health` devuelve el SHA de `main` (el deploy es automático; si CI de `main` cayó por una intermitente, relanzar el job y después el gate de deploy, como el 2026-09-14).
-2. Los recorridos con cuenta (`just walk lucia`, `just walk matias`, `just walk copas`) corren **antes** del reset y nunca después: ensucian el corpus (P02, [#526](https://github.com/lucasidev/plan-b/issues/526)).
+2. Los recorridos con cuenta (`just walk lucia`, `just walk matias`, `just walk copas`, `just walk sofia`) corren **antes** del reset y nunca después: escriben reseñas, cuentas, cátedras o frases (P02, [#526](https://github.com/lucasidev/plan-b/issues/526)).
 3. Reset y seed del stage ([runbook](../engineering/runbook.md), caso 7): la base queda con el catálogo, las personas, los datos oficiales y el corpus de demostración (Pérez en 16 con la comparación, Ibáñez en 16 con la fama, Aráoz con el corte de serie, Ruiz en 6 bajo el piso, Bravo en 9 a una de publicar).
 4. La importación de la AGN desde el backoffice (`/admin/universities`): el seed no la trae.
 5. Mailpit del stage arriba y accesible: la cuenta nueva de la demo verifica su mail ahí.
-6. Una pasada de los recorridos sin cuenta (`just walk valentina`, `just walk sofia`) sobre el stage ya sembrado: ninguno de los dos escribe.
+6. Una pasada de `just walk valentina`, sin cuenta, sobre el stage ya sembrado. El backoffice se revisa con la cuenta de administración, en modo lectura: universidades, cátedras, catálogo de frases y curaduría. `just walk sofia` crea cátedras y frases, así que pertenece al paso 2.
 7. El tag narrativo sobre el SHA que se muestra (`presentacion-...`, [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md)).
 8. Las cuentas de prueba, verificadas a mano el mismo jueves: una cuenta de alumno con reseñas (Lucía Mansilla, dos reseñas del corpus), una sin reseñas (Matías Ledesma) y la de administración. Las credenciales viven en `.env.stage.local`, nunca en el repo ni en el guion.
 9. Una cuenta de alumno nueva para crear en vivo: un mail que Mailpit reciba y que no exista todavía.

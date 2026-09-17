@@ -184,7 +184,7 @@ Antes de correrlo:
 Resetear stage es destructivo y nunca forma parte de un deploy:
 
 1. Confirmar en el panel que el destino es la PostgreSQL Database de stage, no producción.
-2. Hacer y conservar un backup previo.
+2. Hacer y conservar un backup previo si hay datos que preservar. Una demo con datos de prueba recreables puede omitirlo cuando la autorización incluye descartarlos; registrar la decisión según el [runbook](runbook.md#7-reset-destructivo-de-stage).
 3. Detener o bloquear escrituras.
 4. Vaciar o recrear la Database mediante una acción explícita de Dokploy.
 5. Si cambió el endpoint, actualizar las conexiones de API y Migrate.
