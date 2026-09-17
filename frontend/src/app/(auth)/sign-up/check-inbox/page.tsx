@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { AuthCard } from '@/components/layout/auth-card';
 import { ResendVerificationButton } from '@/features/resend-verification';
 import { sanitizeInternalRedirect } from '@/lib/internal-redirect';
+import { redirectAuthenticatedUser } from '@/lib/redirect-authenticated-user';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -26,6 +27,7 @@ type Props = {
 export default async function CheckInboxPage({ searchParams }: Props) {
   const { email, from: rawFrom } = await searchParams;
   const from = sanitizeInternalRedirect(rawFrom);
+  await redirectAuthenticatedUser(from);
   const signInHref = from ? `/sign-in?from=${encodeURIComponent(from)}` : '/sign-in';
 
   return (
@@ -95,7 +97,7 @@ export default async function CheckInboxPage({ searchParams }: Props) {
 
         {email && (
           <div className="w-full" style={{ marginTop: 14 }}>
-            <ResendVerificationButton email={email} variant="primary" />
+            <ResendVerificationButton email={email} from={from} variant="primary" />
           </div>
         )}
 

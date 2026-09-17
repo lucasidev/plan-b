@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { expect, type Locator, type Page, test } from '@playwright/test';
-import { waitForMail } from '../helpers/mailpit';
+import { verificationLinkFromMail, waitForMail } from '../helpers/mailpit';
 
 /**
  * El recorrido de Lucía (docs/product/personas.md) como prueba manual simulada contra el stage
@@ -155,7 +155,8 @@ async function fillCareerCascade(page: Page): Promise<void> {
 }
 
 async function signIn(page: Page, email: string, password: string): Promise<void> {
-  await page.goto('/sign-in', { timeout: 15_000 });
+  await page.getByRole('link', { name: /^iniciar sesión$/i }).click();
+  await page.waitForURL(/\/sign-in/, { timeout: 15_000 });
   await page.getByLabel(/tu email/i).fill(email, { timeout: 15_000 });
   await page.getByLabel(/^contraseña$/i).fill(password, { timeout: 15_000 });
   await page.getByRole('button', { name: /^entrar$/i }).click({ timeout: 15_000 });
@@ -447,7 +448,9 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       });
 
       if (tokenMatch) {
-        await page.goto(`/verify-email?token=${tokenMatch[1]}`, { timeout: 15_000 });
+        // Sin la cookie del registro: el destino tiene que sobrevivir en el mail (L10).
+        await page.context().clearCookies();
+        await page.goto(verificationLinkFromMail(mail), { timeout: 15_000 });
         await page.waitForLoadState('networkidle').catch(() => {});
       }
       await shot(page, '02-verified.png');

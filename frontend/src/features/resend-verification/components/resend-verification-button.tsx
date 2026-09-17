@@ -11,6 +11,7 @@ type Props = {
    *  (`/sign-up/check-inbox?email=`) or from a previous sign-in error
    *  (`email_not_verified`). */
   email: string;
+  from?: string | null;
   /** Visual variant:
    *  - `primary`: full-width, primary-button look (used in check-inbox).
    *  - `inline`: compact, ideal for error banners inside forms. */
@@ -32,7 +33,7 @@ const COOLDOWN_SECONDS = 60;
  * is invalid HTML. The action is still the same server action ('use server'), we just
  * invoke it via `formAction(formData)` without a wrapping form.
  */
-export function ResendVerificationButton({ email, variant = 'primary' }: Props) {
+export function ResendVerificationButton({ email, from, variant = 'primary' }: Props) {
   const [state, formAction] = useActionState<ResendVerificationFormState, FormData>(
     resendVerificationAction,
     initialResendVerificationState,
@@ -60,6 +61,7 @@ export function ResendVerificationButton({ email, variant = 'primary' }: Props) 
     if (pending || cooldownRemaining > 0) return;
     const formData = new FormData();
     formData.set('email', email);
+    if (from) formData.set('from', from);
     startTransition(() => {
       formAction(formData);
     });

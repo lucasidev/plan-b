@@ -119,6 +119,13 @@ export async function extractTokenFromLatestMail(
   return match[1];
 }
 
+/** El recorrido abre el link entero del mail, incluido el destino de retorno. */
+export function verificationLinkFromMail(mail: { HTML: string }): string {
+  const link = mail.HTML.match(/href="([^"]*\/verify-email\?[^"]*)"/)?.[1];
+  if (!link) throw new Error('Verification link missing from email');
+  return link.replaceAll('&amp;', '&');
+}
+
 /**
  * Borra todos los mensajes en Mailpit. Con la suite en paralelo ningún spec la llama (borraría el
  * mail que otro está esperando en simultáneo); queda para debugging manual local.

@@ -86,9 +86,10 @@ public class ResendVerificationEmailEndpointTests : IClassFixture<RegisterApiFix
     [Fact]
     public async Task Sends_a_fresh_verification_email_to_unverified_user()
     {
+        const string returnTo = "/reviews/new?subjectId=abc&chairId=def";
         var response = await _client.PostAsJsonAsync(
             "/api/identity/resend-verification",
-            new ResendVerificationEmailRequest(TestPersonas.MartinEmail));
+            new ResendVerificationEmailRequest(TestPersonas.MartinEmail, returnTo));
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         var summary = await _mailpit.WaitForMessageToAsync(TestPersonas.MartinEmail, TimeSpan.FromSeconds(10));
@@ -99,6 +100,7 @@ public class ResendVerificationEmailEndpointTests : IClassFixture<RegisterApiFix
         var detail = await _mailpit.GetMessageDetailAsync(summary.Id);
         detail.ShouldNotBeNull();
         detail.Html.ShouldContain("token=");
+        detail.Text.ShouldContain("&from=" + Uri.EscapeDataString(returnTo));
     }
 
     [Fact]

@@ -3,6 +3,7 @@ import { AuthShell } from '@/components/layout/auth-shell';
 import { Button } from '@/components/ui';
 import { FlowSteps } from '@/features/forgot-password/components/flow-steps';
 import { ResetPasswordForm } from '@/features/reset-password';
+import { redirectAuthenticatedUser } from '@/lib/redirect-authenticated-user';
 
 type Props = {
   searchParams: Promise<{ token?: string }>;
@@ -25,12 +26,13 @@ const BACK_TO_SIGNIN = (
 /**
  * /reset-password?token=... (US-033-f). Server component que lee el token de la
  * URL y lo pasa al form (client). Sin token renderea el estado "link roto" sin el
- * form. Si ya hay sesión, el guard del `(auth)` layout redirige a donde entra ese rol antes.
+ * form. Si ya hay sesión, el guard de la página redirige a donde entra ese rol antes.
  *
  * Migrado al `AuthShell` v2 (paso final del flujo de recuperación, `FlowSteps
  * active={3}`) en US-059-f; el comportamiento (token, redirect, guard) no cambia.
  */
 export default async function ResetPasswordPage({ searchParams }: Props) {
+  await redirectAuthenticatedUser();
   const { token } = await searchParams;
 
   if (!token) {

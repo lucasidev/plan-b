@@ -112,7 +112,7 @@ export function SignInForm({ from, reason }: Props) {
           {state.kind === 'invalid_credentials' && (
             <div className="text-ink-2" style={{ marginTop: 8 }}>
               <p style={{ marginBottom: 6 }}>¿Te registraste hace poco y no confirmaste el mail?</p>
-              <ResendVerificationButton email={state.email} variant="inline" />
+              <ResendVerificationButton email={state.email} from={from} variant="inline" />
             </div>
           )}
         </AuthErrorBanner>

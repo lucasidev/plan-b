@@ -1,5 +1,6 @@
 'use server';
 
+import { sanitizeInternalRedirect } from '@/lib/internal-redirect';
 import { resendVerification } from './api';
 import { resendVerificationSchema } from './schema';
 import type { ResendVerificationFormState } from './types';
@@ -34,7 +35,11 @@ export async function resendVerificationAction(
     };
   }
 
-  const response = await resendVerification({ email: parsed.data.email });
+  const from = sanitizeInternalRedirect(formData.get('from')?.toString());
+  const response = await resendVerification({
+    email: parsed.data.email,
+    ...(from ? { returnTo: from } : {}),
+  });
 
   if (response.status === 204) {
     return { status: 'sent' };

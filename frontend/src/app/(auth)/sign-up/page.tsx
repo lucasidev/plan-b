@@ -3,6 +3,7 @@ import { AuthShell } from '@/components/layout/auth-shell';
 import { CarnetPreview } from '@/features/sign-up/components/carnet-preview';
 import { SignUpForm } from '@/features/sign-up/components/sign-up-form';
 import { sanitizeInternalRedirect } from '@/lib/internal-redirect';
+import { redirectAuthenticatedUser } from '@/lib/redirect-authenticated-user';
 
 type Props = {
   searchParams: Promise<{ from?: string }>;
@@ -28,6 +29,7 @@ const LEFT_PANEL = <CarnetPreview />;
 export default async function SignUpPage({ searchParams }: Props) {
   const { from: rawFrom } = await searchParams;
   const from = sanitizeInternalRedirect(rawFrom);
+  await redirectAuthenticatedUser(from);
 
   const signInHref = from ? `/sign-in?from=${encodeURIComponent(from)}` : '/sign-in';
   const foot = (
