@@ -1,4 +1,5 @@
 import type { CurrentInstrument, InstrumentItem, ItemLayer } from '@/components/instrument/types';
+import { PageFrame } from '@/components/layout/page-frame';
 
 /**
  * Método (SC-021, US-130). Cómo se calcula cada número que el producto publica.
@@ -20,170 +21,176 @@ export function MethodSheet({
   pairFloor: number | null;
 }) {
   return (
-    <div className="min-h-full w-full">
-      <div className="mx-auto w-full max-w-[640px] px-4 py-8">
-        <header className="mb-6">
-          <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Método</p>
-          <h1 className="mt-1.5 font-serif text-[26px] font-semibold leading-tight text-ink">
-            Cómo se calcula lo que publicamos.
-          </h1>
-          <p className="mt-2 text-[13.5px] leading-relaxed text-ink-2">
+    <PageFrame
+      head={
+        <header className="max-w-2xl">
+          <p className="pb-eyebrow">Método</p>
+          <h1 className="font-serif text-ink">Cómo se calcula lo que publicamos.</h1>
+          <p className="pb-h-sub">
             Cada número de una ficha sale de una regla escrita acá. Si después de leer esto pensás
             que un dato no se sostiene, tenés con qué discutirlo.
           </p>
         </header>
+      }
+      main={
+        <div className="max-w-3xl">
+          <Block title="De dónde sale una voz">
+            <P>
+              Una voz es una persona hablando de <b>una cursada</b>: una materia, un período y la
+              cátedra con la que la hizo. Se suma a esa cátedra. La materia, la carrera y la
+              institución no se preguntan por separado: se arman sumando lo de las cátedras y las
+              cursadas que les pertenecen.
+            </P>
+            <P>
+              Nadie responde dos veces la misma cursada. Editar una reseña reemplaza lo anterior, y
+              borrarla la saca de todos los conteos donde sumó.
+            </P>
+          </Block>
 
-        <Block title="De dónde sale una voz">
-          <P>
-            Una voz es una persona hablando de <b>una cursada</b>: una materia, un período y la
-            cátedra con la que la hizo. Se suma a esa cátedra. La materia, la carrera y la
-            institución no se preguntan por separado: se arman sumando lo de las cátedras y las
-            cursadas que les pertenecen.
-          </P>
-          <P>
-            Nadie responde dos veces la misma cursada. Editar una reseña reemplaza lo anterior, y
-            borrarla la saca de todos los conteos donde sumó.
-          </P>
-        </Block>
+          <Block title="Cómo se arma un conteo">
+            <P>
+              De cada pregunta se publican dos cosas. La <b>más elegida</b>, con su etiqueta tal
+              como está escrita en el cuestionario y su porcentaje, y la{' '}
+              <b>distribución completa</b>, opción por opción, con los ceros incluidos: que nadie
+              haya elegido una opción es información, no una fila para omitir.
+            </P>
+            <P>
+              <b>Nada se promedia.</b> Un promedio junta respuestas que no son números y produce una
+              cifra que nadie puede volver a armar. Por eso no vas a ver "2,4 sobre 3" en ninguna
+              parte, ni un puntaje, ni un ranking.
+            </P>
+            <P>
+              Cuando varias preguntas distintas apuntan al mismo lado, la ficha lo dice arriba, con
+              las preguntas a la vista: la afirmación tiene que poder verificarse sin bajar al
+              detalle.
+            </P>
+          </Block>
 
-        <Block title="Cómo se arma un conteo">
-          <P>
-            De cada pregunta se publican dos cosas. La <b>más elegida</b>, con su etiqueta tal como
-            está escrita en el cuestionario y su porcentaje, y la <b>distribución completa</b>,
-            opción por opción, con los ceros incluidos: que nadie haya elegido una opción es
-            información, no una fila para omitir.
-          </P>
-          <P>
-            <b>Nada se promedia.</b> Un promedio junta respuestas que no son números y produce una
-            cifra que nadie puede volver a armar. Por eso no vas a ver "2,4 sobre 3" en ninguna
-            parte, ni un puntaje, ni un ranking.
-          </P>
-          <P>
-            Cuando varias preguntas distintas apuntan al mismo lado, la ficha lo dice arriba, con
-            las preguntas a la vista: la afirmación tiene que poder verificarse sin bajar al
-            detalle.
-          </P>
-        </Block>
+          <FloorBlock chairFloor={chairFloor} pairFloor={pairFloor} />
 
-        <FloorBlock chairFloor={chairFloor} pairFloor={pairFloor} />
+          <Block title="Cuándo decimos que una cátedra es distinta de otra">
+            <P>
+              Una cátedra solo se compara contra las otras de <b>su misma materia</b>. Ahí el sesgo
+              de quién reseña pega parejo, y la diferencia que quede es de la cátedra y no de la
+              materia.
+            </P>
+            <P>
+              La diferencia se publica{' '}
+              <b>solo si no puede explicarse por el tamaño de la muestra</b>. Para eso se calcula,
+              sobre cada proporción, un intervalo de Wilson, que depende de la proporción observada,
+              de cuántas respuestas la sostienen y de un factor de confianza fijo. Si los intervalos
+              de las dos cátedras se tocan, no se publica ninguna diferencia.
+            </P>
+            <P>
+              Si la cátedra es <b>la única de su materia</b>, no hay contra qué compararla y no se
+              publica ninguna comparación.
+            </P>
+            <P>
+              Ese número nunca se muestra: es la maquinaria que decide si mostrar algo, no un dato.
+              Cuando no hay señal suficiente, la ficha se calla en vez de insinuar.
+            </P>
+          </Block>
 
-        <Block title="Cuándo decimos que una cátedra es distinta de otra">
-          <P>
-            Una cátedra solo se compara contra las otras de <b>su misma materia</b>. Ahí el sesgo de
-            quién reseña pega parejo, y la diferencia que quede es de la cátedra y no de la materia.
-          </P>
-          <P>
-            La diferencia se publica <b>solo si no puede explicarse por el tamaño de la muestra</b>.
-            Para eso se calcula, sobre cada proporción, un intervalo de Wilson, que depende de la
-            proporción observada, de cuántas respuestas la sostienen y de un factor de confianza
-            fijo. Si los intervalos de las dos cátedras se tocan, no se publica ninguna diferencia.
-          </P>
-          <P>
-            Si la cátedra es <b>la única de su materia</b>, no hay contra qué compararla y no se
-            publica ninguna comparación.
-          </P>
-          <P>
-            Ese número nunca se muestra: es la maquinaria que decide si mostrar algo, no un dato.
-            Cuando no hay señal suficiente, la ficha se calla en vez de insinuar.
-          </P>
-        </Block>
+          <Block title="Qué sesgos tiene esto">
+            <P>
+              Todo dato que sale de reseñas es <b>de quienes reseñaron</b>, y quien reseña no es una
+              muestra al azar de quien cursó. No lo corregimos con ninguna ponderación: lo decimos.
+            </P>
+            <P>
+              Con qué se llevó una materia sale solo de quien reseñó <b>las dos</b>. La cobertura de
+              una carrera dice cuántas de sus materias tienen alguna cátedra publicando: una carrera
+              sin reseñas no es impecable, es desconocida, y la ficha lo dice así.
+            </P>
+            <P>
+              Los datos oficiales (cuánto dura una carrera en el papel y en la realidad, cuánto
+              egresa por cohorte) <b>no salen de reseñas</b>: se relevan contra fuente pública y se
+              publican con <b>la fuente y el período relevado</b> al lado. Un dato oficial sin decir
+              de cuándo es no se puede discutir.
+            </P>
+          </Block>
 
-        <Block title="Qué sesgos tiene esto">
-          <P>
-            Todo dato que sale de reseñas es <b>de quienes reseñaron</b>, y quien reseña no es una
-            muestra al azar de quien cursó. No lo corregimos con ninguna ponderación: lo decimos.
-          </P>
-          <P>
-            Con qué se llevó una materia sale solo de quien reseñó <b>las dos</b>. La cobertura de
-            una carrera dice cuántas de sus materias tienen alguna cátedra publicando: una carrera
-            sin reseñas no es impecable, es desconocida, y la ficha lo dice así.
-          </P>
-          <P>
-            Los datos oficiales (cuánto dura una carrera en el papel y en la realidad, cuánto egresa
-            por cohorte) <b>no salen de reseñas</b>: se relevan contra fuente pública y se publican
-            con <b>la fuente y el período relevado</b> al lado. Un dato oficial sin decir de cuándo
-            es no se puede discutir.
-          </P>
-        </Block>
+          <Block title="Qué es un dato Derivado" id="graduation-flow-proxy">
+            <P>
+              Vas a ver esta etiqueta en el egreso por cohorte de cada carrera. Significa que
+              ninguna fuente oficial publica cuánta gente termina esa carrera puntual: el Ministerio
+              de Educación solo publica una serie por institución entera o por un área grande, como
+              informática, nunca por carrera. Con esa serie armamos nosotros una cuenta propia, y
+              por eso el número lleva la etiqueta en vez de mostrarse como si viniera leído directo
+              de una fuente.
+            </P>
+            <P>
+              La cuenta es así: cuánta gente egresó en un año, dividido cuánta gente había entrado
+              unos años antes (tantos años como dura la carrera en el papel, redondeado para
+              arriba). Por ejemplo, para una carrera de dos años y medio comparamos a quienes
+              egresaron en 2022 contra quienes entraron en 2019. La hacemos sobre la institución
+              entera o sobre un área grande cuando la fuente lo permite, nunca sobre una carrera
+              sola: a ese nivel, la fuente no llega. Usamos los anuarios que la SPU (Secretaría de
+              Políticas Universitarias, del Ministerio de Educación) publica cada año, del 2020 al
+              2023.
+            </P>
+            <P>
+              Esta cuenta arrastra seis problemas. Ninguno se corrige: se declaran, y por eso el
+              número puede salir más alto o más bajo de lo que en realidad pasa.
+            </P>
+            <ol className="mb-2.5 flex list-decimal flex-col gap-2 pl-4 last:mb-0">
+              <li className="text-[13px] leading-relaxed text-ink-2">
+                No es la misma gente de punta a punta: quienes egresaron ese año entraron en
+                momentos distintos entre sí, y quienes entraron el año que usamos como base van a
+                egresar, si egresan, en años distintos entre sí.
+              </li>
+              <li className="text-[13px] leading-relaxed text-ink-2">
+                Mezcla carreras que no se parecen: la institución entera junta carreras de dos a
+                seis años, y un área grande junta tecnicaturas con ingenierías.
+              </li>
+              <li className="text-[13px] leading-relaxed text-ink-2">
+                Cuando entra más gente nueva a una carrera, el número de abajo de la cuenta crece y
+                el resultado baja, aunque nada haya empeorado.
+              </li>
+              <li className="text-[13px] leading-relaxed text-ink-2">
+                Una carrera recién abierta todavía no tiene egresados: el número le sale
+                artificialmente bajo hasta que pasen los años que dura.
+              </li>
+              <li className="text-[13px] leading-relaxed text-ink-2">
+                Si la fuente repite el mismo número dos años seguidos en vez de actualizarlo, el año
+                que en realidad estamos usando como base queda corrido hacia atrás sin que se note.
+              </li>
+              <li className="text-[13px] leading-relaxed text-ink-2">
+                Alguien que cambia de carrera o de institución se puede contar dos veces: como quien
+                entró en un lado y como quien egresó en otro.
+              </li>
+            </ol>
+            <P>
+              Por estos seis motivos, el número sirve para tener una idea de orden de magnitud entre
+              instituciones. No sirve para comparar dos carreras entre sí.
+            </P>
+          </Block>
 
-        <Block title="Qué es un dato Derivado" id="graduation-flow-proxy">
-          <P>
-            Vas a ver esta etiqueta en el egreso por cohorte de cada carrera. Significa que ninguna
-            fuente oficial publica cuánta gente termina esa carrera puntual: el Ministerio de
-            Educación solo publica una serie por institución entera o por un área grande, como
-            informática, nunca por carrera. Con esa serie armamos nosotros una cuenta propia, y por
-            eso el número lleva la etiqueta en vez de mostrarse como si viniera leído directo de una
-            fuente.
-          </P>
-          <P>
-            La cuenta es así: cuánta gente egresó en un año, dividido cuánta gente había entrado
-            unos años antes (tantos años como dura la carrera en el papel, redondeado para arriba).
-            Por ejemplo, para una carrera de dos años y medio comparamos a quienes egresaron en 2022
-            contra quienes entraron en 2019. La hacemos sobre la institución entera o sobre un área
-            grande cuando la fuente lo permite, nunca sobre una carrera sola: a ese nivel, la fuente
-            no llega. Usamos los anuarios que la SPU (Secretaría de Políticas Universitarias, del
-            Ministerio de Educación) publica cada año, del 2020 al 2023.
-          </P>
-          <P>
-            Esta cuenta arrastra seis problemas. Ninguno se corrige: se declaran, y por eso el
-            número puede salir más alto o más bajo de lo que en realidad pasa.
-          </P>
-          <ol className="mb-2.5 flex list-decimal flex-col gap-2 pl-4 last:mb-0">
-            <li className="text-[13px] leading-relaxed text-ink-2">
-              No es la misma gente de punta a punta: quienes egresaron ese año entraron en momentos
-              distintos entre sí, y quienes entraron el año que usamos como base van a egresar, si
-              egresan, en años distintos entre sí.
-            </li>
-            <li className="text-[13px] leading-relaxed text-ink-2">
-              Mezcla carreras que no se parecen: la institución entera junta carreras de dos a seis
-              años, y un área grande junta tecnicaturas con ingenierías.
-            </li>
-            <li className="text-[13px] leading-relaxed text-ink-2">
-              Cuando entra más gente nueva a una carrera, el número de abajo de la cuenta crece y el
-              resultado baja, aunque nada haya empeorado.
-            </li>
-            <li className="text-[13px] leading-relaxed text-ink-2">
-              Una carrera recién abierta todavía no tiene egresados: el número le sale
-              artificialmente bajo hasta que pasen los años que dura.
-            </li>
-            <li className="text-[13px] leading-relaxed text-ink-2">
-              Si la fuente repite el mismo número dos años seguidos en vez de actualizarlo, el año
-              que en realidad estamos usando como base queda corrido hacia atrás sin que se note.
-            </li>
-            <li className="text-[13px] leading-relaxed text-ink-2">
-              Alguien que cambia de carrera o de institución se puede contar dos veces: como quien
-              entró en un lado y como quien egresó en otro.
-            </li>
-          </ol>
-          <P>
-            Por estos seis motivos, el número sirve para tener una idea de orden de magnitud entre
-            instituciones. No sirve para comparar dos carreras entre sí.
-          </P>
-        </Block>
+          <Block title="Lo que no publicamos nunca">
+            <P>
+              El texto que alguien escribe al final de una reseña <b>no se publica</b>. Lo lee el
+              equipo para descubrir qué habría que estar preguntando y no preguntamos.
+            </P>
+            <P>
+              Ninguna reseña se muestra sola, ni con nombre ni sin él. No hay puntajes, ni rankings,
+              ni instituciones destacadas o patrocinadas. En ningún lado se afirma una causa: se
+              publica qué contestó la gente, no por qué.
+            </P>
+            <P>
+              No tenemos acuerdos con ninguna institución, pagos ni de palabra, y ninguna recibe
+              trato preferencial: la misma cátedra necesita{' '}
+              {chairFloor !== null
+                ? `las mismas ${chairFloor} reseñas`
+                : 'el mismo piso de reseñas'}{' '}
+              para publicar, sea cual sea la universidad, y a nadie le bajamos ese piso ni le
+              subimos su cobertura para que se vea mejor. Eso incluye a UNSTA, la universidad donde
+              arrancó este proyecto: se mide con las mismas reglas que cualquier otra.
+            </P>
+          </Block>
 
-        <Block title="Lo que no publicamos nunca">
-          <P>
-            El texto que alguien escribe al final de una reseña <b>no se publica</b>. Lo lee el
-            equipo para descubrir qué habría que estar preguntando y no preguntamos.
-          </P>
-          <P>
-            Ninguna reseña se muestra sola, ni con nombre ni sin él. No hay puntajes, ni rankings,
-            ni instituciones destacadas o patrocinadas. En ningún lado se afirma una causa: se
-            publica qué contestó la gente, no por qué.
-          </P>
-          <P>
-            No tenemos acuerdos con ninguna institución, pagos ni de palabra, y ninguna recibe trato
-            preferencial: la misma cátedra necesita{' '}
-            {chairFloor !== null ? `las mismas ${chairFloor} reseñas` : 'el mismo piso de reseñas'}{' '}
-            para publicar, sea cual sea la universidad, y a nadie le bajamos ese piso ni le subimos
-            su cobertura para que se vea mejor. Eso incluye a UNSTA, la universidad donde arrancó
-            este proyecto: se mide con las mismas reglas que cualquier otra.
-          </P>
-        </Block>
-
-        <ItemCatalog instrument={instrument} />
-      </div>
-    </div>
+          <ItemCatalog instrument={instrument} />
+        </div>
+      }
+    />
   );
 }
 
@@ -249,15 +256,15 @@ function Block({
   id?: string;
 }) {
   return (
-    <section id={id} className="mb-6">
-      <h2 className="mb-2 font-serif text-[18px] font-semibold text-ink">{title}</h2>
-      <div className="rounded-xl border border-line bg-bg-card p-4">{children}</div>
+    <section id={id} className="mb-8 scroll-mt-6">
+      <h2 className="mb-3 font-serif text-xl font-semibold text-ink">{title}</h2>
+      <div className="rounded-[10px] border border-line bg-bg-card p-4 sm:p-5">{children}</div>
     </section>
   );
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="mb-2.5 text-[13px] leading-relaxed text-ink-2 last:mb-0">{children}</p>;
+  return <p className="mb-3 text-sm leading-relaxed text-ink-2 last:mb-0">{children}</p>;
 }
 
 const LAYER_LABELS: Record<ItemLayer, string> = {
@@ -291,7 +298,7 @@ function ItemCatalog({ instrument }: { instrument: CurrentInstrument | null }) {
 
   return (
     <section className="mb-6">
-      <h2 className="mb-1 font-serif text-[18px] font-semibold text-ink">Qué se pregunta</h2>
+      <h2 className="mb-2 font-serif text-xl font-semibold text-ink">Qué se pregunta</h2>
       <p className="mb-2 text-[12px] text-ink-3">
         Las {instrument.items.length} preguntas del cuestionario vigente, con todas sus opciones.
         Salen del mismo lugar del que las lee la pantalla de reseñar.
@@ -309,7 +316,7 @@ function ItemCatalog({ instrument }: { instrument: CurrentInstrument | null }) {
         if (items.length === 0) return null;
 
         return (
-          <div key={layer} className="mb-3 rounded-xl border border-line bg-bg-card p-4">
+          <div key={layer} className="mb-3 rounded-[10px] border border-line bg-bg-card p-4 sm:p-5">
             <p className="text-[13px] font-medium text-ink">{LAYER_LABELS[layer]}</p>
             <p className="mb-3 text-[11.5px] text-ink-3">{LAYER_NOTES[layer]}</p>
             <ul className="m-0 flex list-none flex-col gap-3 p-0">

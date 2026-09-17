@@ -18,13 +18,14 @@ export function SecuritySection() {
     <>
       <SectionCard title="Seguridad" description="Control de acceso de tu cuenta.">
         <SettingRow
+          stackOnMobile
           label="Contraseña"
           description="Cambiá tu contraseña. Vas a tener que iniciar sesión de nuevo."
           control={
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="flex items-center gap-1 text-sm text-accent hover:underline focus:underline focus:outline-none"
+              className="flex min-h-10 items-center gap-1 rounded-[6px] border border-line px-3 py-2 text-sm font-medium text-ink hover:bg-bg-elev"
             >
               Cambiar contraseña
               <ChevronRight className="size-4" aria-hidden="true" />

@@ -64,12 +64,13 @@ export function SelectSetting<F extends 'language' | 'theme', T extends string>(
   return (
     <div>
       <SettingRow
+        stackOnMobile
         htmlFor={id}
         label={label}
         description={description}
         control={
           <Select value={optimisticValue} onValueChange={handleChange}>
-            <SelectTrigger id={id} className="w-[180px]" aria-label={label}>
+            <SelectTrigger id={id} className="w-[200px] max-w-full" aria-label={label}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -83,7 +84,7 @@ export function SelectSetting<F extends 'language' | 'theme', T extends string>(
         }
       />
       {errorMessage && (
-        <p className="text-xs text-danger mt-1 mb-3" role="status">
+        <p className="mt-1 mb-3 text-xs text-ink-2" role="status">
           {errorMessage}
         </p>
       )}

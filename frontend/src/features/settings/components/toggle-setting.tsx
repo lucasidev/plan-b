@@ -71,7 +71,7 @@ export function ToggleSetting({ field, initialValue, label, description }: Props
         }
       />
       {errorMessage && (
-        <p className="text-xs text-danger mt-1 mb-3" role="status">
+        <p className="mt-1 mb-3 text-xs text-ink-2" role="status">
           {errorMessage}
         </p>
       )}

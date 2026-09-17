@@ -11,7 +11,7 @@ type Props = {
 export function NotificationsSection({ settings }: Props) {
   return (
     <SectionCard title="Notificaciones" description="Elegí por dónde y para qué te avisamos.">
-      <h3 className="text-xs font-mono uppercase tracking-wider text-ink-4 pt-3 pb-1">Canales</h3>
+      <h3 className="pt-4 pb-2 font-mono text-xs uppercase tracking-wider text-ink-3">Canales</h3>
       <ToggleSetting
         field="notificationsInApp"
         initialValue={settings.notificationsInApp}
@@ -25,7 +25,7 @@ export function NotificationsSection({ settings }: Props) {
         description="Te llegan a tu casilla registrada."
       />
 
-      <h3 className="text-xs font-mono uppercase tracking-wider text-ink-4 pt-3 pb-1">Por tipo</h3>
+      <h3 className="pt-4 pb-2 font-mono text-xs uppercase tracking-wider text-ink-3">Por tipo</h3>
       <ToggleSetting
         field="notifyReviewResponse"
         initialValue={settings.notifyReviewResponse}

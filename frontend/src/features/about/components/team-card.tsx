@@ -26,13 +26,13 @@ export function TeamCard() {
           <li key={member.name} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div
               aria-hidden
-              className="bg-accent-soft text-accent-ink grid place-items-center font-semibold"
+              className="bg-bg-elev text-ink-2 grid place-items-center font-semibold"
               style={{ width: 36, height: 36, borderRadius: '50%', fontSize: 13, flexShrink: 0 }}
             >
               {member.initials}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div className="text-ink-1" style={{ fontSize: 14, fontWeight: 500 }}>
+              <div className="text-ink" style={{ fontSize: 14, fontWeight: 500 }}>
                 {member.name}
               </div>
               <div className="text-ink-3" style={{ fontSize: 12.5, lineHeight: 1.4 }}>
@@ -48,7 +48,7 @@ export function TeamCard() {
           fontSize: 11.5,
           lineHeight: 1.5,
           marginTop: 16,
-          borderTop: '1px solid var(--line)',
+          borderTop: '1px solid var(--color-line)',
           paddingTop: 12,
         }}
       >

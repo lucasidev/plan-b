@@ -11,28 +11,24 @@
 
 import { SUPPORT_EMAIL } from '../data/resources';
 
-const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Hola plan-b — necesito ayuda')}`;
+const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Hola plan-b: necesito ayuda')}`;
 
 export function ContactCard() {
   return (
     <section
-      className="bg-accent-soft border border-accent/30"
+      className="bg-bg-card border border-line"
       style={{ padding: 18, borderRadius: 10 }}
       aria-labelledby="contact-eyebrow"
     >
-      <div
+      <h2
         id="contact-eyebrow"
-        className="text-accent-ink"
+        className="font-serif text-xl font-semibold text-ink"
         style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10.5,
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase',
           marginBottom: 8,
         }}
       >
         Hablá con nosotros
-      </div>
+      </h2>
       <p
         className="text-ink-2"
         style={{ fontSize: 13.5, lineHeight: 1.5, marginTop: 0, marginBottom: 14 }}
@@ -41,12 +37,12 @@ export function ContactCard() {
       </p>
       <a
         href={SUPPORT_MAILTO}
-        className="bg-accent text-white"
+        className="bg-ink text-bg-card hover:bg-ink-2"
         style={{
           display: 'block',
           textAlign: 'center',
           padding: '10px 14px',
-          borderRadius: 999,
+          borderRadius: 6,
           fontSize: 13.5,
           fontWeight: 500,
           textDecoration: 'none',
@@ -59,7 +55,10 @@ export function ContactCard() {
         style={{ fontSize: 12, marginTop: 10, marginBottom: 0, textAlign: 'center' }}
       >
         o escribinos a{' '}
-        <a href={`mailto:${SUPPORT_EMAIL}`} className="text-accent-ink hover:text-accent-hover">
+        <a
+          href={`mailto:${SUPPORT_EMAIL}`}
+          className="break-all text-ink underline underline-offset-4 hover:text-ink-2"
+        >
           {SUPPORT_EMAIL}
         </a>
       </p>

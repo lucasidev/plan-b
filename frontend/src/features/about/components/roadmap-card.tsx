@@ -10,31 +10,10 @@ export function RoadmapCard() {
   return (
     <Card>
       <EyebrowLabel>Lo que viene</EyebrowLabel>
-      <dl
-        style={{
-          margin: '14px 0 0',
-          display: 'grid',
-          gridTemplateColumns: 'minmax(110px, max-content) 1fr',
-          rowGap: 12,
-          columnGap: 18,
-        }}
-      >
+      <dl className="mt-4 flex flex-col gap-4">
         {ABOUT_ROADMAP.map((item) => (
-          <div key={item.when} style={{ display: 'contents' }}>
-            {/* accent-ink, no accent: accent sobre bg-card da ~2,95:1 (falla WCAG AA para texto
-                chico). Mismo criterio que about-hero.tsx. */}
-            <dt
-              className="text-accent-ink"
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10.5,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                paddingTop: 3,
-              }}
-            >
-              {item.when}
-            </dt>
+          <div key={item.when} className="grid gap-2 sm:grid-cols-[110px_minmax(0,1fr)] sm:gap-4">
+            <dt className="pb-eyebrow pt-0.5">{item.when}</dt>
             <dd className="text-ink-2" style={{ fontSize: 14, lineHeight: 1.55, margin: 0 }}>
               {item.what}
             </dd>
