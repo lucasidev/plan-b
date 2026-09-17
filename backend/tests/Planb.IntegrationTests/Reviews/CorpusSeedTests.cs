@@ -113,8 +113,8 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
     }
 
     /// <summary>
-    /// El contraste que la demo recorre: los intervalos de Wilson de Pérez y de sus hermanas
-    /// (González + Ruiz) no se tocan, así que la ficha publica los cuatro números de los dos lados.
+    /// El contraste que la demo recorre: los intervalos de Wilson de Pérez y de González no se
+    /// tocan. Ruiz queda bajo el piso, así que no aporta sus respuestas a la base comparable.
     /// </summary>
     [Fact]
     public async Task The_chair_publishes_the_sibling_contrast_the_demo_walks_through()
@@ -124,8 +124,8 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
         var contrast = facts.Contrasts.Single(c => c.ItemCode == "CHAIR_CLASSES_HELD");
         contrast.HerePercent.ShouldBe(56);
         contrast.HereTotal.ShouldBe(16);
-        contrast.SiblingsPercent.ShouldBe(11);
-        contrast.SiblingsTotal.ShouldBe(18);
+        contrast.SiblingsPercent.ShouldBe(0);
+        contrast.SiblingsTotal.ShouldBe(12);
     }
 
     /// <summary>

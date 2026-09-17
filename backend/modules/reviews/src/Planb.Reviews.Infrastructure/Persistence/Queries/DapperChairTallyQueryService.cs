@@ -83,6 +83,13 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
                      o.value, o.""order"", o.label, o.valence
             ORDER BY i.code, o.""order"";
 
+            WITH publishing_siblings AS (
+                SELECT chair_id
+                FROM reviews.reviews
+                WHERE chair_id = ANY(@SiblingIds)
+                GROUP BY chair_id
+                HAVING count(*) >= @MinimumReviews
+            )
             SELECT
                 i.code    AS ItemCode,
                 i.layer   AS Layer,
@@ -100,7 +107,9 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
                 ON a.item_id = i.id
                AND a.option_value = o.value
                AND a.review_id IN (
-                   SELECT id FROM reviews.reviews WHERE chair_id = ANY(@SiblingIds))
+                   SELECT id
+                   FROM reviews.reviews
+                   WHERE chair_id IN (SELECT chair_id FROM publishing_siblings))
             WHERE i.is_active = true
             GROUP BY i.code, i.layer, o.value, o.""order"", o.label, o.valence
             ORDER BY i.code, o.""order"";
@@ -119,7 +128,12 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
         using var db = _connections.Create();
         using var grid = await db.QueryMultipleAsync(new CommandDefinition(
             sql,
-            new { ChairId = chairId, SiblingIds = siblingChairIds.ToArray() },
+            new
+            {
+                ChairId = chairId,
+                SiblingIds = siblingChairIds.ToArray(),
+                MinimumReviews = PublishingRules.ChairMinimumReviews,
+            },
             cancellationToken: ct));
 
         var reviewCount = await grid.ReadSingleAsync<int>();
