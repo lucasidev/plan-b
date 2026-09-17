@@ -13,14 +13,6 @@ export const profileUpdateSchema = z.object({
     .min(1, 'El nombre no puede estar vacío')
     .max(80, 'Máximo 80 caracteres')
     .optional(),
-  yearOfStudy: z
-    .number()
-    .int('Tiene que ser un número entero')
-    .min(1, 'Mínimo año 1')
-    .max(8, 'Máximo año 8')
-    .optional(),
-  legajo: z.string().trim().max(32, 'Máximo 32 caracteres').optional(),
-  regularStudent: z.boolean().optional(),
 });
 
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

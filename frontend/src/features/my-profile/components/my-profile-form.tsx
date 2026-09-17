@@ -3,7 +3,6 @@
 import { Pencil } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { TextField } from '@/components/ui/text-field';
 import { displayNameFromEmail } from '@/lib/member-shell';
 import { reloadAfterMutation } from '@/lib/reload-after-mutation';
@@ -12,16 +11,7 @@ import { initialUpdateProfileState, type MyProfile } from '../types';
 import { ProfileAvatar } from './profile-avatar';
 
 /**
- * Mi perfil shell (US-047). Toggle between view mode (default) and edit mode. View mode
- * lists the academic + identity data; edit mode enables displayName, yearOfStudy, legajo
- * and regularStudent. University / Career / Plan / Email are NOT edited here (major
- * changes that need their own post-MVP flows).
- *
- * Implementation with React 19 primitives (useTransition + useState) instead of
- * TanStack Form. ADR-0022 suggests TanStack from 4+ fields onward, but here the 4
- * fields are flat with no complex cross-field logic; the TanStack setup cost outweighs
- * the benefit. Explicit debt: if cross-field validations land (legajo valid per
- * university), migrate.
+ * Mi perfil conserva el año de ingreso y permite editar el nombre de la cuenta.
  */
 type Props = {
   profile: MyProfile;
@@ -84,12 +74,7 @@ function ViewMode({ profile, onEdit }: { profile: MyProfile; onEdit: () => void 
         </Button>
       </div>
       <dl className="grid grid-cols-[140px_1fr] gap-x-4 gap-y-3 text-sm">
-        <Row label="Año cursando">
-          {profile.yearOfStudy ? `${profile.yearOfStudy}° año` : <Empty />}
-        </Row>
         <Row label="Año de ingreso">{profile.enrollmentYear ?? '-'}</Row>
-        <Row label="Legajo">{profile.legajo ?? <Empty />}</Row>
-        <Row label="Estado">{profile.regularStudent ? 'Regular' : 'Libre'}</Row>
       </dl>
     </section>
   );
@@ -102,10 +87,6 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
       <dd className="text-ink-1">{children}</dd>
     </>
   );
-}
-
-function Empty() {
-  return <span className="text-ink-4 italic">Sin cargar</span>;
 }
 
 type EditFormProps = {
@@ -123,15 +104,9 @@ function EditForm({ profile, onCancel, onSaved }: EditFormProps) {
   // nombre viejo, y un guardado fallido deja el form abierto con lo que la persona tipeó.
   function handleSubmit(formData: FormData) {
     const displayName = formData.get('displayName')?.toString().trim() ?? '';
-    const yearOfStudy = formData.get('yearOfStudy')?.toString();
-    const legajo = formData.get('legajo')?.toString().trim() ?? '';
-    const regularStudent = formData.get('regularStudent') === 'on';
 
     const patch: Record<string, unknown> = {
       displayName: displayName.length > 0 ? displayName : undefined,
-      yearOfStudy: yearOfStudy ? Number(yearOfStudy) : undefined,
-      legajo: legajo.length > 0 ? legajo : undefined,
-      regularStudent,
     };
 
     setError(null);
@@ -160,48 +135,8 @@ function EditForm({ profile, onCancel, onSaved }: EditFormProps) {
           name="displayName"
           defaultValue={profile.displayName ?? ''}
           maxLength={80}
-          hint="Cómo querés que te vean en la app y en tus reseñas."
+          hint="Cómo querés que te llamemos en tu cuenta. Tus reseñas se cuentan sin tu nombre."
         />
-        <div>
-          <Label htmlFor="yearOfStudy" className="text-sm">
-            Año cursando
-          </Label>
-          <select
-            id="yearOfStudy"
-            name="yearOfStudy"
-            defaultValue={profile.yearOfStudy ?? ''}
-            className="mt-1 block w-full rounded border border-line bg-bg px-3 py-2 text-sm"
-          >
-            <option value="">Sin especificar</option>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-              <option key={n} value={n}>
-                {n}° año
-              </option>
-            ))}
-          </select>
-        </div>
-        <TextField
-          label="Legajo (opcional)"
-          name="legajo"
-          defaultValue={profile.legajo ?? ''}
-          maxLength={32}
-        />
-        <div className="flex items-center gap-2">
-          {/* aria-label in addition to the <Label htmlFor> because react-doctor does
-              not detect labels that come after the input (it expects label-then-input
-              or an htmlFor the rule can track cross-component). */}
-          <input
-            id="regularStudent"
-            type="checkbox"
-            name="regularStudent"
-            defaultChecked={profile.regularStudent}
-            className="rounded border-line"
-            aria-label="Soy alumno regular"
-          />
-          <Label htmlFor="regularStudent" className="text-sm cursor-pointer">
-            Soy alumno regular
-          </Label>
-        </div>
 
         {error && (
           <p role="alert" className="text-sm text-danger">
