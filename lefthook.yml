@@ -39,71 +39,8 @@ commit-msg:
     conventional-commits:
       run: bun scripts/check-commit-msg.ts {1}
 
+# La misma política que CI; conserva evidencia local por comando e inputs.
 pre-push:
-  parallel: true
   commands:
-    scripts-test:
-      # Los tests de scripts/ no necesitan infra y corren en menos de un segundo.
-      glob:
-        - "scripts/*.ts"
-        - "scripts/**/*.ts"
-      run: bun test scripts/
-    docs-check:
-      # Señala, no bloquea (exit 0 sin --strict): coherencia de docs de producto
-      # (links, em-dashes, períodos codificados, una story por épica, mermaid). ADR-0070.
-      glob:
-        - "docs/*.{md,html}"
-        - "docs/**/*.{md,html}"
-      run: bun scripts/check-docs.ts
-    backend-build:
-      # El restore que dispara este build es también el escaneo de
-      # vulnerabilidades: con NuGetAudit=true, NuGetAuditMode=all y
-      # NuGetAuditLevel=low (defaults del SDK) más TreatWarningsAsErrors=true
-      # sin exenciones, un paquete con CVE sale como `error NU1903` y corta el
-      # push. También cubre NU1608 (conflictos de versión).
-      glob:
-        - "backend/*.{cs,csproj,props,targets,sln,json}"
-        - "backend/**/*.{cs,csproj,props,targets,sln,json}"
-      run: cd backend && dotnet build --nologo --verbosity quiet
-    scripts-typecheck:
-      # El binario y los tipos salen de las deps de frontend (typeRoots relativo
-      # en scripts/tsconfig.json). El tsconfig entra al glob porque cambiarlo es
-      # justo lo que puede romper el chequeo.
-      glob:
-        - "scripts/*.ts"
-        - "scripts/**/*.ts"
-        - "scripts/tsconfig.json"
-      run: ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
-    frontend-lint:
-      glob:
-        - "frontend/*.{ts,tsx,js,jsx,json}"
-        - "frontend/**/*.{ts,tsx,js,jsx,json}"
-      run: cd frontend && bun run lint
-    frontend-typecheck:
-      glob:
-        - "frontend/*.{ts,tsx}"
-        - "frontend/**/*.{ts,tsx}"
-      run: cd frontend && bunx tsc --noEmit
-    frontend-test:
-      # Vitest unit/component (US-T01), ~30s medidos.
-      # E2E (Playwright) ya NO corre en pre-push: vive en CI como un job del
-      # workflow `ci.yml`, según los cambios de producto o del entorno E2E. Para correrlo
-      # local manualmente: `just frontend-test-e2e-show` (browser visible).
-      glob:
-        - "frontend/*.{ts,tsx}"
-        - "frontend/**/*.{ts,tsx}"
-      run: cd frontend && bun run test
-    frontend-react-doctor:
-      # React Doctor scan acotado a los archivos que tu rama cambió vs main
-      # (`--scope changed --base origin/main`). Bloquea el push si introducís un diagnostic
-      # severity=error (server actions sin auth check, only-export-components,
-      # etc). Warnings (a11y, perf, design) los muestra pero NO bloquean.
-      # `--no-score` evita la share URL y el roundtrip al score API.
-      # Suppressions de design system + falsos positivos viven en
-      # `frontend/react-doctor.config.json`.
-      glob:
-        - "frontend/*.{ts,tsx}"
-        - "frontend/**/*.{ts,tsx}"
-        - "frontend/react-doctor.config.json"
-        - "scripts/run-react-doctor.ts"
-      run: bun scripts/run-react-doctor.ts
+    verify:
+      run: bun scripts/verify.ts

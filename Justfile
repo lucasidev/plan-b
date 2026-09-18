@@ -133,6 +133,10 @@ frontend-test-affected:
 
 test-affected: backend-test-affected frontend-test-affected
 
+# Selector compartido con CI. --plan explica, --only elige, --force invalida evidencia.
+verify *args:
+    bun scripts/verify.ts {{args}}
+
 # Mutation testing sobre el corazón de reviews: mide si la suite detecta cambios reales al código, sin gate (ADR-0036).
 backend-mutation:
     cd backend/modules/reviews/tests/Planb.Reviews.Tests && dotnet stryker
