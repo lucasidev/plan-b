@@ -53,7 +53,7 @@ Cada route group tiene su propio `layout.tsx` que hace el guard server-side usan
 - `(public)`: sin guard.
 - `(auth)`: si YA hay sesión, rebota a donde entra ese rol (`lib/role-home-path.ts`). Mandar a todos a `/home` dejaba al admin rebotando entre este guard y el de `(member)`.
 - `(member)`: redirige a `/sign-in` si no hay sesión o el rol no es `member`. **No** exige perfil: toda cuenta declara su carrera al registrarse (ADR-0086) y el perfil nace al verificar el mail.
-- `(staff)`: solo `admin`. Moderación se retiró en R2 y su rol se fue con ella; `university_staff` nunca tuvo pantalla propia. Los dos salieron del union de `Session`, así que un token con esos roles no produce sesión.
+- `(staff)`: solo `admin`. Moderación se retiró en R2 y su rol salió del union de `Session`, así que un token con ese rol no produce sesión.
 
 La autorización real se hace en el backend. El guard del frontend existe para UX y evitar requests rechazados. Ver [ADR-0019](../decisions/0019-single-nextjs-app-with-route-groups-per-actor.md) y [ADR-0023](../decisions/0023-auth-flow-jwt-cookie-layout-guards.md).
 

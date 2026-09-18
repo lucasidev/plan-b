@@ -67,7 +67,7 @@ public sealed class IdentitySeeder
 
             var password = persona.Password;
 
-            // Staff personas (Admin / Moderator / UniversityStaff) take a distinct provisioning
+            // Staff personas (Admin / Moderator) take a distinct provisioning
             // path: created verified via RegisterStaff, no state transitions, no academic profile.
             if (TryParseStaffRole(persona.Role, out var staffRole))
             {

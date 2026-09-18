@@ -9,5 +9,4 @@ public enum UserRole
     Member,
     Moderator,
     Admin,
-    UniversityStaff,
 }

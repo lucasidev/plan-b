@@ -21,7 +21,7 @@ public static class UserErrors
 
     /// <summary>
     /// <see cref="User.RegisterStaff"/> was called with <see cref="UserRole.Member"/>. Staff
-    /// provisioning is only for moderator/admin/university_staff (ADR-0008); members self-register
+    /// provisioning is only for moderator/admin (ADR-0008); members self-register
     /// through <see cref="User.Register"/>.
     /// </summary>
     public static readonly Error StaffRoleRequired =
@@ -196,8 +196,8 @@ public static class UserErrors
     // -- StudentProfile (US-012) --------------------------------------------------
 
     /// <summary>
-    /// Solo users con role=Member pueden tener StudentProfiles. Staff (moderator/admin/
-    /// university_staff) operan el catálogo pero no son alumnos del mismo (ADR-0008).
+    /// Solo users con role=Member pueden tener StudentProfiles. Staff (moderator/admin) operan el
+    /// catálogo pero no son alumnos del mismo (ADR-0008).
     /// </summary>
     public static readonly Error OnlyMembersCanHaveProfiles =
         Error.Conflict(
