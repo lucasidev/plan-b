@@ -17,6 +17,7 @@ namespace Planb.Identity.Infrastructure.Security;
 /// </summary>
 public sealed class JwtIssuer : IJwtIssuer
 {
+    internal const string AccessVersionClaim = "access_version";
     private readonly JwtOptions _options;
     private readonly IDateTimeProvider _clock;
     private readonly SigningCredentials _signingCredentials;
@@ -40,6 +41,8 @@ public sealed class JwtIssuer : IJwtIssuer
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.Value.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email.Value),
+            new Claim(AccessVersionClaim, user.AccessVersion.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                ClaimValueTypes.Integer32),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTimeSeconds().ToString(),
                 ClaimValueTypes.Integer64),

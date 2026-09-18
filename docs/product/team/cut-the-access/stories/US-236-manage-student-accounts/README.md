@@ -10,7 +10,7 @@ Como quien administra, quiero encontrar una cuenta de alumno, consultar su estad
 ## Listo cuando
 
 - Alumnos permite buscar por email, filtrar por estado y recorrer una lista paginada con los datos de cuenta y perfil necesarios para identificarla, sin mostrar aportes ni credenciales.
-- Suspender exige un motivo y corta el inicio, la renovación y el uso de sesiones ya emitidas; reactivar devuelve el acceso sin saltear la verificación pendiente de email. Ambas acciones registran responsable y conservan el perfil y los aportes.
+- Suspender guarda responsable y motivo, y corta el inicio, la renovación y el uso de sesiones ya emitidas; reactivar permite iniciar una sesión nueva, sin rehabilitar los tokens anteriores ni saltear la verificación pendiente de email. Ambas acciones conservan el perfil y los aportes.
 - Solamente quien administra puede operar cuentas de alumnos vigentes: quedan afuera las cuentas del equipo, las dadas de baja y la cuenta propia, incluso si se intenta acceder directo al endpoint.
 
 ## Dónde se resuelve

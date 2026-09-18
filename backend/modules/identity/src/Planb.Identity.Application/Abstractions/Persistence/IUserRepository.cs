@@ -20,6 +20,9 @@ public interface IUserRepository
 
     Task<User?> FindByIdAsync(UserId id, CancellationToken ct = default);
 
+    /// <summary>Persiste solo el acceso, de forma atómica y si conserva el estado leído.</summary>
+    Task<bool> TryUpdateAccessAsync(User user, int expectedAccessVersion, CancellationToken ct = default);
+
     Task<User?> FindByVerificationTokenAsync(
         string rawToken,
         TokenPurpose purpose,

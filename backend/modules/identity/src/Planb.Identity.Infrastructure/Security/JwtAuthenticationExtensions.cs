@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Planb.Identity.Application.Abstractions.Reading;
 
 namespace Planb.Identity.Infrastructure.Security;
 
@@ -77,6 +78,19 @@ public static class JwtAuthenticationExtensions
 
                 opts.Events = new JwtBearerEvents
                 {
+                    OnTokenValidated = async context =>
+                    {
+                        var subject = context.Principal?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+                        // Los JWT previos a esta versión equivalen a 0 hasta el primer cambio de acceso.
+                        var versionClaim = context.Principal?.FindFirst(JwtIssuer.AccessVersionClaim)?.Value ?? "0";
+                        var users = context.HttpContext.RequestServices.GetRequiredService<IAdminUserReadService>();
+                        if (!Guid.TryParse(subject, out var userId)
+                            || !int.TryParse(versionClaim, out var accessVersion) || accessVersion < 0
+                            || !await users.CanAuthenticateAsync(userId, accessVersion, context.HttpContext.RequestAborted))
+                        {
+                            context.Fail("Account is not active.");
+                        }
+                    },
                     // Si el cliente no manda Authorization header pero sí cookie planb_session,
                     // tomamos el token de ahí. Mantiene compat con el frontend que usa httpOnly
                     // cookies (ADR-0023) sin exigir doble-storage en el cliente.

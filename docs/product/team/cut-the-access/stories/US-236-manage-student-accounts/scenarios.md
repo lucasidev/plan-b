@@ -4,7 +4,7 @@
 
 **E2.** Dada esa cuenta con una sesión abierta, cuando el administrador suspende su acceso con un motivo, las siguientes solicitudes autenticadas y la renovación de sesión se rechazan. El perfil y los aportes se conservan.
 
-**E3.** Dada una cuenta suspendida, cuando el administrador reactiva su acceso, puede volver a iniciar sesión y conserva el perfil anterior. Si su email estaba pendiente, todavía debe verificarlo.
+**E3.** Dada una cuenta suspendida, cuando el administrador reactiva su acceso, puede volver a iniciar sesión y conserva el perfil anterior. Los tokens emitidos antes de suspenderla siguen rechazándose, aunque no hayan vencido. Si su email estaba pendiente, todavía debe verificarlo.
 
 **E4.** Dada una cuenta del equipo o una cuenta dada de baja, cuando alguien intenta suspenderla o reactivarla desde los endpoints de alumnos, la operación se rechaza.
 
