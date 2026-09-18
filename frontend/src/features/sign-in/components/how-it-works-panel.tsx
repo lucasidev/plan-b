@@ -62,7 +62,7 @@ function Step({ n, title, children }: { n: string; title: string; children: Reac
 }
 
 /**
- * Los tramos de la distribución de la frase de ejemplo, en el mismo orden en que el instrumento
+ * Los tramos de la distribución de la pregunta de ejemplo, en el mismo orden en que el instrumento
  * ofrece sus opciones (`CatalogSeedData`, CHAIR_CLASSES_HELD): la negativa va última y es la única
  * con color.
  */
@@ -73,7 +73,7 @@ const SLICES = [
 ] as const;
 
 /**
- * Una frase publicada, con la anatomía de `ItemRow`: pregunta, moda como badge con su etiqueta
+ * Una pregunta publicada, con la anatomía de `ItemRow`: pregunta, moda como badge con su etiqueta
  * literal, distribución completa y los conteos crudos con su "de N". Ningún puntaje.
  */
 function ItemExample() {

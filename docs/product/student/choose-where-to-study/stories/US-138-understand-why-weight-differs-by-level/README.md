@@ -20,4 +20,4 @@ Como quien lee, quiero entender por qué un dato aparece en una ficha y no en ot
 
 ## Notas
 
-P2; depende de US-134; tema del mapa: T3 · Cuando el catálogo no alcanza. Hasta [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md) esta story explicaba por qué una misma frase pesaba distinto en la cátedra y en la carrera (denominadores distintos de una frase compartida entre niveles). Ese modelo se retiró: ahora cada nivel deriva sus propios conteos, y lo que hace falta explicar es por qué algo todavía no entró a esos conteos, no por qué pesa distinto.
+P2; depende de US-134; tema del mapa: T3 · Cuando el catálogo no alcanza. Hasta [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md) esta story explicaba por qué una misma pregunta pesaba distinto en la cátedra y en la carrera (denominadores distintos de una pregunta compartida entre niveles). Ese modelo se retiró: ahora cada nivel deriva sus propios conteos, y lo que hace falta explicar es por qué algo todavía no entró a esos conteos, no por qué pesa distinto.

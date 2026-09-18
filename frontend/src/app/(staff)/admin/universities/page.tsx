@@ -30,7 +30,7 @@ export default async function AdminUniversitiesPage() {
             href="/admin/universities/new"
             className="inline-flex h-8 items-center gap-1.5 rounded-pill border border-ink bg-ink px-3.5 text-[12.5px] font-medium text-white shadow-card transition-colors hover:bg-[#1a110a]"
           >
-            + Afiliar universidad
+            + Agregar universidad
           </Link>
         }
       />

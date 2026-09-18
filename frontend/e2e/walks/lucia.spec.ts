@@ -500,12 +500,12 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
         screenshot: '03-review-form.png',
       });
 
-      // Paso 4 (qué hizo la cátedra) se saltea entero. Paso 5 (qué te pasó a vos): una sola frase,
+      // Paso 4 (qué hizo la cátedra) se saltea entero. Paso 5 (qué te pasó a vos): una sola pregunta,
       // "Con esfuerzo" (única en el catálogo de phrases.md, sin ambigüedad con otra opción).
       const oneAnswer = page.getByRole('button', { name: 'Con esfuerzo', exact: true });
       const hasOneAnswer = await checkVisible(
         oneAnswer,
-        'debe poder responder una sola frase del paso 5 y dejar el resto sin contestar',
+        'debe poder responder una sola pregunta del paso 5 y dejar el resto sin contestar',
       );
       if (hasOneAnswer) await oneAnswer.click({ timeout: 15_000 });
       await shot(page, '03-review-answered.png');
@@ -514,10 +514,10 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
         step: 3,
         story: 'US-146',
         expected:
-          'Responder una sola frase (o ninguna) alcanza: saltear el resto no bloquea el envío.',
+          'Responder una sola pregunta (o ninguna) alcanza: saltear el resto no bloquea el envío.',
         observed: hasOneAnswer
           ? 'Encontró "Con esfuerzo" (paso 5, ¿Pudiste seguir el ritmo?) y la tocó; dejó todo el paso 4 y el resto del paso 5 sin contestar.'
-          : 'No encontró la opción "Con esfuerzo" para responder una sola frase.',
+          : 'No encontró la opción "Con esfuerzo" para responder una sola pregunta.',
         verdict: hasOneAnswer ? 'cumple' : 'no cumple',
         screenshot: '03-review-answered.png',
       });
@@ -600,7 +600,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
         step: 4,
         story: 'US-162',
         expected:
-          'Mis aportes muestra, por cada frase que respondiste, la opción elegida y las voces que suma ahora esa opción.',
+          'Mis aportes muestra, por cada pregunta que respondiste, la opción elegida y las voces que suma ahora esa opción.',
         observed: hasRow
           ? `Fila encontrada: "${rowText.slice(0, 300)}"`
           : 'No se encontró ninguna fila para esta reseña.',
@@ -711,7 +711,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       await page.waitForLoadState('networkidle').catch(() => {});
       await chooseSubjectTermChair(page, FIRST_TERM_LABEL);
 
-      // Completa la segunda reseña igual que la primera (cómo terminó + una frase): un botón
+      // Completa la segunda reseña igual que la primera (cómo terminó + una pregunta): un botón
       // deshabilitado por campos obligatorios sin completar no prueba nada sobre el bloqueo de
       // duplicados, solo que el formulario está vacío.
       const outcomeButton = page.getByRole('button', { name: /^La aprob.$/ });
@@ -746,11 +746,11 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       record({
         step: 6,
         story: 'US-163',
-        expected: `Reseñar de nuevo la misma materia y cátedra en el mismo período (${FIRST_TERM_LABEL}), con la reseña completa (cómo terminó + una frase), no cuenta dos veces: rechazo o aviso, nunca una segunda fila.`,
+        expected: `Reseñar de nuevo la misma materia y cátedra en el mismo período (${FIRST_TERM_LABEL}), con la reseña completa (cómo terminó + una pregunta), no cuenta dos veces: rechazo o aviso, nunca una segunda fila.`,
         observed: hasInlineBlock
           ? `Con la reseña completa, un aviso lo frenó antes de enviar: "${await textOf(blockedInline)}".`
           : submitDisabled
-            ? 'Con "cómo terminó" y una frase completas, el botón "Enviar la reseña" siguió deshabilitado, sin ningún aviso de texto visible.'
+            ? 'Con "cómo terminó" y una pregunta completas, el botón "Enviar la reseña" siguió deshabilitado, sin ningún aviso de texto visible.'
             : `No hubo aviso inline ni botón deshabilitado con la reseña completa; ${countForFirstTerm} fila(s) de "${SUBJECT_NAME}" en ${FIRST_TERM_LABEL} en Mis aportes.`,
         verdict: hasInlineBlock || submitDisabled || stillOnlyOne ? 'cumple' : 'no cumple',
         screenshot: '06-duplicate-same-term.png',
@@ -827,7 +827,7 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
         step: 7,
         story: 'US-161',
         expected:
-          'Cerrar la pestaña a medias (dos frases contestadas) y volver hace que lo contestado reaparezca para retomar, en /reviews/new o en Mis aportes.',
+          'Cerrar la pestaña a medias (dos preguntas contestadas) y volver hace que lo contestado reaparezca para retomar, en /reviews/new o en Mis aportes.',
         observed: `${draftResumedOnPage ? 'Al volver a /reviews/new, lo elegido seguía ahí (sin buscador vacío de nuevo).' : 'Al volver a /reviews/new, no encontró señales de que lo contestado haya sobrevivido: apareció el buscador de materia vacío otra vez.'} ${draftInMyContributions ? 'En Mis aportes aparece un aporte "a medias".' : 'En Mis aportes no aparece ningún aporte "a medias".'}`,
         verdict: combineVerdict([draftResumedOnPage, draftInMyContributions]),
         screenshot: '07-resume-draft.png',

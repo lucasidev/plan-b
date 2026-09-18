@@ -491,7 +491,7 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
         step: 3,
         story: 'US-162',
         expected:
-          'Mis aportes muestra la reseña recién dada, con lo que marcó: cómo terminó y la opción elegida en cada frase respondida.',
+          'Mis aportes muestra la reseña recién dada, con lo que marcó: cómo terminó y la opción elegida en cada pregunta respondida.',
         observed: `Menciona "la dejé": ${showsOutcome ? 'sí' : 'no'}. Menciona "faltaron muchas": ${showsConduct ? 'sí' : 'no'}.`,
         verdict: combineVerdict([showsOutcome, showsConduct]),
         screenshot: '06-review-submitted.png',

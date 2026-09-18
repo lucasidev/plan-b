@@ -98,7 +98,7 @@ function escapeCell(text: string): string {
   return text.replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
 }
 
-/** Correlaciona todo lo que esta corrida crea: la cátedra, la frase destilada, la nota editorial. */
+/** Correlaciona todo lo que esta corrida crea: la cátedra, la pregunta destilada, la nota editorial. */
 function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 7).toUpperCase();
 }
@@ -294,7 +294,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
     });
   });
 
-  await test.step('4. Editar la frase en un solo lugar (US-198)', async () => {
+  await test.step('4. Editar la pregunta en un solo lugar (US-198)', async () => {
     const targetPhrase = '¿Se dictaron las clases?';
     await page.goto('/admin/items');
     await page.waitForLoadState('networkidle').catch(() => {});
@@ -309,10 +309,10 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
     record({
       step: 4,
       story: 'US-198',
-      expected: `La frase "${targetPhrase}" se encuentra en el catálogo de /admin/items.`,
+      expected: `La pregunta "${targetPhrase}" se encuentra en el catálogo de /admin/items.`,
       observed: foundInCatalog
         ? `Aparece un botón "${await textOf(phraseButton)}".`
-        : 'No se encontró ningún botón con esa frase en el catálogo.',
+        : 'No se encontró ningún botón con esa pregunta en el catálogo.',
       verdict: foundInCatalog ? 'cumple' : 'no cumple',
       screenshot: '04-edit-phrase-search.png',
     });
@@ -327,7 +327,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
       step: 4,
       story: 'US-198',
       expected:
-        'Al abrir la frase, un formulario para corregir el texto sin cambiar el significado.',
+        'Al abrir la pregunta, un formulario para corregir el texto sin cambiar el significado.',
       observed: hasEditForm
         ? `Campo editable con el valor: "${await questionField.inputValue().catch(() => '(no se pudo leer)')}"`
         : 'No se abrió ningún campo editable reconocible como getByLabel("La pregunta").',
@@ -354,7 +354,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
         changedVisibleInMethod = await isVisible(page.getByText(corrected), 6000);
         await shot(page, '04-edit-phrase-method.png');
       } finally {
-        // Revertir siempre, haya salido bien el guardado o no: no dejar la frase mutada.
+        // Revertir siempre, haya salido bien el guardado o no: no dejar la pregunta mutada.
         await page.goto('/admin/items');
         await page.waitForLoadState('networkidle').catch(() => {});
         await page.getByLabel(/buscar en el catálogo/i).fill('dieron las clases');
@@ -390,7 +390,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
       record({
         step: 4,
         story: 'US-198 (limpieza)',
-        expected: 'Dejar la frase como estaba antes de este recorrido.',
+        expected: 'Dejar la pregunta como estaba antes de este recorrido.',
         observed: revertedOk
           ? 'Se revirtió el texto original correctamente.'
           : 'No se pudo confirmar la reversión: revisar manualmente el catálogo de items.',
@@ -452,12 +452,12 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
     await page.getByLabel('La pregunta').fill(distilledQuestion);
     await page.getByLabel(/etiqueta de la opción 1/i).fill('Sí');
     await page.getByLabel(/etiqueta de la opción 2/i).fill('No');
-    await page.getByRole('button', { name: 'Destilar' }).click();
+    await page.getByRole('button', { name: 'Agregar pregunta' }).click();
 
     const status = page.getByRole('status');
     const distilled = await checkVisible(
       status,
-      'debe confirmar que la frase entró en una versión nueva',
+      'debe confirmar que la pregunta entró en una versión nueva',
       15_000,
     );
     const statusText = distilled ? await textOf(status) : '';
@@ -465,7 +465,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
     record({
       step: 5,
       story: 'US-199',
-      expected: `Destilar una frase nueva (código ${distilledCode}) que entre a una versión nueva del instrumento.`,
+      expected: `Destilar una pregunta nueva (código ${distilledCode}) que entre a una versión nueva del instrumento.`,
       observed: distilled ? statusText : 'No se confirmó ningún mensaje de éxito tras destilar.',
       verdict: distilled ? 'cumple' : 'no cumple',
       screenshot: '05-curation-distill.png',
@@ -495,14 +495,18 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
       story: 'US-199',
       expected: `${distilledCode} aparece en /admin/items y en Método marcada como "destilada".`,
       observed: `En /admin/items: ${inCatalog ? 'aparece' : 'no aparece'}. En Método: ${hasInMethod ? `"${markedText}"` : 'no aparece'}.`,
-      verdict: combineVerdict([inCatalog, hasInMethod, markedText.includes('destilada')]),
+      verdict: combineVerdict([
+        inCatalog,
+        hasInMethod,
+        markedText.includes('a partir de comentarios'),
+      ]),
       screenshot: '05-curation-distill.png',
     });
 
     record({
       step: 5,
       story: 'US-199',
-      expected: 'Una cola de revisión antes de ofrecer la frase destilada a quien reseña.',
+      expected: 'Una cola de revisión antes de ofrecer la pregunta destilada a quien reseña.',
       observed: hasReviewQueueBeforeSubmit
         ? 'Aparece wording relacionado a una cola de revisión antes de destilar.'
         : 'No se encontró ninguna cola de revisión: destilar la deja disponible directamente, sin paso previo visible.',
@@ -598,7 +602,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
         expected:
           'Sin cuenta, la nota se lee en la ficha de carrera, con fecha y procedencia, sin nombre de nadie.',
         observed: visiblePublicly
-          ? `Se lee públicamente en /careers/${CAREER_SOFTWARE_QUALITY_ID}. Procedencia: ${hasProvenance ? `"${await textOf(provenance)}"` : 'no se encontró la frase de procedencia esperada'}.`
+          ? `Se lee públicamente en /careers/${CAREER_SOFTWARE_QUALITY_ID}. Procedencia: ${hasProvenance ? `"${await textOf(provenance)}"` : 'no se encontró la pregunta de procedencia esperada'}.`
           : 'No se encontró la nota en la ficha pública de carrera.',
         verdict: combineVerdict([visiblePublicly, hasProvenance]),
         screenshot: '06-editorial-note-public.png',

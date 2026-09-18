@@ -31,7 +31,7 @@ export type MyAnswer = {
   optionValue: number;
   /**
    * Cuántas voces suma ahora la opción elegida, y sobre cuántas (US-162, SC-018: "ahora 22 de 42
-   * voces"). Vienen null sin cátedra declarada (no hay tally al que atribuírselas) o si la frase ya
+   * voces"). Vienen null sin cátedra declarada (no hay tally al que atribuírselas) o si la pregunta ya
    * no está vigente.
    */
   optionVoices: number | null;

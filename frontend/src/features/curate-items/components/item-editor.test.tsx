@@ -97,7 +97,7 @@ describe('ItemEditor', () => {
    * US-198 N1: cambiar de opinión y volver a la redacción deja todo como estaba. No hay nada que
    * cancelar porque no se mandó nada: el corte solo existe cuando se confirma.
    */
-  it('volver a la redacción baja el aviso y deja la frase intacta', async () => {
+  it('volver a la redacción baja el aviso y deja la pregunta intacta', async () => {
     const user = userEvent.setup();
     render(<ItemEditor item={item} onDone={vi.fn()} />);
 
@@ -116,10 +116,10 @@ describe('ItemEditor', () => {
   });
 
   /**
-   * Una frase retirada se lee y no se edita: su texto es el enunciado bajo el que ya se respondió, y
+   * Una pregunta retirada se lee y no se edita: su texto es el enunciado bajo el que ya se respondió, y
    * la ficha lo muestra al lado de esos conteos.
    */
-  it('una frase retirada no ofrece edición, y dice qué pasó con sus respuestas', () => {
+  it('una pregunta retirada no ofrece edición, y dice qué pasó con sus respuestas', () => {
     const retired: CatalogItem = {
       ...item,
       isActive: false,

@@ -8,7 +8,7 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
 
-/** Un instrumento mínimo, con las frases que esta tarjeta necesita traducir. */
+/** Un instrumento mínimo, con las preguntas que esta tarjeta necesita traducir. */
 const INSTRUMENT: CurrentInstrument = {
   code: 'TEST',
   version: 1,
@@ -123,7 +123,7 @@ describe('MyReviewsList', () => {
   /**
    * Ficha SC-018 ("Publicado"): "Cómo terminaste esa cursada se ve acá, aunque nunca se publique
    * con la reseña: es tu propio registro, no lo público" (US-148, "Dónde se resuelve"). El
-   * desenlace viaja en `answers` como cualquier otra frase (`COURSE_OUTCOME`, optionValue 1 = "La
+   * desenlace viaja en `answers` como cualquier otra pregunta (`COURSE_OUTCOME`, optionValue 1 = "La
    * aprobé": mismo mapeo que usa `chair-facts.spec.ts`), y `ReviewCard` lo traduce con el
    * instrumento vigente, igual que `review-editor.tsx`.
    */
@@ -178,10 +178,10 @@ describe('MyReviewsList', () => {
   });
 
   /**
-   * US-162 (E1): por cada frase que respondiste en esa cátedra, la opción elegida y las voces que
+   * US-162 (E1): por cada pregunta que respondiste en esa cátedra, la opción elegida y las voces que
    * suma ahora ("ahora 12 de 40 voces", SC-018).
    */
-  it('US-162: cada frase respondida en la cátedra muestra la opción elegida y sus voces', () => {
+  it('US-162: cada pregunta respondida en la cátedra muestra la opción elegida y sus voces', () => {
     render(
       <MyReviewsList
         reviews={[
@@ -206,10 +206,10 @@ describe('MyReviewsList', () => {
   });
 
   /**
-   * Sin cátedra declarada el backend no manda voces para esa frase (quedan null): no se dibuja
+   * Sin cátedra declarada el backend no manda voces para esa pregunta (quedan null): no se dibuja
    * ninguna línea inventada.
    */
-  it('US-162: sin voces para esa frase no dibuja ninguna línea', () => {
+  it('US-162: sin voces para esa pregunta no dibuja ninguna línea', () => {
     render(
       <MyReviewsList
         reviews={[
@@ -234,10 +234,10 @@ describe('MyReviewsList', () => {
   });
 
   /**
-   * El desenlace no entra a la lista de voces por frase aunque el backend le mande conteos: ya
+   * El desenlace no entra a la lista de voces por pregunta aunque el backend le mande conteos: ya
    * tiene su propia línea arriba (US-148), y listarlo dos veces sería redundante.
    */
-  it('US-162: el desenlace no aparece en la lista de voces por frase', () => {
+  it('US-162: el desenlace no aparece en la lista de voces por pregunta', () => {
     render(
       <MyReviewsList
         reviews={[

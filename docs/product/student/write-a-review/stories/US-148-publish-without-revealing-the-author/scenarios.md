@@ -4,9 +4,9 @@
 
 ## Camino feliz
 
-**E1.** Dado que la cátedra Pérez (turno noche) de Análisis Matemático II, período 2026-C1, ya tiene 9 reseñas, y Matías reseña esa misma cursada respondiendo "la recursé" en cómo terminó y "Faltaron muchas" en la frase "¿Se dictaron las clases?".
+**E1.** Dado que la cátedra Pérez (turno noche) de Análisis Matemático II, período 2026-C1, ya tiene 9 reseñas, y Matías reseña esa misma cursada respondiendo "la recursé" en cómo terminó y "Faltaron muchas" en la pregunta "¿Se dictaron las clases?".
 Cuando su reseña se envía y la cátedra llega a las 10 reseñas.
-Entonces la Ficha de cátedra publica, por primera vez, la distribución de esa frase (por ejemplo, "Faltaron muchas · 40 %, 10 voces"); en ningún lugar público aparece el nombre de Matías, su cuenta, su rol, ni que él la recursó.
+Entonces la Ficha de cátedra publica, por primera vez, la distribución de esa pregunta (por ejemplo, "Faltaron muchas · 40 %, 10 voces"); en ningún lugar público aparece el nombre de Matías, su cuenta, su rol, ni que él la recursó.
 
 ## Negativos
 
@@ -14,5 +14,5 @@ Entonces la Ficha de cátedra publica, por primera vez, la distribución de esa 
 
 ## Edge cases
 
-- Reseña sin cátedra marcada ("No me acuerdo"): no publica ninguna cátedra; el resto de la reseña (contexto y vivencia) queda guardado igual, sin frases de cátedra que atribuirle.
+- Reseña sin cátedra marcada ("No me acuerdo"): no publica ninguna cátedra; el resto de la reseña (contexto y vivencia) queda guardado igual, sin preguntas de cátedra que atribuirle.
 - Cátedra con menos de 10 reseñas: nada de esa cátedra se publica todavía, ni agregado ni individual; la ficha solo muestra el estado del piso.

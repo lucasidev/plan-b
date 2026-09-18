@@ -85,7 +85,7 @@ describe('LandingSample', () => {
 
   // Muestra los dos primeros en el orden de la ficha. Recortar por "los peores" sería curar
   // exactamente lo que el producto promete no curar.
-  it('enseña las dos primeras frases de la ficha, no una selección', () => {
+  it('enseña las dos primeras preguntas de la ficha, no una selección', () => {
     render(<LandingSample sample={facts()} />);
 
     expect(

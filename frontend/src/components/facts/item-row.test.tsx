@@ -4,7 +4,7 @@ import { ItemRow } from './item-row';
 import type { PublishedItem } from './types';
 
 /**
- * La frase publicada y, cuando la pregunta cambió, sus dos tramos (US-198 E3, ADR-0083).
+ * La pregunta publicada y, cuando la pregunta cambió, sus dos tramos (US-198 E3, ADR-0083).
  *
  * Lo que estos tests protegen no es el layout: es que la ficha no pueda leerse como si dos
  * porcentajes de dos preguntas distintas midieran lo mismo.
@@ -145,7 +145,7 @@ describe('ItemRow', () => {
   });
 
   /**
-   * El denominador de la frase pluraliza: "de 1 voz" y no "de 1 voces". Es el caso de un tramo
+   * El denominador de la pregunta pluraliza: "de 1 voz" y no "de 1 voces". Es el caso de un tramo
    * nuevo (US-198) recién estrenado, que arranca en 0 y la primera respuesta lo lleva a 1.
    */
   it('con total 1, dice "de 1 voz"', () => {

@@ -99,8 +99,8 @@ const COURSE_OUTCOME_ITEM_CODE = 'COURSE_OUTCOME';
 
 /**
  * La etiqueta del desenlace declarado, si la reseña lo contestó y el instrumento vigente todavía
- * trae esa frase: mismo mapeo opción → etiqueta que usa `ReviewEditor` para dibujar las preguntas,
- * pero de solo lectura. Sin instrumento, sin la frase, o sin esa respuesta, no hay nada que traducir.
+ * trae esa pregunta: mismo mapeo opción → etiqueta que usa `ReviewEditor` para dibujar las preguntas,
+ * pero de solo lectura. Sin instrumento, sin la pregunta, o sin esa respuesta, no hay nada que traducir.
  */
 function courseOutcomeLabel(review: MyReview, instrument: CurrentInstrument | null): string | null {
   const item = instrument?.items.find((i) => i.code === COURSE_OUTCOME_ITEM_CODE);
@@ -110,11 +110,11 @@ function courseOutcomeLabel(review: MyReview, instrument: CurrentInstrument | nu
 }
 
 /**
- * Por cada frase que respondiste en esa cátedra, la opción que elegiste y las voces que suma ahora
+ * Por cada pregunta que respondiste en esa cátedra, la opción que elegiste y las voces que suma ahora
  * (US-162, SC-018: "ahora 22 de 42 voces"). El desenlace (`COURSE_OUTCOME`) ya tiene su propia
- * línea arriba y no se repite acá: no es una frase de la ficha, es el registro de cómo terminaste.
+ * línea arriba y no se repite acá: no es una pregunta de la ficha, es el registro de cómo terminaste.
  *
- * Sin cátedra declarada no hay tally al que atribuirle voces a ninguna frase (el backend las deja
+ * Sin cátedra declarada no hay tally al que atribuirle voces a ninguna pregunta (el backend las deja
  * en null), así que la lista sale vacía y no se dibuja nada: mejor nada que un número inventado.
  */
 function VoicesList({

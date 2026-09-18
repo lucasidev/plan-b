@@ -81,7 +81,7 @@ export async function distilItemAction(
     const problem = (await response.json().catch(() => null)) as { title?: string } | null;
     return {
       status: 'error',
-      message: MESSAGES[problem?.title ?? ''] ?? 'No pudimos destilar la pregunta.',
+      message: MESSAGES[problem?.title ?? ''] ?? 'No pudimos agregar la pregunta.',
     };
   } catch {
     return { status: 'error', message: NO_CONNECTION };

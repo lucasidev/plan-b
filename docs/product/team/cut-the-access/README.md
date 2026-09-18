@@ -8,7 +8,7 @@ Que el anonimato sea un mecanismo y no una promesa depende de que ningún rol de
 
 De esa regla sale el número: el equipo mínimo es de cuatro personas (D09), las cuatro del equipo en las [personas](../../personas.md): quien carga el catálogo, quien modera, quien verifica (nunca la misma que modera) y quien administra los accesos sin operar ninguna cola.
 
-Y lo que le pedimos a las instituciones se lo aplicamos al equipo: el registro de quién hizo qué se arma para que ningún rol, actuando solo, pueda reconstruir un cruce, y se revisa. Dos capas (US-218): la primera, construible, es el registro del equipo publicado en agregado (cuántas notas editoriales se publicaron y se retiraron, cuántas frases destiladas se aprobaron y se descartaron, y cuántos reclamos de instituciones se resolvieron, por categoría, sin contenido); la segunda, una persona externa con lectura del registro ya disociado, es una decisión de gobierno y no un requisito que el equipo resuelva solo. Cuando alguien deja el equipo, el acceso se corta en el momento y lo que hizo mientras lo tuvo no desaparece con ella (US-219).
+Y lo que le pedimos a las instituciones se lo aplicamos al equipo: el registro de quién hizo qué se arma para que ningún rol, actuando solo, pueda reconstruir un cruce, y se revisa. Dos capas (US-218): la primera, construible, es el registro del equipo publicado en agregado (cuántas notas editoriales se publicaron y se retiraron, cuántas preguntas destiladas se aprobaron y se descartaron, y cuántos reclamos de instituciones se resolvieron, por categoría, sin contenido); la segunda, una persona externa con lectura del registro ya disociado, es una decisión de gobierno y no un requisito que el equipo resuelva solo. Cuando alguien deja el equipo, el acceso se corta en el momento y lo que hizo mientras lo tuvo no desaparece con ella (US-219).
 
 ## Para quién
 
@@ -34,7 +34,7 @@ Las filas con "tema del mapa" vienen de los grupos transversales del mapa (BO6 �
 
 ## Decisiones que aplica
 
-D09 ([registro del 17](../../../history/reviews/2026-08-17-catalog-propagation.md): verificación y moderación son roles excluyentes, el Admin no se auto-asigna roles operativos, equipo mínimo de cuatro), [THESIS.md](../../../THESIS.md) ("Posición": el anonimato es mecanismo, no declaración), [ADR-0050](../../../decisions/0050-backoffice-is-a-cross-cutting-slice-not-a-module.md) (el backoffice es un corte transversal sobre los módulos existentes; el gating es por rol en cada endpoint, no por estar en un módulo aparte: es la base técnica de que cada rol vea solo sus colas), [ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md) (el campo libre no se publica y lo lee la curaduría: por eso lo que se audita del equipo son sus notas, sus frases destiladas y los reclamos que resolvió, y por eso la cola de curaduría y la de verificación son distintas).
+D09 ([registro del 17](../../../history/reviews/2026-08-17-catalog-propagation.md): verificación y moderación son roles excluyentes, el Admin no se auto-asigna roles operativos, equipo mínimo de cuatro), [THESIS.md](../../../THESIS.md) ("Posición": el anonimato es mecanismo, no declaración), [ADR-0050](../../../decisions/0050-backoffice-is-a-cross-cutting-slice-not-a-module.md) (el backoffice es un corte transversal sobre los módulos existentes; el gating es por rol en cada endpoint, no por estar en un módulo aparte: es la base técnica de que cada rol vea solo sus colas), [ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md) (el campo libre no se publica y lo lee la curaduría: por eso lo que se audita del equipo son sus notas, sus preguntas destiladas y los reclamos que resolvió, y por eso la cola de curaduría y la de verificación son distintas).
 
 ## Pantallas
 
@@ -42,11 +42,11 @@ La única que existe solo para esta épica vive acá, con su ficha y su boceto:
 
 - [**Equipo**](screens/SC-033-team/README.md) (backoffice, rol Admin): altas, roles con la exclusión imposible en la propia pantalla, el registro con autor y fecha, la baja que corta el acceso en el momento; [boceto mid-fi](screens/SC-033-team/sketch.html).
 
-Las colas que cada rol ve, y que no puede cruzar, viven en su épica: [Pedidos, Catálogo, Correcciones y Frases](../sustain-the-catalog/README.md) (catálogo y curaduría); [Reportes y Verificaciones](../moderate-without-breaking-the-product/README.md) (moderación y verificación).
+Las colas que cada rol ve, y que no puede cruzar, viven en su épica: [Pedidos, Catálogo, Correcciones y Preguntas](../sustain-the-catalog/README.md) (catálogo y curaduría); [Reportes y Verificaciones](../moderate-without-breaking-the-product/README.md) (moderación y verificación).
 
 ## Lo que esta épica todavía no resuelve
 
-- **Si curar las frases es un rol aparte o parte de catálogo**: el catálogo de requisitos nombra "quien cura las frases" como un rol distinto del de Sofía, y BO3 no lo lista entre los que se asignan.
+- **Si curar las preguntas es un rol aparte o parte de catálogo**: el catálogo de requisitos nombra "quien cura las preguntas" como un rol distinto del de Sofía, y BO3 no lo lista entre los que se asignan.
 - **Cómo se cubre la cola de verificación si Camila está de vacaciones** sin violar US-217: hace falta un segundo verificador, nunca un moderador supliendo.
 - **Si el Admin puede leer las colas sin operar**: US-215 dice que cada rol ve solo sus colas, y no dice qué ve el Admin.
 - **Qué pasa cuando alguien deja el equipo y vuelve más tarde**: si el alta reactiva la cuenta vieja con su historial de acciones o crea una entidad nueva en el registro.

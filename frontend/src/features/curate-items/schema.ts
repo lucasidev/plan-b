@@ -16,7 +16,7 @@ const option = z.object({
 
 const layer = z.enum(['Context', 'ChairConduct', 'StudentExperience']);
 
-/** Editar una frase sin cortar su serie: el código no viaja porque no se toca. */
+/** Editar una pregunta sin cortar su serie: el código no viaja porque no se toca. */
 export const editItemSchema = z.object({
   text: z.string().trim().min(1, 'Escribí la pregunta.').max(200),
   help: z.string().trim().max(500).optional(),

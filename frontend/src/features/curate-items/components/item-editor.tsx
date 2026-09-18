@@ -22,7 +22,7 @@ const VALENCE_LABELS: Record<(typeof OPTION_VALENCES)[number], string> = {
 type DraftOption = { value: number; label: string; valence: (typeof OPTION_VALENCES)[number] };
 
 /**
- * Editar una frase del catálogo (US-198).
+ * Editar una pregunta del catálogo (US-198).
  *
  * <p>
  * <b>La pantalla arranca preguntando qué estás cambiando, y esa es toda la decisión de diseño.</b>
@@ -42,9 +42,9 @@ type DraftOption = { value: number; label: string; valence: (typeof OPTION_VALEN
 export function ItemEditor({ item, onDone }: { item: CatalogItem; onDone: () => void }) {
   const [kind, setKind] = useState<ChangeKind | null>(null);
 
-  // Cambiar de frase en el catálogo vuelve a la declaración: la respuesta anterior era sobre otra
+  // Cambiar de pregunta en el catálogo vuelve a la declaración: la respuesta anterior era sobre otra
   // pregunta, y arrastrarla dejaría el aviso del corte armado sobre algo que nadie declaró.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: el reset es por frase, no por su contenido
+  // biome-ignore lint/correctness/useExhaustiveDependencies: el reset es por pregunta, no por su contenido
   useEffect(() => setKind(null), [item.id]);
 
   if (!item.isActive) {
@@ -368,7 +368,7 @@ function OptionsField({ options }: { options: DraftOption[] }) {
 }
 
 /**
- * Una frase retirada se lee y no se edita: su texto es el enunciado bajo el que se respondió, y la
+ * Una pregunta retirada se lee y no se edita: su texto es el enunciado bajo el que se respondió, y la
  * ficha lo muestra al lado de sus conteos.
  */
 function RetiredNotice({ item }: { item: CatalogItem }) {
@@ -405,7 +405,7 @@ function ErrorNote({ message }: { message: string }) {
 }
 
 /**
- * Las opciones de la frase como las edita el form. El `value` se conserva porque es lo que las
+ * Las opciones de la pregunta como las edita el form. El `value` se conserva porque es lo que las
  * respuestas guardaron: reasignarlo dejaría huérfano todo lo contestado.
  */
 function toDraft(item: CatalogItem): DraftOption[] {

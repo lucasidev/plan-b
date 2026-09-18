@@ -63,11 +63,11 @@ async function visibleText(page: Page): Promise<string> {
 }
 
 /**
- * Dos frases legítimas que nombran "ranking" para negarlo, no para mostrarlo
+ * Dos preguntas legítimas que nombran "ranking" para negarlo, no para mostrarlo
  * (`landing-hero.tsx` y `method-sheet.tsx`, ambos fuera del `#faq` que ya descarta `visibleText`).
  * Se descuentan del texto antes de buscar la palabra suelta: así el patrón sigue discriminando una
  * reaparición real (que usaría otra redacción) sin tropezar con su propia negación. Si el copy
- * cambia de forma que ya no matchea ninguna de las dos, el chequeo vuelve a fallar sobre la frase
+ * cambia de forma que ya no matchea ninguna de las dos, el chequeo vuelve a fallar sobre la pregunta
  * nueva y hay que mirarlo, no quedó aflojado en silencio.
  */
 const KNOWN_RANKING_NEGATIONS = [

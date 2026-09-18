@@ -1,8 +1,8 @@
 /**
- * Una frase publicada y su distribución, tal como las publica cualquier ficha (ADR-0083).
+ * Una pregunta publicada y su distribución, tal como las publica cualquier ficha (ADR-0083).
  *
  * Viven acá y no dentro de una ficha porque los comparten la ficha de cátedra y la muestra de la
- * entrada, que enseña una ficha real. Es la forma de lo que el producto publica de una frase: qué se
+ * entrada, que enseña una ficha real. Es la forma de lo que el producto publica de una pregunta: qué se
  * preguntó, qué eligió la mayoría con su etiqueta literal, y la distribución completa.
  */
 
@@ -16,7 +16,7 @@ export interface PublishedItem {
   distribution: DistributionSlice[];
   /**
    * El tramo de antes, cuando la pregunta cambió y se abrió un código nuevo (US-198). Cuelga del
-   * frase de hoy porque es la misma pregunta antes de dejar de serlo, y se dibuja separada porque
+   * pregunta de hoy porque es la misma pregunta antes de dejar de serlo, y se dibuja separada porque
    * los dos tramos no se comparan entre sí. No se suman nunca: cada uno tiene su propio total.
    */
   previousSeries?: PublishedItem | null;
@@ -52,7 +52,7 @@ export interface OfficialFact {
   sourceUrl: string;
   /** La regla de Método que citó el cálculo (ADR-0090). Solo la trae un `Derived`; el link de la ficha usa este id como fragmento (`/method#id`). */
   derivationRuleId: string | null;
-  /** Una frase para la ficha cuando el estado la necesita (la razón de un NotApplicable, el detalle de un NotPublished). */
+  /** Una pregunta para la ficha cuando el estado la necesita (la razón de un NotApplicable, el detalle de un NotPublished). */
   note: string | null;
   /** Cuándo se relevó esta afirmación (ISO 8601). */
   relievedAt: string;

@@ -20,7 +20,7 @@ export function UniversityTable({ universities }: { universities: AdminUniversit
     return (
       <div className="rounded-lg border border-dashed border-line bg-bg-card px-6 py-12 text-center">
         <p className="m-0 text-[13px] text-ink-3">
-          Todavía no hay universidades cargadas. Afiliá la primera con "Afiliar universidad".
+          Todavía no hay universidades cargadas. Agregá la primera con "Agregar universidad".
         </p>
       </div>
     );
@@ -77,7 +77,12 @@ function UniversityRow({ university }: { university: AdminUniversityRow }) {
         style={{ gridTemplateColumns: GRID }}
       >
         <div className="min-w-0">
-          <div className="truncate font-medium text-ink">{university.name}</div>
+          <Link
+            href={`/admin/universities/${university.id}`}
+            className="block truncate font-medium text-ink underline underline-offset-2"
+          >
+            {university.name}
+          </Link>
           <div className="truncate font-mono text-[10px] text-ink-4">{university.slug}</div>
         </div>
         <div className="truncate text-ink-2">
@@ -93,7 +98,7 @@ function UniversityRow({ university }: { university: AdminUniversityRow }) {
             className="text-ink-2 underline decoration-dotted underline-offset-2 hover:text-ink"
             aria-label={`Ver carreras de ${university.name}`}
           >
-            {university.careerCount}
+            {university.careerCount} carreras
           </Link>
         </div>
         <div>

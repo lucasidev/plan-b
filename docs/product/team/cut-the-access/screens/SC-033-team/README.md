@@ -4,7 +4,7 @@
 
 ## Quién la usa
 
-**Admin** (accesos: roles cortados por lo que no ven, y registro de quién hizo qué; la baja del que se va). Nadie más: administrar accesos es la única cola que el Admin opera, y no se auto-asigna ningún rol operativo (catálogo, curaduría de frases, moderación, verificación).
+**Admin** (accesos: roles cortados por lo que no ven, y registro de quién hizo qué; la baja del que se va). Nadie más: administrar accesos es la única cola que el Admin opera, y no se auto-asigna ningún rol operativo (catálogo, curaduría de preguntas, moderación, verificación).
 
 ## Qué stories resuelve
 
@@ -12,11 +12,11 @@ US-215 (cada rol ve solo sus colas, ni por acceso directo), US-216 (cada acción
 
 ## Qué muestra
 
-- **El equipo**: una fila por persona, con su rol (catálogo, curaduría de frases, moderación, verificación, o Admin) y desde cuándo. Sofía en catálogo, Nahuel en moderación, Camila en verificación; curaduría de frases sin nadie asignado todavía, porque ninguna fuente dice si es un rol aparte del de Sofía.
+- **El equipo**: una fila por persona, con su rol (catálogo, curaduría de preguntas, moderación, verificación, o Admin) y desde cuándo. Sofía en catálogo, Nahuel en moderación, Camila en verificación; curaduría de preguntas sin nadie asignado todavía, porque ninguna fuente dice si es un rol aparte del de Sofía.
 - **Dar de alta**: mail y un rol para elegir. El propio Admin no aparece como destino de ningún rol operativo.
-- **Cada rol, sus colas**: qué ve cada uno (catálogo entra a Pedidos, Catálogo, Correcciones y Frases; moderación a Reportes; verificación a Verificaciones) y qué no: ninguno llega a la cola de otro, ni por URL directa (US-215).
+- **Cada rol, sus colas**: qué ve cada uno (catálogo entra a Pedidos, Catálogo, Correcciones y Preguntas; moderación a Reportes; verificación a Verificaciones) y qué no: ninguno llega a la cola de otro, ni por URL directa (US-215).
 - **El registro**: quién hizo qué, con autor y fecha, en las cuatro colas operativas; las referencias que guarda están armadas para que ningún rol, actuando solo, pueda reconstruir un cruce (US-216, US-217).
-- **El registro público**: la primera capa, construible ahora, en agregado y sin contenido (cuántas notas editoriales se publicaron y se retiraron, cuántas frases destiladas se aprobaron y se descartaron, y cuántos reclamos de instituciones se resolvieron, por categoría, sin contenido). La segunda capa, una persona externa leyendo el registro ya disociado, es una decisión de gobierno y esta pantalla no la resuelve (US-218).
+- **El registro público**: la primera capa, construible ahora, en agregado y sin contenido (cuántas notas editoriales se publicaron y se retiraron, cuántas preguntas destiladas se aprobaron y se descartaron, y cuántos reclamos de instituciones se resolvieron, por categoría, sin contenido). La segunda capa, una persona externa leyendo el registro ya disociado, es una decisión de gobierno y esta pantalla no la resuelve (US-218).
 
 ## Estados
 
@@ -32,7 +32,7 @@ US-215 (cada rol ve solo sus colas, ni por acceso directo), US-216 (cada acción
 
 ## Adónde va
 
-Llega desde que alguien se suma o se va del equipo, o desde que hace falta revisar el registro. Va a: la cola que el rol recién asignado puede operar (Pedidos, Catálogo, Correcciones y Frases en [Sostener el catálogo](../../../sustain-the-catalog/README.md); Reportes y Verificaciones en [Moderar sin romper el producto](../../../moderate-without-breaking-the-product/README.md)); y, para la segunda capa del registro, a quien sea el lector externo, fuera del producto.
+Llega desde que alguien se suma o se va del equipo, o desde que hace falta revisar el registro. Va a: la cola que el rol recién asignado puede operar (Pedidos, Catálogo, Correcciones y Preguntas en [Sostener el catálogo](../../../sustain-the-catalog/README.md); Reportes y Verificaciones en [Moderar sin romper el producto](../../../moderate-without-breaking-the-product/README.md)); y, para la segunda capa del registro, a quien sea el lector externo, fuera del producto.
 
 ## Decisiones que aplica
 
@@ -40,7 +40,7 @@ D09 ([registro del 17](../../../../../history/reviews/2026-08-17-catalog-propaga
 
 ## Lo que esta ficha deja abierto
 
-- **Si "curar las frases" es un rol aparte o parte de catálogo**: el boceto lo muestra sin nadie asignado porque ninguna fuente lo cierra.
+- **Si "curar las preguntas" es un rol aparte o parte de catálogo**: el boceto lo muestra sin nadie asignado porque ninguna fuente lo cierra.
 - **Cómo se cubre la cola de verificación si Camila está de vacaciones**, sin violar la exclusión de US-217.
 - **Si el Admin puede leer las colas sin operarlas**: US-215 dice que cada rol ve solo las suyas y no dice qué ve el Admin.
 - **Qué pasa con una acción a medio hacer cuando a alguien se le corta el acceso en el momento.**

@@ -7,7 +7,7 @@ import type { CatalogItem } from '../types';
 import { ItemEditor } from './item-editor';
 
 /**
- * El catálogo de frases y su panel de edición, en una sola pantalla (US-198, E1).
+ * El catálogo de preguntas y su panel de edición, en una sola pantalla (US-198, E1).
  *
  * Un solo lugar es literal: no hay una segunda copia editable en ninguna otra parte del producto.
  * El catálogo se lista entero (son decenas de filas, y curar es mirar el conjunto) y editar es
@@ -113,7 +113,11 @@ export function ItemCatalog() {
 
 /** De dónde salió la pregunta, o que ya no se ofrece. Es lo mismo que Método publica. */
 function Tag({ item }: { item: CatalogItem }) {
-  const label = !item.isActive ? 'retirada' : item.origin === 'Distilled' ? 'destilada' : 'semilla';
+  const label = !item.isActive
+    ? 'retirada'
+    : item.origin === 'Distilled'
+      ? 'a partir de comentarios'
+      : 'inicial';
   const distilled = item.isActive && item.origin === 'Distilled';
 
   return (

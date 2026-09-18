@@ -45,7 +45,7 @@ Es la puerta de entrada: no llega desde ninguna otra pantalla del producto, sino
 
 Están los bloques 1, 2, 3, 4 y 6: qué es plan-b, la salida a Explorar (el buscador se encuentra en el catálogo), la muestra sorteada con su ficha real, el método al alcance desde el hero, y los tres pasos, donde el primero dice que explorar y buscar no piden cuenta; el hero no lo repite en una línea aparte.
 
-**El sorteo es por visita** y lo hace la base (`ORDER BY random()` sobre las cátedras que cruzaron el piso), no la pantalla: dejarlo del lado del llamador permitiría ordenarlo «por las mejores» sin que se note. De la ficha sorteada se enfrentan la finalización y las dos primeras frases **en el orden de la ficha** (alfabético por código), no una selección; el resto se ve entrando.
+**El sorteo es por visita** y lo hace la base (`ORDER BY random()` sobre las cátedras que cruzaron el piso), no la pantalla: dejarlo del lado del llamador permitiría ordenarlo «por las mejores» sin que se note. De la ficha sorteada se enfrentan la finalización y las dos primeras preguntas **en el orden de la ficha** (alfabético por código), no una selección; el resto se ve entrando.
 
 **No está el bloque 5** (Pedir): su pantalla todavía no existe, y un link a una pantalla inexistente es peor que no ofrecerla. Las dos preguntas que más hacen dudar a quien llega (por qué no hay puntaje, por qué algunas cátedras no muestran nada) se contestan también en las preguntas de la propia entrada, además de en Método.
 

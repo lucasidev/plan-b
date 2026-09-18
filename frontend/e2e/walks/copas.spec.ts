@@ -27,7 +27,7 @@ function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 7).toUpperCase();
 }
 
-/** Correlaciona todo lo que esta corrida crea (cuenta, texto libre, cátedra, frase). */
+/** Correlaciona todo lo que esta corrida crea (cuenta, texto libre, cátedra, pregunta). */
 const WALK_SUFFIX = randomSuffix();
 
 function requireEnv(name: string, hint: string): string {
@@ -167,7 +167,9 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     console.log(`6: Ruiz pasó de ${reviewCount} a ${reviewCount + 1}`);
   });
 
-  test('7. Backoffice: cátedra nueva y una frase destilada del campo libre', async ({ page }) => {
+  test('7. Backoffice: cátedra nueva y una pregunta destilada del campo libre', async ({
+    page,
+  }) => {
     // Cierra la sesión de Copas antes de entrar como admin, tal cual el recorrido.
     await signIn(page, copasEmail, copasPassword);
     await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 20_000 });
@@ -216,7 +218,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     await expect(chairCard.getByText(`${teacherName} DeStage`, { exact: true })).toBeVisible();
     await expect(chairCard.getByText(/titular/i)).toBeVisible();
 
-    // 7b. Curaduría: lee el texto libre que dejó la reseña del paso 6 y destila una frase nueva.
+    // 7b. Curaduría: lee el texto libre que dejó la reseña del paso 6 y destila una pregunta nueva.
     await page.goto('/admin/curation');
     await expect(page.getByText(freeTextNote)).toBeVisible({ timeout: 15_000 });
 
@@ -226,7 +228,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     await page.getByLabel('La pregunta').fill(question);
     await page.getByLabel(/etiqueta de la opción 1/i).fill('Sí');
     await page.getByLabel(/etiqueta de la opción 2/i).fill('No');
-    await page.getByRole('button', { name: 'Destilar' }).click();
+    await page.getByRole('button', { name: 'Agregar pregunta' }).click();
 
     const status = page.getByRole('status');
     await expect(status).toContainText(/entró en la versión \d+/i, { timeout: 15_000 });
@@ -246,8 +248,10 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     await page.goto('/method');
     const marked = page.getByText(question);
     await expect(marked).toBeVisible({ timeout: 15_000 });
-    await expect(marked).toContainText('destilada');
+    await expect(marked).toContainText('a partir de comentarios');
 
-    console.log(`7: cátedra ${chairName} creada, frase ${code} destilada en la versión ${version}`);
+    console.log(
+      `7: cátedra ${chairName} creada, pregunta ${code} destilada en la versión ${version}`,
+    );
   });
 });

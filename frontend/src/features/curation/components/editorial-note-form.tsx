@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useRef } from 'react';
 import { useHydrated } from '@/lib/use-hydrated';
 import { publishEditorialNoteAction } from '../actions';
@@ -30,7 +29,6 @@ export function EditorialNoteForm({
     initialEditorialNoteState,
   );
   const hydrated = useHydrated();
-  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
 
   // Se limpia el form y nada más: la nota se publica en la ficha de la carrera, que no es esta
@@ -52,23 +50,26 @@ export function EditorialNoteForm({
 
       {/* La universidad va por la URL y no por el form: al elegirla hay que ir a buscar sus
           carreras, y eso es una navegación, no parte del envío de la nota. */}
-      <label htmlFor="note-university" className="mb-1 block text-[12.5px] text-ink-2">
-        Universidad
-      </label>
-      <select
-        id="note-university"
-        defaultValue={selectedUniversityId ?? ''}
-        disabled={disabled}
-        onChange={(e) => router.push(`/admin/curation?universityId=${e.target.value}`)}
-        className="mb-3 w-full rounded-lg border border-line bg-bg px-3 py-2 text-[13px] text-ink disabled:opacity-60"
-      >
-        <option value="">Elegí una</option>
-        {universities.map((university) => (
-          <option key={university.id} value={university.id}>
-            {university.name}
-          </option>
-        ))}
-      </select>
+      <form action="/admin/curation" method="get">
+        <label htmlFor="note-university" className="mb-1 block text-[12.5px] text-ink-2">
+          Universidad
+        </label>
+        <select
+          id="note-university"
+          name="universityId"
+          defaultValue={selectedUniversityId ?? ''}
+          disabled={disabled}
+          onChange={(e) => e.currentTarget.form?.requestSubmit()}
+          className="mb-3 w-full rounded-lg border border-line bg-bg px-3 py-2 text-[13px] text-ink disabled:opacity-60"
+        >
+          <option value="">Elegí una</option>
+          {universities.map((university) => (
+            <option key={university.id} value={university.id}>
+              {university.name}
+            </option>
+          ))}
+        </select>
+      </form>
 
       <form ref={formRef} action={action}>
         <label htmlFor="note-career" className="mb-1 block text-[12.5px] text-ink-2">
