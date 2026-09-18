@@ -31,6 +31,26 @@ internal sealed class UserRepository : IUserRepository
     public Task<User?> FindByIdAsync(UserId id, CancellationToken ct = default) =>
         _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
 
+    public async Task<bool> TryUpdateAccessAsync(User user, int expectedAccessVersion, CancellationToken ct = default)
+    {
+        // La transición se calcula en User. El WHERE evita pisar otra suspensión o escribir
+        // sobre una baja ocurrida después de leer, sin cambiar la concurrencia de otros writes.
+        var affected = await _db.Users.IgnoreAutoIncludes()
+            .Where(u => u.Id == user.Id && u.Role == UserRole.Member
+                && u.DeactivatedAt == null && u.ExpiredAt == null && u.AccessVersion == expectedAccessVersion)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.DisabledAt, user.DisabledAt)
+                .SetProperty(u => u.DisabledBy, user.DisabledBy)
+                .SetProperty(u => u.AccessVersion, user.AccessVersion)
+                .SetProperty(u => u.DisabledReason, user.DisabledReason)
+                .SetProperty(u => u.UpdatedAt, user.UpdatedAt), ct);
+        // ExecuteUpdate ya persistió la transición; el tracker no debe repetirla al cerrar el handler.
+        var entry = _db.Entry(user);
+        entry.OriginalValues.SetValues(entry.CurrentValues);
+        entry.State = EntityState.Unchanged;
+        return affected == 1;
+    }
+
     public Task<User?> FindByVerificationTokenAsync(
         string rawToken,
         TokenPurpose purpose,

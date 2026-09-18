@@ -510,6 +510,20 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         return rows.AsList();
     }
 
+    public async Task<IReadOnlyList<CareerLabel>> GetCareerLabelsAsync(
+        IReadOnlyCollection<Guid> careerIds, CancellationToken ct = default)
+    {
+        if (careerIds.Count == 0) return [];
+        const string sql = """
+            SELECT c.id AS Id, c.name AS CareerName, u.name AS UniversityName
+            FROM academic.careers c JOIN academic.universities u ON u.id = c.university_id
+            WHERE c.id = ANY(@Ids);
+            """;
+        using var db = _connections.Create();
+        return (await db.QueryAsync<CareerLabel>(new CommandDefinition(sql,
+            new { Ids = careerIds.ToArray() }, cancellationToken: ct))).AsList();
+    }
+
     public async Task<IReadOnlyList<CareerCatalogItem>> ListAllCareersAsync(CancellationToken ct = default)
     {
         // Mismo filtro que ListUniversitiesAsync (is_active de la universidad) más el de la carrera:

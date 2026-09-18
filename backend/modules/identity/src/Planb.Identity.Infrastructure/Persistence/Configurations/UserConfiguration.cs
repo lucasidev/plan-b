@@ -56,6 +56,10 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.DisabledBy)
             .HasColumnName("disabled_by");
 
+        builder.Property(u => u.AccessVersion)
+            .HasColumnName("access_version")
+            .HasDefaultValue(0);
+
         builder.Property(u => u.ExpiredAt)
             .HasColumnName("expired_at");
 

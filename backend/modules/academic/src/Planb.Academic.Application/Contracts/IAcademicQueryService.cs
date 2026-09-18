@@ -10,6 +10,8 @@ namespace Planb.Academic.Application.Contracts;
 /// </summary>
 public interface IAcademicQueryService
 {
+    /// <summary>Nombres de carrera y universidad en lote, incluidos los registros archivados.</summary>
+    Task<IReadOnlyList<CareerLabel>> GetCareerLabelsAsync(IReadOnlyCollection<Guid> careerIds, CancellationToken ct = default);
     /// <summary>Existe un CareerPlan con ese Id en el catálogo Academic?</summary>
     Task<bool> CareerPlanExistsAsync(Guid careerPlanId, CancellationToken ct = default);
 

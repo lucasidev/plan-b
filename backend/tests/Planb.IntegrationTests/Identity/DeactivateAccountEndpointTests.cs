@@ -133,7 +133,7 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
 
     /// <summary>US-166 N4</summary>
     [Fact]
-    public async Task Returns_409_when_user_is_already_deactivated()
+    public async Task Returns_401_when_the_session_belongs_to_a_deactivated_account()
     {
         var auth = await AuthenticatedClient.CreateAsync(
             _fixture, FreshEmail("deactivate-twice"));
@@ -141,10 +141,9 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
         var first = await auth.Client.DeleteAsync("/api/me/account");
         first.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        // Segundo intento con la misma sesión. La cookie sigue siendo válida (JWT firmado),
-        // pero el handler chequea IsDeactivated y devuelve 409.
+        // El JWT conserva su firma, pero el estado de la cuenta invalida el acceso de inmediato.
         var second = await auth.Client.DeleteAsync("/api/me/account");
-        second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        second.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     /// <summary>US-166 E1, N1</summary>

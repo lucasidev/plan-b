@@ -19,6 +19,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public DateTimeOffset? DisabledAt { get; private set; }
     public string? DisabledReason { get; private set; }
     public Guid? DisabledBy { get; private set; }
+    public int AccessVersion { get; private set; }
     public DateTimeOffset? ExpiredAt { get; private set; }
     public DateTimeOffset? DeactivatedAt { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
@@ -516,6 +517,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         DisabledAt = now;
         DisabledReason = reason;
         DisabledBy = disabledBy;
+        AccessVersion++;
         UpdatedAt = now;
         Raise(new UserDisabledDomainEvent(Id, disabledBy, reason, now));
         return Result.Success();
@@ -534,6 +536,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         DisabledAt = null;
         DisabledReason = null;
         DisabledBy = null;
+        AccessVersion++;
         UpdatedAt = now;
         Raise(new UserRestoredDomainEvent(Id, now));
         return Result.Success();

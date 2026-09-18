@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IUserDeletionLogRepository, UserDeletionLogRepository>();
         services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
         services.AddScoped<IIdentityReadService, DapperIdentityReadService>();
+        services.AddScoped<IAdminUserReadService, DapperAdminUserReadService>();
         services.AddScoped<IIdentityQueryService, DapperIdentityQueryService>();
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();

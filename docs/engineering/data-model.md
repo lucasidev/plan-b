@@ -85,6 +85,7 @@ erDiagram
 | `email_verified_at`      | TIMESTAMPTZ               | NULL        | Null = registro pendiente de verificar                                                                      |
 | `role`                   | ENUM `identity.user_role` | NOT NULL    | `member`, `moderator`, `admin` (ADR-0008). Sin default en DB: lo fija `User.Register`   |
 | `disabled_at`            | TIMESTAMPTZ               | NULL        | Soft suspend                                                                                                |
+| `access_version`         | INTEGER                   | NOT NULL, default 0 | Versión incluida en el JWT; aumenta al suspender o reactivar y mantiene revocadas las sesiones anteriores |
 | `disabled_reason`        | TEXT                      | NULL        |                                                                                                             |
 | `disabled_by`            | UUID                      | NULL        | Self-ref a `User.id`, sin FK                                                                                 |
 | `expired_at`             | TIMESTAMPTZ               | NULL        | Registro sin verificar, vencido (US-022)                                                                    |

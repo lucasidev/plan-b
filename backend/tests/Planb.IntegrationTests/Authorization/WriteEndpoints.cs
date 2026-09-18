@@ -62,10 +62,8 @@ public sealed record WriteEndpointCase(
 }
 
 /// <summary>
-/// El catálogo de los 51 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
-/// declara su *Endpoint.cs. Verificado en el código el 2026-09-02 (issue #417); subió de 49 a 50 al
-/// sumar Academic_CreateOfficialFact (ADR-0090, issue #481); subió de 50 a 51 al sumar
-/// Academic_ImportAgnAudits (issue #506).
+/// El catálogo de los 53 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
+/// declara su *Endpoint.cs. EveryWriteEndpointIsDeclaredTests verifica que el inventario esté completo.
 ///
 /// <para>
 /// Los ids "reales" son los del seed determinístico de <c>AcademicSeedData</c>, repetidos acá como
@@ -97,6 +95,12 @@ public static class WriteEndpoints
 
     public static readonly IReadOnlyList<WriteEndpointCase> All =
     [
+        new WriteEndpointCase("Identity_SuspendUser", HttpMethod.Post, WriteAccess.Admin,
+            ids => $"/api/identity/users/{ids[0]}/suspend", [Guid.Empty],
+            ValidBody: () => new { reason = "Account access review" },
+            LongStringBody: () => new { reason = LongString }),
+        new WriteEndpointCase("Identity_RestoreUser", HttpMethod.Post, WriteAccess.Admin,
+            ids => $"/api/identity/users/{ids[0]}/restore", [Guid.Empty]),
         // -----------------------------------------------------------------
         // Identity: sin autorización
         // -----------------------------------------------------------------
