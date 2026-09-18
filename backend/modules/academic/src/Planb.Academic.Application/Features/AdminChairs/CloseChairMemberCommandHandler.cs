@@ -1,6 +1,8 @@
 using Planb.Academic.Application.Abstractions.Persistence;
+using Planb.Academic.Application.Contracts;
 using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.Chairs;
+using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Primitives;
@@ -17,6 +19,8 @@ public static class CloseChairMemberCommandHandler
         CloseChairMemberCommand command,
         IChairRepository chairs,
         IAcademicTermRepository terms,
+        ISubjectRepository subjects,
+        IAcademicQueryService academic,
         IAcademicUnitOfWork unitOfWork,
         IDateTimeProvider clock,
         CancellationToken ct)
@@ -27,12 +31,35 @@ public static class CloseChairMemberCommandHandler
             return ChairErrors.NotFound;
         }
 
-        // El período de cierre se valida contra el catálogo igual que el de alta: un Guid inventado
-        // dejaría un tramo cerrado contra un período que no existe, y la ficha no podría fecharlo.
+        var member = chair.Members.FirstOrDefault(m => m.IsCurrent && m.TeacherId.Value == command.TeacherId);
+        if (member is null)
+        {
+            return ChairErrors.TeacherNotInChair;
+        }
+
         var term = await terms.FindByIdAsync(new AcademicTermId(command.UntilTermId), ct);
-        if (term is null)
+        var since = await terms.FindByIdAsync(member.SinceTermId, ct);
+        if (term is null || since is null)
         {
             return ChairErrors.TermNotFound;
+        }
+
+        var subject = await subjects.GetByIdAsync(chair.SubjectId, ct);
+        var plan = subject is null ? null : await academic.GetCareerPlanByIdAsync(subject.CareerPlanId.Value, ct);
+        if (plan is null)
+        {
+            return ChairErrors.SubjectNotFound;
+        }
+
+        if (term.UniversityId.Value != plan.UniversityId || since.UniversityId.Value != plan.UniversityId)
+        {
+            return ChairErrors.UniversityMismatch;
+        }
+
+        // Hasta incluye el período elegido; las fechas permiten comparar cadencias distintas.
+        if (term.EndDate < since.StartDate)
+        {
+            return ChairErrors.MemberPeriodInverted;
         }
 
         var result = chair.CloseMember(

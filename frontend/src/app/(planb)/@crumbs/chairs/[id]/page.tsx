@@ -1,4 +1,5 @@
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { fetchPlanServer } from '@/features/browse-catalog/api.server';
 import { fetchChairFactsServer } from '@/features/chair-facts';
 import { fetchSubjectFactsServer } from '@/features/subject-facts';
 import { genericCrumbs } from '@/lib/member-shell';
@@ -34,6 +35,7 @@ export default async function ChairCrumbs({ params }: { params: Params }) {
   }
 
   const university = await universityCrumbByPlan(subjectFacts.careerPlanId);
+  const plan = await fetchPlanServer(subjectFacts.careerPlanId).catch(() => null);
   if (!university) {
     return <Breadcrumbs items={genericCrumbs(pathname)} />;
   }
@@ -48,6 +50,10 @@ export default async function ChairCrumbs({ params }: { params: Params }) {
           label: subjectFacts.careerName,
           href: `/careers/${subjectFacts.careerId}`,
           truncate: true,
+        },
+        {
+          label: plan ? `Plan ${plan.year}` : 'Plan de estudios',
+          href: `/plans/${subjectFacts.careerPlanId}/subjects`,
         },
         {
           label: subjectLabel(subjectFacts.subjectCode, subjectFacts.subjectName),

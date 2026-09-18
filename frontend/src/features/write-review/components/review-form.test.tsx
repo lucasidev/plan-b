@@ -11,7 +11,7 @@ import { ReviewForm } from './review-form';
  * leído antes el cuerpo del componente.
  *
  * El instrumento de fixture usa los textos y opciones reales del catálogo
- * (docs/product/phrases.md) para que lo que aparece en pantalla sea lo que una frase real diría.
+ * (docs/product/phrases.md) para que lo que aparece en pantalla sea lo que una pregunta real diría.
  */
 
 vi.mock('../actions', () => ({
@@ -250,9 +250,86 @@ beforeEach(() => {
 });
 
 describe('US-146: reseñar en menos de dos minutos', () => {
+  it('muestra la materia preseleccionada aunque quede fuera de las primeras ocho', async () => {
+    const subjects = Array.from({ length: 12 }, (_, i) => ({
+      id: `subject-${i}`,
+      name: `Materia ${i}`,
+      code: null,
+      yearInPlan: 1,
+    }));
+    render(
+      <ReviewForm
+        instrument={INSTRUMENT}
+        subjects={subjects}
+        terms={TERMS}
+        initialSubjectId="subject-11"
+      />,
+    );
+    expect(screen.getByRole('button', { name: /Materia 11/, pressed: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await screen.findByText(/Esta materia todavía no tiene cátedras/);
+  });
+  it('conserva la cátedra del enlace y la limpia al elegir otra materia', async () => {
+    stubFetchRoutes({ chairs: [{ id: 'chair-1', name: 'Cátedra Pérez' }], floor: null });
+    const user = userEvent.setup();
+    render(
+      <ReviewForm
+        instrument={INSTRUMENT}
+        subjects={SUBJECTS}
+        terms={TERMS}
+        initialSubjectId="subj-databases"
+        initialChairId="chair-1"
+      />,
+    );
+    expect(screen.getByRole('button', { name: /bases de datos/i })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Cátedra Pérez' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      ),
+    );
+    expect(screen.getByRole('button', { name: '2026-C1' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Cátedra Pérez' })).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      ),
+    );
+  });
+
+  it('un error al cargar cátedras permite reintentar y no se presenta como catálogo vacío', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
+    const user = userEvent.setup();
+    render(
+      <ReviewForm
+        instrument={INSTRUMENT}
+        subjects={SUBJECTS}
+        terms={TERMS}
+        initialSubjectId="subj-databases"
+        initialChairId="chair-1"
+      />,
+    );
+    expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar las cátedras');
+    expect(screen.queryByText(/todavía no tiene cátedras cargadas/i)).not.toBeInTheDocument();
+    stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);
+    await user.click(screen.getByRole('button', { name: 'Reintentar' }));
+    expect(await screen.findByRole('button', { name: 'Cátedra Pérez' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
   /**
    * US-146 E1: responde "la aprobé" en cómo terminó, elige "No me acuerdo" en cátedra, responde una
-   * sola frase del paso 5 (pudo seguir el ritmo) y deja el resto sin contestar; la reseña se envía
+   * sola pregunta del paso 5 (pudo seguir el ritmo) y deja el resto sin contestar; la reseña se envía
    * igual.
    */
   it('publica la reseña con solo opciones cerradas, sin escribir nada obligatorio', async () => {
@@ -436,7 +513,7 @@ describe('SC-015: estados que dependen de props', () => {
     expect(screen.getByRole('button', { name: /enviar la reseña/i })).toBeDisabled();
   });
 
-  it('si el instrumento no trae frases de conducta observable, el paso no se ofrece', () => {
+  it('si el instrumento no trae preguntas de conducta observable, el paso no se ofrece', () => {
     const withoutChairConduct: CurrentInstrument = {
       ...INSTRUMENT,
       items: INSTRUMENT.items.filter((item) => item.layer !== 'ChairConduct'),

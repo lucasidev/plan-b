@@ -362,6 +362,91 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
             .ShouldBe([assistantOne, assistantTwo], ignoreOrder: true);
     }
 
+    // US-196 N2: rechazar un período de otra universidad sin cerrar el tramo.
+    [Fact]
+    public async Task Closing_with_a_term_from_another_university_preserves_the_current_member()
+    {
+        var admin = await AdminAsync();
+        var universities = await admin.Client.GetOkAsync<List<UniversityRow>>("/api/academic/universities");
+        var other = universities!.First(u => u.Id != Unsta);
+        var terms = await admin.Client.GetOkAsync<TermList>($"/api/academic/universities/{other.Id}/terms");
+
+        await AssertRejectedClosureAsync(admin, UnstaTerm, terms!.Items.First().Id,
+            "academic.chair.university_mismatch");
+    }
+
+    // US-196 N3: rechazar un cierre anterior al inicio sin modificar el equipo.
+    [Fact]
+    public async Task Closing_before_the_start_preserves_the_current_member()
+    {
+        var admin = await AdminAsync();
+        await AssertRejectedClosureAsync(admin, UnstaTermLater, UnstaTerm,
+            "academic.chair.member_period_inverted");
+    }
+
+    [Fact]
+    public async Task A_member_can_start_and_finish_in_the_same_term()
+    {
+        var admin = await AdminAsync();
+        var (chairId, teacherId) = await CreateMemberAsync(admin, UnstaTerm);
+        var response = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/chairs/{chairId}/members/{teacherId}/close", new { untilTermId = UnstaTerm });
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        var chairs = await admin.Client.GetOkAsync<List<AdminChairListItem>>(
+            $"/api/academic/chairs?subjectId={Subject211}");
+        var member = chairs!.Single(c => c.Id == chairId).Members.ShouldHaveSingleItem();
+        member.UntilTermLabel.ShouldBe(member.SinceTermLabel);
+    }
+
+    private async Task AssertRejectedClosureAsync(
+        AuthenticatedClient admin, Guid sinceTermId, Guid untilTermId, string errorCode)
+    {
+        var (chairId, teacherId) = await CreateMemberAsync(admin, sinceTermId);
+        var response = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/chairs/{chairId}/members/{teacherId}/close", new { untilTermId });
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync()).ShouldContain(errorCode);
+        var chairs = await admin.Client.GetOkAsync<List<AdminChairListItem>>(
+            $"/api/academic/chairs?subjectId={Subject211}");
+        chairs!.Single(c => c.Id == chairId).Members.ShouldHaveSingleItem().UntilTermLabel.ShouldBeNull();
+    }
+
+    private async Task<(Guid ChairId, Guid TeacherId)> CreateMemberAsync(
+        AuthenticatedClient admin, Guid sinceTermId)
+    {
+        var created = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() });
+        created.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var chair = (await created.Content.ReadFromJsonAsync<CreateChairResponse>())!;
+        var teacherId = await CreateTeacherAsync(admin);
+        var added = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/chairs/{chair.Id}/members", new { teacherId, role = "Assistant", sinceTermId });
+        added.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        return (chair.Id, teacherId);
+    }
+
+    private sealed record TermList(List<TermRow> Items);
+    private sealed record TermRow(Guid Id);
+
+    [Fact]
+    public async Task Admin_context_resolves_the_subject_hierarchy_and_is_not_public()
+    {
+        var admin = await AdminAsync();
+        var url = $"/api/academic/chairs/subject-context?subjectId={Subject211}";
+        var context = await admin.Client.GetOkAsync<ChairSubjectContext>(url);
+        context.ShouldNotBeNull();
+        context.SubjectId.ShouldBe(Subject211);
+        context.UniversityId.ShouldBe(Unsta);
+        context.CareerId.ShouldBe(Guid.Parse("00000002-0000-4000-a000-000000000003"));
+        context.CareerPlanId.ShouldBe(Guid.Parse("00000003-0000-4000-a000-000000000003"));
+        context.SubjectName.ShouldNotBeNullOrWhiteSpace();
+        context.SubjectIsActive.ShouldBeTrue();
+        var anonymous = _fixture.Factory.CreateClient();
+        (await anonymous.GetAsync(url)).StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        (await admin.Client.GetAsync($"/api/academic/chairs/subject-context?subjectId={Guid.NewGuid()}"))
+            .StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
     private async Task<Guid> CreateTeacherAsync(
         AuthenticatedClient admin, Guid? universityId = null, string? firstName = null, string? lastName = null)
     {

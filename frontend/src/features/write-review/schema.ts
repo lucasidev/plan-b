@@ -5,8 +5,8 @@ import { z } from 'zod';
  * validación del cliente y el server action.
  *
  * Deliberadamente laxo con las respuestas: **saltear siempre vale**, así que no exige responder
- * ninguna frase en particular, solo al menos una (una reseña sin nada respondido no aporta a ningún
- * conteo y es una sesión abandonada). Qué frase existe y qué opción le pertenece lo valida el
+ * ninguna pregunta en particular, solo al menos una (una reseña sin nada respondido no aporta a ningún
+ * conteo y es una sesión abandonada). Qué pregunta existe y qué opción le pertenece lo valida el
  * backend contra el catálogo, que es el único que lo sabe.
  */
 

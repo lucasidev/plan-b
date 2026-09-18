@@ -14,6 +14,14 @@ US-191 (dueña: la pantalla abre por huecos, y entre ellos los dos que bloquean 
 
 Para una institución, Catálogo permite mantener su identidad, ubicación, dominios institucionales, unidades académicas y afirmaciones oficiales. Los conteos de unidades, carreras y planes se derivan del catálogo y cada oferta solo puede vincularse a una unidad de su propia institución (US-234).
 
+**Interacción acordada el 2026-09-18, implementada parcialmente (detalle de lo construido abajo):**
+
+- La cabecera conserva universidad, unidad académica cuando esté relevada, carrera, plan y materia, con enlaces a sus pantallas. Un acceso directo resuelve el mismo contexto que el recorrido desde la universidad.
+- Los listados generales de docentes y cátedras son atajos: cada resultado identifica su contexto. Las altas dependientes heredan el padre elegido o piden seleccionarlo antes de mostrar el formulario.
+- El detalle de cátedra muestra equipo actual e histórico y permite agregar integrantes y cerrar sus tramos. Los selectores ofrecen docentes y períodos del contexto; el error conserva los valores escritos. Si falta el docente, se puede cargar y regresar al mismo equipo.
+- Guardar o cancelar vuelve al lugar de origen con sus filtros y selección. Salir con cambios sin guardar ofrece continuar editando o descartarlos. Una sesión vencida no convierte el retorno en una segunda ejecución del guardado.
+- Archivar muestra el impacto antes de confirmar y registra el cierre efectivo separado de la fecha administrativa. La cátedra conserva su ficha pública y admite reseñas de cursadas anteriores al cierre, según US-196. El límite temporal y las reglas de reactivación siguen pendientes de precisión.
+
 Para una oferta que se está cargando por primera vez:
 
 1. **Huecos primero** (describe el destino: es US-191, en el Backlog; hoy el backoffice lista sin priorizar): la pantalla abre listando las ofertas por cuántos campos les faltan, no por las que ya están casi listas; entre los huecos, dos bloquean publicar y se marcan aparte, la duración nominal del plan y la carrera canónica (US-191).
@@ -24,8 +32,9 @@ Para una oferta que se está cargando por primera vez:
 
 **Hoy, en el código** (`/admin/chairs`, `/admin/teachers`): el ABM existe, sin el recorrido por huecos que describe arriba.
 
-- **Cátedras** (`/admin/chairs`): se entra buscando la materia (reusa el buscador global, filtrado a materias), no por universidad ni período. Elegida la materia, un formulario carga una cátedra nueva con un solo campo, su nombre (el apellido del titular, que es como el alumno la recuerda); nace sin equipo. La lista de cátedras de esa materia muestra, por cada una, su equipo activo (nombre, rol y desde cuándo) y, aparte, "Integraron antes" con quienes cerraron su tramo; una sin equipo dice "Sin equipo cargado todavía", y una archivada se marca. **No hay ningún control para sumar un integrante al equipo desde la pantalla**: el titular hoy solo entra por seed o por API (S02).
-- **Docentes** (`/admin/teachers`): la lista trae nombre, universidad, cargo (o "sin cargo") y estado, con "Editar" y "Desactivar" (pide confirmación) o "Reactivar" por fila. "+ Nuevo docente" abre el alta: universidad (fija en la edición, no se cambia), nombre, apellido, cargo opcional, bio opcional y una foto por URL con vista previa. Es el insumo de la cátedra (US-196): un docente existe acá antes de poder sumarlo a un equipo, aunque esa segunda parte todavía no tenga pantalla.
+- **Cátedras** (`/admin/chairs`): se entra desde una materia o buscándola. La cabecera resuelve universidad, carrera, plan y materia. Crear abre el detalle `/admin/chairs/[id]?subjectId=...`, que verifica la pertenencia a la materia y muestra el equipo vigente e histórico. Permite agregar docentes activos de esa universidad y cerrar sus tramos con períodos del mismo contexto; el último período queda incluido. El backend rechaza un cierre cuyo fin sea anterior al inicio. Si falta un docente, el alta vuelve al detalle conservando rol y período en esta pestaña. Las archivadas se identifican y su equipo se puede consultar. La unidad académica en esta cadena, la confirmación general de cambios sin guardar y el archivo con cierre efectivo siguen pendientes.
+
+- **Docentes** (`/admin/teachers`): la lista trae nombre, universidad, cargo (o "sin cargo") y estado, con "Editar" y "Desactivar" (pide confirmación) o "Reactivar" por fila. "+ Nuevo docente" abre el alta: universidad (fija en la edición, no se cambia), nombre, apellido, cargo opcional, bio opcional y una foto por URL con vista previa. Es el insumo de la cátedra (US-196): un docente existe acá antes de poder sumarlo a un equipo, con retorno al filtro de universidad después de guardar o cancelar.
 
 **La fuente sin oficializar** (US-202): un campo admite marcarse "fuente: no oficial" cuando la facultad no publica el plan o publica versiones que no coinciden; no bloquea cargar, y la ficha pública lo muestra.
 
@@ -37,7 +46,13 @@ Para una oferta que se está cargando por primera vez:
 
 ## Estados
 
-No están decididos los estados de carga, error o guardado parcial de esta pantalla (qué se ve mientras se guarda un campo, o si falla el contraste de una fuente): el recorrido completo por huecos está descrito arriba, en **Qué muestra**, pero no sus estados transitorios.
+- **Carga o guardado en curso**: la pantalla identifica la operación y evita enviar la misma mutación dos veces.
+- **Error de validación o red**: conserva el formulario; señala el campo cuando corresponde y permite corregir o reintentar.
+- **Sin plan, materia o equipo relevado**: declara qué dato falta y ofrece su carga dentro del contexto conocido. No afirma que esa oferta o equipo no exista en la universidad.
+- **Sin coincidencias**: conserva los filtros y permite cambiarlos; no confunde una búsqueda vacía con un catálogo vacío.
+- **Archivada**: el equipo puede consultar el registro y su historia; las acciones disponibles y su impacto siguen el contrato de archivo/reactivación de cada entidad.
+
+Los estados específicos de contraste de fuentes y guardado parcial de afirmaciones oficiales siguen pendientes en US-234.
 
 ## Lo que no muestra nunca
 

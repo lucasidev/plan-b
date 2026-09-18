@@ -4,6 +4,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
+**Revisión de planificación del 2026-09-18:** R8 incorpora abajo el plan de catálogo y backoffice de esta sesión, con decisiones pendientes y lotes verificables. El trabajo local sigue pendiente de integración; la ampliación requiere reestimar el plan base de 36 pts.
+
 **Última actualización**: 2026-09-17 (R7 cerrado: demo verificada y evidencias integradas en #555; tag narrativo opcional). Antes, el 2026-09-08 (R5 cerrado y R6 planificado: elegir dónde estudiar con datos reales; desde acá la única ficción son los alumnos). Antes, el 2026-09-07 (R4 cerrado y R5 planificado: lo construido contra lo deseado, medido sobre el stage rellenado, con cuatro recorridos de persona como E2E y el relevamiento de los datos oficiales que el producto pide). Antes, el 2026-09-02 (R3 cerrado y R4 planificado: un stage con datos de prueba, todos los hallazgos de la auditoría de tests de R1 a R3, y la suite y CI más rápidos). Antes, el 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
 
 ---
@@ -33,7 +35,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R5** | desde 2026-09-08 | **Lo construido contra lo deseado**: la distancia entre lo que la tesis y las 91 stories piden y lo que el stage hace, medida con un mapa por épica y por pantalla en tres estados, cuatro recorridos de persona contra el stage rellenado con corpus sintético, y el relevamiento de qué datos oficiales pide el producto, dónde están y en qué formato. Y el diagnóstico del click de envío que CI pierde una de cada tres corridas. La salida es el backlog priorizado de R6, no features. | ✓ Hecho (cerrado el 2026-09-08 con el merge de #480; #470 y #473 cierran con el plan de R6) |
 | **R6** | 2026-09-09 a 2026-09-22 | **Elegir dónde estudiar, con datos reales**: el modelo de datos oficiales del ADR-0090, el catálogo real de Tucumán (instituciones, carreras y planes desde las fuentes; la única ficción, los alumnos), la ficha de carrera con sus datos y Dónde estudiarla, el buscador que encuentra carreras, la puerta y el contrato de Reseñar arreglados, el click que el router pierde, y las dos APIs de terceros que el producto consume (la AGN y Georef). 70 pts en cuatro pistas. | ✓ Hecho (cerrado el 2026-09-13, antes de las dos semanas planificadas, con los recorridos de la tarea 15, que cierran #495 y #470; el stage pasó a Databases y Applications de Dokploy en el camino, #514) |
 | **R7** | 2026-09-14 a 2026-09-18 | **La demo muestra la tesis**: la sesión que no muere, volver a la reseña desde cualquier dispositivo, la cobertura en la ficha de materia, Editar, el nombre del docente como se tipeó, Mi perfil sin la versión anterior; el catálogo adentro de planb (el shell único, Explorar, las cuatro fichas y Mis aportes como la maqueta aprobada); la falla intermitente que bloquea los deploys, la regla de los recorridos y el jueves de reset, el guion de la demo, y la tesis y los docs diciendo lo que hay. Milestone [R7](https://github.com/lucasidev/plan-b/milestone/9), issues #517 a #529 y #536, 38 pts en tres pistas. | ✓ Hecho (cerrado el 2026-09-17; evidencias finales integradas en [#555](https://github.com/lucasidev/plan-b/pull/555)) |
-| **R8** | desde 2026-09-21 | **El catálogo del país**: el corpus con cuentas que existen en identity, el catálogo del país entero desde la Guía SIU con Georef y el anuario SPU, la universidad cargada entera desde el backoffice (identidad, logo, URL, ubicación, unidades y sus conteos), la modalidad y las veces en la reseña, y la poda del rol sin cliente. Milestone [R8](https://github.com/lucasidev/plan-b/milestone/10), issues #530 a #534, 36 pts. Lo que avance rápido se trae a R7. | Planificado |
+| **R8** | desde 2026-09-21; ampliación a reestimar | **El catálogo del país**, precedido por la revisión de integridad e interacción del catálogo y backoffice del 2026-09-18. Conserva corpus, mantenimiento institucional, modalidad/veces y poda del rol del plan base. Milestone [R8](https://github.com/lucasidev/plan-b/milestone/10), issues #530 a #534: 36 pts anteriores a la ampliación. | Planificado; trabajo local pendiente de integración y ampliación sin estimar |
 
 Convenciones:
 
@@ -749,13 +751,13 @@ La 7 corre de lunes a jueves en dos PR: el shell, Explorar y Mis aportes el mié
 
 ## R8 · El catálogo del país
 
-**Trabajo local del 2026-09-18, pendiente de integración:** reorganización del backoffice en Catálogo académico, Cuestionarios, Curaduría y Usuarios; reemplazo de "frases" por "preguntas" y de "afiliar" por "agregar universidad"; implementación de [US-236](../product/team/cut-the-access/stories/US-236-manage-student-accounts/README.md), con búsqueda y estado de cuentas de alumnos, suspensión con motivo y reactivación. Verificación local en curso.
+**Trabajo del 2026-09-18, pendiente de integración:** reorganización del backoffice en Catálogo académico, Cuestionarios, Curaduría y Usuarios; reemplazo de "frases" por "preguntas" y de "afiliar" por "agregar universidad"; implementación de [US-236](../product/team/cut-the-access/stories/US-236-manage-student-accounts/README.md), con búsqueda y estado de cuentas de alumnos, suspensión con motivo y reactivación. Verificación local: build, tipos y lint del frontend, 1121 pruebas frontend y 11 recorridos E2E verdes; integración de permisos, baja y administración de alumnos verificada, incluida la concurrencia de suspensiones. La versión de acceso conserva la revocación de sesiones al reactivar: la regresión falló sin la comparación de versión y pasó con ella. `check-scenarios` pasa. `check-docs --strict` pasa sobre los archivos versionables; los 68 enlaces rotos del archivo local ignorado de Claude quedan fuera de la entrega.
 
-Desde el 2026-09-21, después de la demo, con el tamaño que tenga: 36 pts. Milestone [R8](https://github.com/lucasidev/plan-b/milestone/10), tareas [TK-530](https://github.com/lucasidev/plan-b/issues/530) a [TK-534](https://github.com/lucasidev/plan-b/issues/534) y stories [US-233](https://github.com/lucasidev/plan-b/issues/558) a [US-235](https://github.com/lucasidev/plan-b/issues/560). Lo que avance rápido durante R7 se trae adelante.
+**Plan base, anterior a la revisión del 2026-09-18:** desde el 2026-09-21, después de la demo, 36 pts. Milestone [R8](https://github.com/lucasidev/plan-b/milestone/10), tareas [TK-530](https://github.com/lucasidev/plan-b/issues/530) a [TK-534](https://github.com/lucasidev/plan-b/issues/534) y stories [US-233](https://github.com/lucasidev/plan-b/issues/558) a [US-235](https://github.com/lucasidev/plan-b/issues/560). La ampliación de catálogo y backoffice de abajo todavía no tiene estimación ni fecha comprometida; los 36 pts no la incluyen.
 
 **Por qué este hilo.** La demo muestra Tucumán con un corpus cuyas cuentas no existen y una universidad que el backoffice apenas nombra. Un seed sintético no es un seed hecho mal: el sistema tiene que ser coherente por dentro y no solo en pantalla. Por eso el corpus pasa a ser gente que existe en identity, el catálogo pasa a ser el del país y no el de una provincia relevada a mano, y la institución pasa a cargarse entera desde el backoffice, con su identidad, su ubicación y sus unidades.
 
-### Tareas (36 pts)
+### Tareas del plan base (36 pts)
 
 | # | Tarea | Pts | Estado |
 |---|---|---|---|
@@ -764,6 +766,125 @@ Desde el 2026-09-21, después de la demo, con el tamaño que tenga: 36 pts. Mile
 | [TK-532](https://github.com/lucasidev/plan-b/issues/532) · 3 | **Mantener y publicar una institución completa** (implementación): implementa [US-234](../product/team/sustain-the-catalog/stories/US-234-maintain-a-complete-institution/README.md), [US-235](../product/student/choose-where-to-study/stories/US-235-see-who-and-where-the-institution-is/README.md) y completa la fuente editorial de [US-232](../product/student/choose-where-to-study/stories/US-232-see-what-the-institution-publishes/README.md). Incluye identidad, ubicación, dominios, unidades académicas, conteos derivados y afirmaciones oficiales desde el backoffice; la ficha pública muestra logo, URL y ubicación. El mecanismo del logo se decide antes de implementar. Listo cuando: Sofía carga una institución entera sin tocar el seed y una persona sin cuenta ve su identidad y ubicación correctas. | 13 | Planificado |
 | [TK-533](https://github.com/lucasidev/plan-b/issues/533) · 4 | **Capturar modalidad y cantidad de cursadas** (implementación): implementa [US-233](../product/student/write-a-review/stories/US-233-share-private-course-context/README.md) y [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) §3. El formulario las pide como contexto privado, el dominio y el seed las llevan y ningún read público las expone. Listo cuando: se pueden responder o saltear, una opción inválida se rechaza y `check-scenarios` cubre US-233. | 3 | Planificado |
 | [TK-534](https://github.com/lucasidev/plan-b/issues/534) · 5 | **Retirar el rol sin cliente** (poda): `UniversityStaff` sale del enum y del glosario; `Moderator` se queda. No tiene story porque elimina una capacidad sin persona ni cliente. Listo cuando: enum, glosario, datos y tests coinciden y ningún dato del stage referencia el rol retirado. | 2 | En curso: revisión previa de stage registrada el 2026-09-18 (1 admin, 7 members, ninguna cuenta `university_staff`); falta integrar y desplegar la migración |
+
+### Revisión del catálogo y backoffice (2026-09-18)
+
+**Estado:** plan de implementación preparado a partir de la auditoría de código y el recorrido local. Los lotes siguientes son cortes de ejecución, no stories nuevas ni números de issue. La letra y los escenarios siguen en producto. La sincronización con GitHub y la estimación quedan pendientes; este plan no crea issues ni modifica el milestone.
+
+**Prioridad propuesta:** consolidar el trabajo local y corregir integridad e interacción antes de ampliar el catálogo mediante TK-531. La investigación de fuentes puede continuar. TK-532 conserva la propiedad del mantenimiento institucional; sus unidades académicas no se vuelven otra implementación paralela. TK-530, TK-533 y TK-534 mantienen su alcance y estado del plan base.
+
+#### Punto de partida y límites de la evidencia
+
+| Área | Situación al planificar | Tratamiento |
+|---|---|---|
+| Vocabulario, navegación del backoffice y Alumnos | Cambios locales y comprobaciones registrados arriba; todavía sin integrar. | Consolidar y revisar el diff existente; no reconstruirlos. El árbol de trabajo también contiene cambios de otras tareas. |
+| Relación institucional | `Career.UniversityId`, `Subject.CareerPlanId` y `Chair.SubjectId` son obligatorios. Un listado propio no implica independencia de esas relaciones. | Mantener las identidades existentes mientras se corrigen sus garantías; no renombrar clases ni reunir todo en un único agregado por la ubicación del menú. |
+| Catálogo parcial | El registro admite una carrera sin plan relevado; un plan deprecado puede seguir siendo el de alumnos actuales. | Conservar ambos casos. Separar falta de relevamiento, disponibilidad y cobertura de reseñas. |
+| Integridad temporal | `CloseChairMemberCommandHandler` comprueba existencia del período, pero no universidad ni orden respecto del inicio. | Defecto confirmado por lectura de código; reproducir por HTTP y corregir en el lote 2. |
+| Referencias y concurrencia | Faltan FKs entre agregados de Academic. Las consultas de datos previas no hallaron huérfanos en las relaciones examinadas; no prueban todas las reglas. Titulares simultáneos y ciclos concurrentes de correlativas son riesgos estáticos. | Prevalidar datos antes de migrar; reproducir concurrencia con el aislamiento real antes de elegir su defensa. |
+| Interacción | En navegador, Cátedras pierde el contexto de la materia y no permite gestionar integrantes. La ficha pública omite universidad/carrera. En código, el retorno del formulario docente pierde el filtro. | Lotes 3 y 5. La comprobación pública se hizo con sesión admin; falta el recorrido con alumno y sin sesión. |
+
+Evidencia principal: [cierre de integrante](../../backend/modules/academic/src/Planb.Academic.Application/Features/AdminChairs/CloseChairMemberCommandHandler.cs), [lecturas académicas](../../backend/modules/academic/src/Planb.Academic.Infrastructure/Reading/DapperAcademicQueryService.cs), [pantalla de cátedras](../../frontend/src/app/%28staff%29/admin/chairs/page.tsx), [lista y equipo](../../frontend/src/features/manage-chairs/components/chair-list.tsx), [formulario docente](../../frontend/src/features/manage-teachers/components/teacher-form.tsx) y [entrada a Reseñar](../../frontend/src/app/%28member%29/reviews/new/page.tsx).
+
+#### Decisiones y dependencias
+
+Las decisiones de Lucas sobre archivo quedan en [US-196](../product/team/sustain-the-catalog/stories/US-196-load-the-chair-as-teaching-staff/README.md) y [SC-002](../product/student/choose-where-to-study/screens/SC-002-chair/README.md): ficha pública conservada con estado archivada y nuevos aportes permitidos para cursadas anteriores al cierre efectivo. La matriz siguiente identifica lo que falta resolver para implementarlas.
+
+| Tema | Trabajo previo necesario | Qué queda condicionado |
+|---|---|---|
+| Cierre efectivo de cátedra | Definir representación y frontera temporal con períodos de la misma universidad: último período incluido, calendarios superpuestos, fecha de archivo distinta del cese y filas legacy sin dato. No inferir el cierre desde el día del click. | Persistencia del cierre y elegibilidad de nuevas reseñas del lote 4. |
+| Ancestros archivados | Fijar una matriz por operación: crear, corregir, reactivar, listar para uso actual y leer historial. Resolver cómo recuperar el contexto histórico de una cátedra cuando materia/carrera/universidad estén archivadas. | Restricciones dependientes del estado del padre; no bloquea corregir referencias inexistentes ni el cierre de integrantes. |
+| Reactivación | Precisar la corrección de un archivo erróneo y si una reapertura real requiere otra vigencia; conservar historial y trazabilidad. | Reactivación del lote 4; no inventar intervalos de vigencia múltiples sin un caso que los requiera. |
+| Cambio de titular y materia compartida | Resolver con casos concretos cuándo continúa la misma cátedra, cuándo nace otra y qué significa compartir dictado entre planes/carreras. | Flujos de sustitución del titular e identidad entre planes; no bloquea agregar un integrante ni mostrar el contexto existente. |
+| Continuidad entre planes | Revisar US-195, US-197 y US-204: clasificación de carreras, equivalencia curricular, continuidad de dictado y comparabilidad de reseñas son decisiones distintas. | Lote 6. `Chair → CanonicalSubject` sigue siendo una alternativa, no una decisión tomada. |
+
+#### Lotes de implementación
+
+**0. Consolidar lo ya construido.** Estado: pendiente de integración. Alcance: US-198, US-199 y [US-236](../product/team/cut-the-access/stories/US-236-manage-student-accounts/README.md).
+
+- [ ] Clasificar los cambios locales por funcionalidad y autoría antes de preparar commits. Separar Alumnos, vocabulario/navegación y trabajos ajenos como TK-534; preservar todo el trabajo existente.
+- [ ] Revisar el diff final de Alumnos: permisos, privacidad del listado, suspensión con motivo, sesiones emitidas, renovación, reactivación y conflicto entre administradores. Reutilizar la evidencia previa cuando el código relevante no haya cambiado.
+- [ ] Completar la trazabilidad de Alumnos con su ficha de pantalla pendiente y corregir vocabulario vigente, incluido texto proveniente de seeds, sin reescribir `docs/history` ni convertir el cambio en una campaña de copy.
+- [ ] Registrar qué está verificado, qué está integrado y qué queda pendiente. Los verdes locales anteriores no certifican los nuevos lotes.
+
+**1. Cerrar los contratos que van a guiar la implementación.** Estado: pendiente; puede avanzar junto al lote 0. Alcance: US-196, US-204, US-234 y US-229.
+
+- [ ] Resolver las filas de la matriz anterior por caso de uso y completar los escenarios de sus stories. Separar existencia de la referencia, pertenencia institucional, disponibilidad y consulta histórica.
+- [ ] Reconciliar glosario, SC-027, SC-002 y ADR-0057 con el archivo histórico acordado. Revisar las afirmaciones documentales de funcionalidad que el navegador no mostró.
+- [ ] Confirmar con ejemplos la continuidad de cátedra ante cambio de titular y reforma; si sigue abierta, mantener esos flujos fuera de la entrega correspondiente y dejar identificado el bloqueo.
+- [ ] Traducir la propuesta de interacción a las fichas de pantalla: contexto visible, padre heredado al crear, accesos generales con contexto, retorno al mismo listado y estados de error/vacío. El ejemplo interactivo de la sesión orienta el recorrido; sus datos y opciones no son el contrato de producción.
+
+**2. Integridad comprobable del catálogo.** Estado: parcial, cierre de integrantes corregido y verificado localmente. Base técnica: [ADR-0017](../decisions/0017-persistence-ignorance.md) y [ADR-0052](../decisions/0052-database-constraints-as-a-net-under-aggregate-invariants.md); producto: US-196 y US-234.
+
+- [ ] Escribir una reproducción HTTP para el cierre de integrante con período de otra universidad o anterior al inicio. Corregir el handler y validar las demás entradas que persisten tramos del equipo, con errores de negocio y sin cambios parciales.
+- [ ] Inventariar las referencias internas de `academic` y prevalidarlas con consultas de solo lectura: padres existentes, unidades de la institución correcta, docentes/períodos del contexto correcto, duplicados y tramos inválidos. Un dato anómalo genera un informe y una corrección explícita, no borrado ni reasignación automática.
+- [ ] Agregar las FKs internas justificadas mediante migraciones y validaciones de aplicación. No agregar FKs cross-schema ni cascadas de borrado del catálogo histórico. Verificar seed, base existente y respuesta controlada ante una referencia inválida.
+- [ ] Reproducir altas concurrentes de titular/integrante y aristas de correlativas bajo las transacciones reales. Implementar una defensa solo para los invariantes que lo requieran y probar la colisión; las FKs no resuelven unicidad temporal ni ciclos.
+- [ ] Aplicar las restricciones de estado del padre únicamente después del contrato del lote 1. La ausencia de un plan relevado sigue siendo un estado admisible.
+
+**3. Catálogo operable desde el backoffice.** Estado: parcial, recorrido de cátedras y equipo construido localmente. Alcance: [US-196](../product/team/sustain-the-catalog/stories/US-196-load-the-chair-as-teaching-staff/README.md), SC-027 y la parte institucional de TK-532 / US-234.
+
+- [ ] Resolver y mostrar universidad, unidad académica cuando se conozca, carrera, plan, materia y cátedra en el detalle y sus formularios; validar la cadena también al entrar mediante URL directa. Un dato faltante se declara, no se inventa una unidad.
+- [ ] Conservar accesos generales como atajos. Cada resultado se identifica con su contexto; crear una entidad dependiente requiere seleccionar o heredar el padre. No ofrecer botones inertes ni controles que aparenten funcionar.
+- [x] Crear el detalle de cátedra y conectar las operaciones existentes de agregar/cerrar integrantes. Ofrecer docentes y períodos válidos del contexto; mostrar equipo actual e histórico. El backend vuelve a validar. Crear un docente faltante permite regresar a la cátedra conservando el formulario.
+- [ ] Preservar filtros, selección y destino al guardar/cancelar en docentes, materias y cátedras. Dar una salida explícita a cambios sin guardar; conservar valores al fallar; distinguir carga, error, ausencia de resultados y dato no relevado. Recuperarse de sesión vencida sin ejecutar la operación dos veces.
+- [ ] Completar las unidades académicas y la asociación de ofertas dentro de TK-532, reutilizando ese trabajo. El recorrido sigue funcionando mientras una oferta no tenga unidad relevada.
+
+**4. Archivar sin perder la historia.** Estado: pendiente de los contratos temporales y de ancestros del lote 1. Alcance: US-196, SC-027, SC-002 y Reseñar.
+
+- [ ] Persistir el cierre efectivo según el contrato acordado, separado del registro administrativo de archivo. Prevalidar reseñas y tramos existentes antes de fijar el límite; no ocultar ni descartar aportes por una migración.
+- [ ] Exponer archivo/reactivación con autorización y trazabilidad. La pantalla presenta el impacto real sobre disponibilidad, equipo e historial antes de confirmar; una falla conserva el estado anterior.
+- [ ] Separar las lecturas para disponibilidad actual de las lecturas de fichas históricas. Devolver estado y contexto en el contrato público; conservar el enlace directo a la cátedra archivada, su piso de publicación y privacidad. Resolver su acceso desde materia/búsqueda como historial señalado, sin presentarla como oferta actual.
+- [ ] Permitir aportar una cursada anterior al cierre desde su ficha y desde Reseñar; rechazar períodos posteriores. Verificar también edición de reseñas, cambio del período, enlace manipulado, plan deprecado, falta de fecha legacy y ancestros archivados. La fecha en que se envía el aporte no reemplaza el período cursado.
+- [ ] Verificar archivo/reactivación y cambios concurrentes con el guardado de una reseña usando el mismo contrato de elegibilidad.
+
+**5. Exploración y Reseñar conservan el contexto.** Estado: parcial, migas y selección al ingresar verificadas localmente. Alcance: [US-132](../product/student/choose-where-to-study/stories/US-132-search-by-subject-career-or-teacher/README.md), [US-222](../product/student/choose-where-to-study/stories/US-222-browse-what-there-is-to-study/README.md), [US-147](../product/student/write-a-review/stories/US-147-review-a-single-subject/README.md) y [US-229](../product/student/enter/stories/US-229-sign-in-and-land-back-on-what-i-was-doing/README.md).
+
+- [ ] Incorporar el contexto completo a resultados y fichas con enlaces a sus padres; funcionar desde búsqueda y URL directa, sin depender de haber recorrido el árbol. Mantener las entradas por carrera y universidad y el regreso con filtros/lente conservados.
+- [x] Hacer que la acción de reseñar de una cátedra transporte materia y cátedra hasta el formulario, incluso después del ingreso. El período lo declara el alumno; el destino de retorno debe ser interno y validado.
+- [ ] Validar la selección recibida contra el perfil y el catálogo. Una materia de otra carrera, cátedra de otra materia, ausencia de plan, sesión vencida o reseña ya existente tiene una salida explícita; el query string nunca concede autorización ni cambia el perfil.
+- [x] Reproducir el recorrido como visitante, alumno y admin. Evitar ofrecer al admin una acción que termina en una redirección silenciosa a Docentes; no habilitarle una capacidad de alumno como arreglo.
+- [ ] Probar navegación por teclado y en celular, nombres largos, entrada directa, volver y estados sin reseñas/sin plan/sin equipo. Integrar los estados de archivo después del lote 4.
+
+**6. Continuidad del catálogo entre planes.** Estado: diseño condicionado, sin migración autorizada por este plan. Alcance: US-195, US-197 y US-204.
+
+- [ ] Comparar alternativas con ejemplos de reforma, homónimos, materia compartida, cambio de contenido y cambio de equipo. Definir quién establece equivalencias y cómo se corrigen.
+- [ ] Elegir la identidad y las relaciones que hacen falta con evidencia de esos casos. Conservar institución, materia/plan, cátedra y período originales de cada aporte; no sumar reseñas por parecido de nombre ni por equivalencia curricular solamente.
+- [ ] Preparar migración, prevalidación y comprobación de conteos para la alternativa elegida. La decisión estructural y su eventual ADR se presentan antes de ejecutar ese cambio.
+
+#### Primera entrega local (2026-09-18)
+
+Construido: cierre de integrantes con validación institucional y temporal; lectura administrativa del contexto; detalle de cátedra con alta/cierre de integrantes e historial; alta de docente con retorno y borrador del integrante; retorno al filtro de docentes; migas públicas visibles también en celular; selección de materia/cátedra conservada al ingresar y validada al abrir Reseñar; CTA de alumno retirado para admin.
+
+Verificación: 15 tests de integración HTTP con Postgres (los dos cierres inválidos fallaron antes de la corrección); 10 E2E de los recorridos administrativo y público, con visitante, alumno y admin, en escritorio y celular; tests de frontend, tipos, lint y build de producción. La revisión de código detectó pérdida de selección ante error de red y se corrigió con regresión. La pantalla de equipo se verificó también en el navegador local, con contexto y controles visibles; API, Postgres y Redis respondieron correctamente. Pendiente de integración.
+
+Antes del push, el build completo y las suites de unidad/arquitectura pasaron. La suite de integración completa terminó con 834/835: falló `Fame_never_states_a_percentage_without_its_own_voice_count`, sin detalle de aserción en el logger quiet. La corrida dirigida posterior pasó 26/26, incluida Fame y los casos de ingreso, renovación, baja y administración sobre la corrección de versión de acceso. El fallo completo no se reprodujo y su causa sigue sin determinar; esa corrida no se declara verde. La migración aditiva de acceso coincide con el modelo EF. La CI debe volver a verificar el conjunto.
+
+El check de escenarios pasó. `check-docs --strict` pasó sobre una exportación de los archivos versionables antes del push. En el checkout completo sigue señalando 68 enlaces rotos preexistentes dentro del directorio ignorado `.claude/local-archive`, que no forma parte de la entrega.
+
+Pendiente en estos lotes: FKs y reproducciones de concurrencia, revisión de las demás entradas de tramos, unidad académica en el contexto, protecciones generales ante salida/sesión vencida, matriz de ancestros archivados y contrato de cierre efectivo. Los checks parciales no cierran los lotes completos ni el diseño de continuidad entre planes.
+
+#### Orden, verificación y cierre
+
+**Compatibilidad del trabajo pendiente, revisada el 2026-09-18 antes del push:**
+
+| Trabajo | Resultado y condición para integrarlo |
+|---|---|
+| [PR #565](https://github.com/lucasidev/plan-b/pull/565), retiro de `UniversityStaff` | Compatible: retira un rol de cuenta, no el registro institucional del catálogo. Esta entrega se apoya en su commit publicado `db3517ed`, sin duplicar la migración. La PR sigue abierta; el commit local `41f2f6d0` marca TK-534 como hecho, pero la integración todavía está pendiente. Su evidencia de stage no se volvió a ejecutar en esta revisión. |
+| TK-530, cuentas del corpus (`5246eb55`) | Incompatibilidad comprobada por lectura conjunta: `CorpusAccountSeeder` exige `IsDisabled`, mientras la nueva operación administrativa permite `Restore` sobre cualquier `Member` vigente. Reactivar una cuenta sintética invalida la siguiente siembra. Antes de integrar TK-530, distinguir la cuenta sintética de una suspensión administrativa y verificar que nunca adquiera credenciales utilizables. El sentinel por sí solo no preserva el estado exigido por el seed. |
+| TK-531, importador nacional (`a0674ecf`) | Mantiene universidad, unidad y oferta relacionadas; no crea planes ni cátedras ni fusiona reseñas. Su ejecución sigue detrás de las garantías de integridad del lote 2. El importador omite ofertas sin unidad o dirección identificable y las informa como pendientes: revisar esa cobertura contra el catálogo parcial admitido antes de cerrar la tarea. |
+| TK-532, mantenimiento institucional | Compatible y dueño de las unidades académicas del lote 3. Hay backend en `ec314ede` y frontend sin commit. La corrección del request de unidades a `localityText` sigue sin commit en backend y es necesaria para el payload del frontend. El trabajo de UI parte también de `a0674ecf`; integrar sus cambios propios sin arrastrar accidentalmente todo TK-531. |
+| TK-533, contexto privado | Conserva el alcance del plan. Hay tests y documentación sin commit que comparten el formulario, sus escenarios y el glosario con esta entrega. Resolver esos solapamientos conservando selección, retorno del ingreso y privacidad; no se certificó todavía el recorrido combinado. |
+
+Esta revisión comprueba contratos y solapamientos, no certifica builds, migraciones ni pruebas conjuntas de las ramas pendientes. La entrega de catálogo/backoffice se publica separada y dependiente de #565; el merge conserva su aprobación propia.
+
+- **Dependencias:** 0 y 1 pueden avanzar juntos. El defecto temporal confirmado de 2 puede corregirse en paralelo al contrato de archivo. El contexto de 3 y 5 no espera a 6. Las mutaciones de equipo de 3 dependen de las garantías pertinentes de 2; los flujos de sustitución de titular esperan su decisión. El lote 4 espera el contrato correspondiente de 1 y las garantías de 2. El 6 queda detrás de sus decisiones, sin bloquear las correcciones anteriores.
+- **Primer corte usable:** backoffice con contexto visible y equipo docente gestionable, validación de tramos y retorno al lugar de origen; junto con migas públicas y conservación de materia/cátedra al ir a Reseñar. Archivo histórico entra como un corte completo de persistencia, API y UI cuando cierre su contrato temporal, no como un badge aislado.
+- **Evidencia por lote:** escenarios de sus stories; integración HTTP con Postgres para referencias, fechas, permisos y concurrencia; migraciones sobre base vacía y existente para 2 y 4; recorridos E2E para 0, 3, 4 y 5. Tipos, lint y build según el diff. Un test de componente no certifica un contrato HTTP y un caso feliz no certifica las colisiones.
+- **Datos y pruebas:** las reproducciones que mutan corren en una base de pruebas aislada, sin vaciar la base local abierta ni alterar el corpus de stage. Comparar referencias y conteos antes/después de migrar; ante anomalías, detener esa migración y conservar el diagnóstico. Separar explícitamente lo comprobado de lo pendiente.
+- **Revisión:** revisar cada diff con contexto fresco y escenarios adversariales antes del commit; completar los checks exigidos por el proyecto. Actualizar el estado en este tracker durante la ejecución y al integrar. Push, PR, merge y despliegue requieren sus autorizaciones específicas; el plan no los ejecuta.
+- **Estimación:** reestimar R8 después del lote 1 y del inventario de migraciones de 2. No comprometer en los 36 pts previos la continuidad entre planes ni toda la ampliación del backoffice. Si no entra, dividir entregas conservando los IDs de las stories.
+- **Fuera de esta intervención:** convenio o afiliación con universidades, renombrado masivo de entidades, cascada universal de archivo, publicación obligatoriamente bloqueada por falta de plan, fusión automática de corpus y ejecución de todo el backlog de catálogo. TK-531 continúa siendo la expansión nacional existente, no un requisito para arreglar la navegación local.
 
 ### Decisiones que R8 necesita antes de arrancar
 

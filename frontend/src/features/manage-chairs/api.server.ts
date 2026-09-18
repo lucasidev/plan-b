@@ -1,7 +1,19 @@
 import 'server-only';
 
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
-import type { AdminChair } from './types';
+import type { AdminChair, ChairSubjectContext } from './types';
+
+export async function fetchChairSubjectContextServer(
+  subjectId: string,
+): Promise<ChairSubjectContext | null> {
+  const res = await apiFetchAuthenticated(
+    `/api/academic/chairs/subject-context?subjectId=${encodeURIComponent(subjectId)}`,
+    { cache: 'no-store' },
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`chair subject context failed with ${res.status}`);
+  return res.json();
+}
 
 /**
  * Las cátedras de una materia para el backoffice (US-196), con su equipo y sus tramos cerrados.

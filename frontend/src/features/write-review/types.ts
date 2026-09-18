@@ -33,7 +33,7 @@ export type ChairOption = {
   leadLastName: string | null;
 };
 
-/** Lo que el usuario respondió: código de frase contra valor de opción. Saltear = no está la clave. */
+/** Lo que el usuario respondió: código de pregunta contra valor de opción. Saltear = no está la clave. */
 export type AnswerDraft = Record<string, number>;
 
 /**

@@ -19,6 +19,23 @@ internal sealed class DapperAdminChairReader : IAdminChairReader
 
     public DapperAdminChairReader(IDbConnectionFactory connections) => _connections = connections;
 
+    public async Task<ChairSubjectContext?> GetSubjectContextAsync(Guid subjectId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT s.id AS SubjectId, s.name AS SubjectName, s.is_active AS SubjectIsActive,
+                   p.id AS CareerPlanId, p.year AS PlanYear,
+                   c.id AS CareerId, c.name AS CareerName,
+                   u.id AS UniversityId, u.name AS UniversityName
+            FROM academic.subjects s
+            JOIN academic.career_plans p ON p.id = s.career_plan_id
+            JOIN academic.careers c ON c.id = p.career_id
+            JOIN academic.universities u ON u.id = c.university_id
+            WHERE s.id = @SubjectId;";
+        using var db = _connections.Create();
+        return await db.QuerySingleOrDefaultAsync<ChairSubjectContext>(
+            new CommandDefinition(sql, new { SubjectId = subjectId }, cancellationToken: ct));
+    }
+
     public async Task<IReadOnlyList<AdminChairListItem>> ListBySubjectAsync(
         Guid subjectId, CancellationToken ct = default)
     {
@@ -39,6 +56,7 @@ internal sealed class DapperAdminChairReader : IAdminChairReader
                 t.first_name    AS FirstName,
                 t.last_name     AS LastName,
                 cm.role         AS Role,
+                cm.since_term_id AS SinceTermId,
                 since.label     AS SinceTermLabel,
                 until.label     AS UntilTermLabel
             FROM academic.chair_members cm
@@ -61,7 +79,7 @@ internal sealed class DapperAdminChairReader : IAdminChairReader
                 g => (IReadOnlyList<AdminChairMemberItem>)g
                     .Select(m => new AdminChairMemberItem(
                         m.TeacherId, m.FirstName, m.LastName,
-                        m.Role, m.SinceTermLabel, m.UntilTermLabel))
+                        m.Role, m.SinceTermId, m.SinceTermLabel, m.UntilTermLabel))
                     .ToList());
 
         return chairs
@@ -81,6 +99,7 @@ internal sealed class DapperAdminChairReader : IAdminChairReader
         string FirstName,
         string LastName,
         string Role,
+        Guid SinceTermId,
         string SinceTermLabel,
         string? UntilTermLabel);
 }

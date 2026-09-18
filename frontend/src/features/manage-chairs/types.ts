@@ -23,6 +23,7 @@ export type AdminChairMember = {
   firstName: string;
   lastName: string;
   role: string;
+  sinceTermId: string;
   sinceTermLabel: string;
   untilTermLabel: string | null;
 };
@@ -50,6 +51,18 @@ export const CHAIR_ROLE_LABELS: Record<ChairMemberRole, string> = {
 export type ManageChairFormState =
   | { status: 'idle' }
   | { status: 'error'; message: string }
-  | { status: 'success' };
+  | { status: 'success'; chairId?: string };
 
 export const initialManageChairState: ManageChairFormState = { status: 'idle' };
+
+export type ChairSubjectContext = {
+  subjectId: string;
+  subjectName: string;
+  subjectIsActive: boolean;
+  careerPlanId: string;
+  planYear: number;
+  careerId: string;
+  careerName: string;
+  universityId: string;
+  universityName: string;
+};

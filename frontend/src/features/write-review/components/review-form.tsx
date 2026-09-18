@@ -19,6 +19,9 @@ type ReviewFormProps = {
   instrument: CurrentInstrument;
   subjects: readonly SubjectOption[];
   terms: readonly TermOption[];
+  initialSubjectId?: string;
+  initialChairId?: string;
+  initialChairs?: readonly ChairOption[];
 };
 
 /** Los tres bloques del cuestionario, en el orden en que se preguntan. */
@@ -34,7 +37,7 @@ const BLOCKS: readonly { layer: ItemLayer; step: string; title: string; note?: s
 ];
 
 /**
- * La frase de Contexto que dice cómo terminó la cursada: junto con la materia y el período, el
+ * La pregunta de Contexto que dice cómo terminó la cursada: junto con la materia y el período, el
  * único paso obligatorio para poder enviar (US-146 N1). Mismo código que usa el backend
  * (`PublishingRules.OutcomeItemCode`).
  */
@@ -48,7 +51,7 @@ type ChairFloorState = {
 };
 
 /**
- * "Junta N reseñas: con M más se publica" es la frase del piso tal como la define el glosario
+ * "Junta N reseñas: con M más se publica" es la pregunta del piso tal como la define el glosario
  * del producto; ya publicada, el contrato dice cuántas voces tiene en vez de repetir el conteo
  * que ya no cuenta hacia ningún piso.
  */
@@ -72,13 +75,23 @@ function cursadaKey(subjectId: string, termId: string): string {
  * pierde lo escrito. Es una limitación conocida y declarada en la ficha de la pantalla; el
  * borrador retomable es trabajo propio y no entró al alcance.
  */
-export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
+export function ReviewForm({
+  instrument,
+  subjects,
+  terms,
+  initialSubjectId,
+  initialChairId,
+  initialChairs = [],
+}: ReviewFormProps) {
   const [state, formAction, pending] = useActionState(publishReviewAction, initialPublishState);
 
-  const [subjectId, setSubjectId] = useState('');
+  const [subjectId, setSubjectId] = useState(initialSubjectId ?? '');
   const [termId, setTermId] = useState('');
-  const [chairId, setChairId] = useState<string | null>(null);
-  const [chairs, setChairs] = useState<readonly ChairOption[]>([]);
+  const [chairId, setChairId] = useState<string | null>(initialChairId ?? null);
+  const [chairs, setChairs] = useState<readonly ChairOption[]>(initialChairs);
+  const [chairsLoading, setChairsLoading] = useState(false);
+  const [chairsError, setChairsError] = useState(false);
+  const [chairsRetry, setChairsRetry] = useState(0);
   const [answers, setAnswers] = useState<AnswerDraft>({});
   const [freeText, setFreeText] = useState('');
   const [query, setQuery] = useState('');
@@ -90,6 +103,7 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
 
   // Las cátedras dependen de la materia: hasta elegirla no se sabe cuáles mirar. Se piden al
   // cliente por eso, no por preferencia de arquitectura.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: el contador permite reintentar la misma materia tras un error.
   useEffect(() => {
     if (!subjectId) {
       setChairs([]);
@@ -97,21 +111,32 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
       return;
     }
     let alive = true;
+    setChairsLoading(true);
+    setChairsError(false);
     fetch(`/api/academic/subjects/${subjectId}/chairs`)
-      .then((r) => (r.ok ? r.json() : []))
+      .then((r) => {
+        if (!r.ok) throw new Error('Chairs fetch failed');
+        return r.json();
+      })
       .then((data: ChairOption[]) => {
         if (alive) {
           setChairs(data);
-          setChairId(null);
+          setChairId((current) => (data.some((c) => c.id === current) ? current : null));
         }
       })
       .catch(() => {
-        if (alive) setChairs([]);
+        if (alive) {
+          setChairs([]);
+          setChairsError(true);
+        }
+      })
+      .finally(() => {
+        if (alive) setChairsLoading(false);
       });
     return () => {
       alive = false;
     };
-  }, [subjectId]);
+  }, [subjectId, chairsRetry]);
 
   // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
   // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
@@ -165,13 +190,18 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
 
   const filteredSubjects = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return subjects.slice(0, 8);
+    if (!q) {
+      const selected = subjects.find((s) => s.id === subjectId);
+      return selected
+        ? [selected, ...subjects.filter((s) => s.id !== subjectId).slice(0, 7)]
+        : subjects.slice(0, 8);
+    }
     return subjects
       .filter(
         (s) => s.name.toLowerCase().includes(q) || (s.code?.toLowerCase().includes(q) ?? false),
       )
       .slice(0, 8);
-  }, [subjects, query]);
+  }, [subjects, query, subjectId]);
 
   const answeredCount = Object.keys(answers).length;
   const chosenSubject = subjects.find((s) => s.id === subjectId);
@@ -185,6 +215,8 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
     Boolean(termId) &&
     answers[COURSE_OUTCOME_ITEM_CODE] !== undefined &&
     !pending &&
+    !chairsLoading &&
+    !chairsError &&
     !isDuplicateOfCurrentCursada;
 
   // Sin cátedra elegida no hay a quién atribuirle su conducta (ficha SC-015, "Sin cátedra"): lo
@@ -254,7 +286,13 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
                 <button
                   type="button"
                   aria-pressed={selected}
-                  onClick={() => setSubjectId(subject.id)}
+                  onClick={() => {
+                    if (subject.id !== subjectId) {
+                      setChairId(null);
+                      setChairs([]);
+                      setSubjectId(subject.id);
+                    }
+                  }}
                   className={
                     selected
                       ? 'flex w-full items-center justify-between rounded-sm border border-ink bg-bg-card px-3 py-2.5 text-left'
@@ -305,6 +343,21 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
         <p className="mb-2 text-[14px] text-ink">¿Con qué cátedra?</p>
         {!subjectId ? (
           <p className="text-[13px] text-ink-3">Elegí primero la materia.</p>
+        ) : chairsError ? (
+          <p role="alert" className="text-[13px] text-ink">
+            No pudimos cargar las cátedras.{' '}
+            <button
+              type="button"
+              className="underline"
+              onClick={() => setChairsRetry((n) => n + 1)}
+            >
+              Reintentar
+            </button>
+          </p>
+        ) : chairsLoading ? (
+          <p role="status" className="text-[13px] text-ink-3">
+            Cargando cátedras…
+          </p>
         ) : chairs.length === 0 ? (
           <p className="text-[13px] text-ink-3">
             Esta materia todavía no tiene cátedras cargadas. Tu reseña cuenta igual en la materia.

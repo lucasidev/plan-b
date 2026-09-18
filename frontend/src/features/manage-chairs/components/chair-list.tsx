@@ -1,8 +1,10 @@
 'use client';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { adminChairQueries } from '../api';
 import { type AdminChair, CHAIR_ROLE_LABELS, type ChairMemberRole } from '../types';
+import { chairDetailHref } from './chair-context';
 
 /**
  * Las cátedras de una materia con su equipo (US-196, SC-027).
@@ -38,6 +40,12 @@ export function ChairList({ subjectId }: { subjectId: string }) {
             )}
           </div>
           <Team members={chair.members} />
+          <Link
+            className="mt-3 inline-block text-[13px] text-ink underline"
+            href={chairDetailHref(subjectId, chair.id)}
+          >
+            Gestionar equipo
+          </Link>
         </li>
       ))}
     </ul>
