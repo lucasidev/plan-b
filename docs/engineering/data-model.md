@@ -83,7 +83,7 @@ erDiagram
 | `email`                  | VARCHAR(254)              | NOT NULL    | Único mientras la cuenta está activa (ver índice abajo)                                                     |
 | `password_hash`          | TEXT                      | NOT NULL    | bcrypt. Sentinel `DEACTIVATED` tras una baja (ADR-0044)                                                      |
 | `email_verified_at`      | TIMESTAMPTZ               | NULL        | Null = registro pendiente de verificar                                                                      |
-| `role`                   | ENUM `identity.user_role` | NOT NULL    | `member`, `moderator`, `admin`, `university_staff` (ADR-0008). Sin default en DB: lo fija `User.Register`   |
+| `role`                   | ENUM `identity.user_role` | NOT NULL    | `member`, `moderator`, `admin` (ADR-0008). Sin default en DB: lo fija `User.Register`   |
 | `disabled_at`            | TIMESTAMPTZ               | NULL        | Soft suspend                                                                                                |
 | `disabled_reason`        | TEXT                      | NULL        |                                                                                                             |
 | `disabled_by`            | UUID                      | NULL        | Self-ref a `User.id`, sin FK                                                                                 |
@@ -599,7 +599,7 @@ Nombres y valores de todos los enums del modelo.
 
 | Enum                          | Valores                                                                               |
 | ----------------------------- | ------------------------------------------------------------------------------------- |
-| `user_role`                   | `member`, `moderator`, `admin`, `university_staff`                                    |
+| `user_role`                   | `member`, `moderator`, `admin`                                                         |
 | `career_degree_type`          | `grado`, `posgrado`, `tecnicatura`                                                    |
 | `career_plan_status`          | `active`, `deprecated`                                                                |
 | `term_kind`                   | `bimestral`, `cuatrimestral`, `semestral`, `anual`                                    |

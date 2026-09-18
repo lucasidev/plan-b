@@ -12,13 +12,13 @@ using Xunit;
 namespace Planb.IntegrationTests.Authorization;
 
 /// <summary>
-/// Las cuatro cuentas por rol que usa <see cref="WriteEndpointMatrixTests"/>, compartidas por toda
+/// Las tres cuentas por rol que usa <see cref="WriteEndpointMatrixTests"/>, compartidas por toda
 /// la clase (xUnit instancia <see cref="IClassFixture{TFixture}"/> una sola vez por clase, a
 /// diferencia de la clase de test misma, que se reinstancia por cada caso de un <c>[Theory]</c>).
 ///
 /// <para>
 /// Poner <c>IAsyncLifetime</c> en la clase de test en vez de acá fue el primer intento, y recreaba
-/// las cuatro cuentas (con su costo de bcrypt, ~2s cada alta) antes de cada una de las ~290 filas de
+/// las tres cuentas (con su costo de bcrypt, ~2s cada alta) antes de cada una de las ~290 filas de
 /// la matriz: una corrida de 28 minutos que terminaba abortada. Achicar el setup a un fixture propio
 /// es lo que lo deja en el orden de los otros archivos de este proyecto.
 /// </para>
@@ -29,7 +29,6 @@ public sealed class WriteEndpointMatrixFixture : IAsyncLifetime
     public AuthenticatedClient Admin { get; private set; } = null!;
     public AuthenticatedClient Member { get; private set; } = null!;
     public AuthenticatedClient Moderator { get; private set; } = null!;
-    public AuthenticatedClient UniversityStaff { get; private set; } = null!;
 
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
 
@@ -60,9 +59,6 @@ public sealed class WriteEndpointMatrixFixture : IAsyncLifetime
             Register, $"matrix-member.{Guid.NewGuid():N}@planb.local", role: UserRole.Member);
         Moderator = await AuthenticatedClient.CreateAsync(
             Register, $"matrix-moderator.{Guid.NewGuid():N}@planb.local", role: UserRole.Moderator);
-        UniversityStaff = await AuthenticatedClient.CreateAsync(
-            Register, $"matrix-staff.{Guid.NewGuid():N}@planb.local", role: UserRole.UniversityStaff);
-
         // Member necesita un StudentProfile activo: PATCH /api/me/student-profile lo exige (404 sin
         // uno), y sin esto la fila de payload-en-el-borde de ese endpoint nunca llega a validar el
         // body, solo el 404 de "no hay profile".
@@ -175,7 +171,7 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
     }
 
     // -----------------------------------------------------------------
-    // 2) Member, Moderator y UniversityStaff: todo endpoint Admin responde 403.
+    // 2) Member y Moderator: todo endpoint Admin responde 403.
     // -----------------------------------------------------------------
 
     public static IEnumerable<object[]> AdminOnlyEndpoints() =>
@@ -190,11 +186,6 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
     [MemberData(nameof(AdminOnlyEndpoints))]
     public Task Moderator_cannot_reach_admin_only_endpoints(WriteEndpointCase testCase) =>
         AssertForbiddenForNonAdmin(testCase, _fixture.Moderator.Client, "Moderator");
-
-    [Theory]
-    [MemberData(nameof(AdminOnlyEndpoints))]
-    public Task University_staff_cannot_reach_admin_only_endpoints(WriteEndpointCase testCase) =>
-        AssertForbiddenForNonAdmin(testCase, _fixture.UniversityStaff.Client, "UniversityStaff");
 
     private static async Task AssertForbiddenForNonAdmin(WriteEndpointCase testCase, HttpClient client, string role)
     {

@@ -26,7 +26,7 @@ public sealed class PersonaConfig
 
     /// <summary>
     /// Optional role. Absent (or "Member") seeds a regular self-registration member. Any other
-    /// value (Admin / Moderator / UniversityStaff) provisions a staff account via
+    /// value (Admin / Moderator) provisions a staff account via
     /// <c>User.RegisterStaff</c> (ADR-0008: staff cannot self-register). Staff personas ignore
     /// <see cref="State"/> and <see cref="StudentProfile"/>: they are created verified and carry no
     /// academic profile. Bound as a string to keep the JSON decoupled from the domain enum.

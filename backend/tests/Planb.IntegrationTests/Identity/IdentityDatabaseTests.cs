@@ -43,7 +43,7 @@ public class IdentityDatabaseTests
                ORDER BY e.enumsortorder")
             .ToListAsync();
         enumLabels.ShouldBe(
-            new[] { "member", "moderator", "admin", "university_staff" },
+            new[] { "member", "moderator", "admin" },
             ignoreOrder: true);
     }
 

@@ -54,7 +54,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     /// <summary>
     /// Public self-registration (UC-010). Always creates a <see cref="UserRole.Member"/>
     /// with a pending-verification status (<see cref="EmailVerifiedAt"/> = null).
-    /// Staff accounts (moderator / admin / university_staff) are created through a distinct
+    /// Staff accounts (moderator / admin) are created through a distinct
     /// factory because of ADR-0008 (staff cannot self-register).
     /// </summary>
     public static Result<User> Register(
@@ -121,7 +121,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Provisions a staff account (moderator / admin / university_staff). Per ADR-0008 staff
+    /// Provisions a staff account (moderator / admin). Per ADR-0008 staff
     /// cannot self-register: this is the backoffice/seed provisioning path. Rejects
     /// <see cref="UserRole.Member"/> (members go through <see cref="Register"/> and pick up their
     /// academic identity via profiles). The account is created already email-verified: a
@@ -602,7 +602,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     ///   <item>El user debe estar verificado y no disabled / expired (un member sin verificar
     ///         no debería poder crear profiles aún).</item>
     ///   <item>Solo users con <see cref="UserRole.Member"/> tienen profiles. Staff
-    ///         (moderator/admin/university_staff) no aplican (ADR-0008).</item>
+    ///         (moderator/admin) no aplican (ADR-0008).</item>
     ///   <item>El año, si viene, debe estar en [<see cref="MinEnrollmentYear"/>, año actual del
     ///         clock]. Es nullable: el profile que <see cref="VerifyEmail"/> materializa desde una
     ///         declaración de carrera hecha en el registro todavía no tiene esa respuesta.</item>

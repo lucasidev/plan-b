@@ -25,11 +25,11 @@ const ROLE_CLAIM_URI = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/
 // Los roles llegan del enum UserRole de C# (PascalCase) y acá se normalizan a la forma que usa
 // el resto del frontend (nombres de route group, guards, copy).
 //
-// El enum del backend tiene además `Moderator` y `UniversityStaff`, que este mapa NO reconoce a
-// propósito: moderación se retiró en R2 y ninguno de los dos tiene hoy una sola pantalla. Un token
-// con esos roles no produce sesión (ver el chequeo de abajo), que es lo que queremos: sin área a
-// donde entrar, reconocerlo dejaría a la persona dando vueltas entre guards. Vuelven cuando vuelva
-// la feature, con su pantalla y su entrada en `roleHomePath`.
+// El enum del backend tiene además `Moderator`, que este mapa NO reconoce a propósito: moderación
+// se retiró en R2 y el rol no tiene hoy una pantalla. Un token con ese rol no produce sesión (ver el
+// chequeo de abajo), que es lo que queremos: sin área a donde entrar, reconocerlo dejaría a la
+// persona dando vueltas entre guards. Vuelve cuando vuelva la feature, con su pantalla y su entrada
+// en `roleHomePath`.
 const ROLE_MAP: Record<string, Session['role']> = {
   Member: 'member',
   Admin: 'admin',
