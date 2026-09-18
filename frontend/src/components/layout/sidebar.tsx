@@ -8,7 +8,7 @@ import './planb.css';
 import { FallbackLink } from './fallback-link';
 
 type Props = {
-  /** Slot rendered below the nav (see `<AvatarMenu />` / `<BackofficeFooterLink />` / `<AnonymousFooter />`). */
+  /** Pie con el menú de cuenta o la entrada para visitantes sin sesión. */
   footer?: React.ReactNode;
   /** `null` sin sesión. Solo `member` ve Mis aportes y el Ajustes directo, sin gate. */
   role: Session['role'] | null;
@@ -89,15 +89,6 @@ function SectionGroup({
         />
       ))}
     </>
-  );
-}
-
-/** El pie del sidebar para una sesión que no es `member` (hoy, admin): un solo link al backoffice. */
-export function BackofficeFooterLink() {
-  return (
-    <div className="border-t border-line" style={{ padding: 8 }}>
-      <NavItem path="/admin" label="Backoffice" active={false} />
-    </div>
   );
 }
 

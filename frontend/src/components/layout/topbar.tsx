@@ -6,8 +6,9 @@ import { GlobalSearch } from '@/features/global-search';
 // Import directo al archivo, no al barrel `@/features/write-review`: ese barrel también
 // reexporta `api.server.ts` (marcado `server-only`), y este topbar es un Client Component.
 import { reviewCtaHref } from '@/features/write-review/review-cta-href';
-import { displayNameFromEmail, genericCrumbs, getInitialsFromEmail } from '@/lib/member-shell';
+import { genericCrumbs } from '@/lib/member-shell';
 import type { ShellSession } from './app-shell';
+import { AvatarMenu } from './avatar-menu';
 import './planb.css';
 import { FallbackLink } from './fallback-link';
 
@@ -38,10 +39,8 @@ type Props = {
  * ADR-0082, US-229): con sesión, directo a `/reviews/new`; sin ella, al gate con el motivo, en
  * vez de a una ruta que el guard de `(member)` rebotaría igual pero sin decir para qué.
  *
- * A la derecha de "Escribir reseña": con sesión, el círculo de iniciales (el menú con las
- * opciones de cuenta vive en el pie del sidebar, no acá; mismo tono de acento que ese círculo,
- * no el gris neutro `.pb-avatar` de la maqueta, para no desentonar entre los dos); sin sesión, el
- * link "Ingresar".
+ * A la derecha de "Escribir reseña": con sesión, el menú de cuenta, también accesible cuando
+ * el sidebar se oculta en celular; sin sesión, el link "Ingresar".
  *
  * Por debajo de `lg` (1024px) el sidebar no se renderiza (ver `Sidebar`), así que las migas se
  * cambian por un link fijo "Explorar" hacia el catálogo. El buscador es `flex-1` (no `w-full`)
@@ -68,7 +67,11 @@ export function Topbar({ session, crumbsSlot }: Props) {
       <div className="flex-1" />
       <GlobalSearch />
       <WriteReviewButton session={session} />
-      {session ? <SessionBadge email={session.email} /> : <SignInLink from={pathname} />}
+      {session ? (
+        <AvatarMenu email={session.email} accountRole={session.role} placement="header" />
+      ) : (
+        <SignInLink from={pathname} />
+      )}
     </div>
   );
 }
@@ -114,19 +117,6 @@ function WriteReviewButton({ session }: { session: ShellSession }) {
     >
       + <span className="hidden md:inline">Escribir reseña</span>
     </FallbackLink>
-  );
-}
-
-/** Círculo de 28px con las iniciales de la cuenta. Sin menú: las opciones de cuenta viven en el pie del sidebar. */
-function SessionBadge({ email }: { email: string }) {
-  return (
-    <div
-      title={displayNameFromEmail(email)}
-      className="shrink-0 bg-accent-soft text-accent-ink grid place-items-center font-semibold"
-      style={{ width: 28, height: 28, borderRadius: '50%', fontSize: 11 }}
-    >
-      {getInitialsFromEmail(email)}
-    </div>
   );
 }
 

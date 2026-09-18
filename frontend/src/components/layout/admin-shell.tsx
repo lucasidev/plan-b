@@ -17,7 +17,7 @@ export function AdminShell({ email, children }: { email: string; children: React
     >
       <AdminSidebar email={email} />
       <div className="flex flex-col overflow-hidden">
-        <AdminTopbar />
+        <AdminTopbar email={email} />
         <main className="flex-1 overflow-y-auto px-7 py-6">{children}</main>
       </div>
     </div>
