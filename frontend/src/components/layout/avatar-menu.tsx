@@ -63,6 +63,7 @@ export function AvatarMenu({ email, accountRole = 'member', placement = 'sidebar
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={inHeader ? `Menú de cuenta: ${email}` : undefined}
+        title={inHeader ? displayNameFromEmail(email) : undefined}
         className={cn(
           'flex items-center gap-2.5 text-left cursor-pointer',
           'border-0 bg-transparent text-inherit',
