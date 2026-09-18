@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useId, useState, useTransition } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { changeUserAccessAction } from '../actions';
 import type { AdminUserRow } from '../types';
 
@@ -38,12 +38,22 @@ function UserRow({ user }: { user: AdminUserRow }) {
   const [editing, setEditing] = useState(false);
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-  const suspended = user.disabledAt !== null;
+  const [pending, setPending] = useState(false);
+  const [access, setAccess] = useState({
+    suspended: user.disabledAt !== null,
+    reason: user.disabledReason,
+  });
+  // Una lectura posterior puede traer cambios de otro administrador.
+  useEffect(() => {
+    setAccess({ suspended: user.disabledAt !== null, reason: user.disabledReason });
+  }, [user]);
+  const suspended = access.suspended;
 
-  function changeAccess() {
+  async function changeAccess() {
+    if (pending) return;
     setError(null);
-    startTransition(async () => {
+    setPending(true);
+    try {
       const result = await changeUserAccessAction({
         id: user.id,
         operation: suspended ? 'restore' : 'suspend',
@@ -53,10 +63,16 @@ function UserRow({ user }: { user: AdminUserRow }) {
         setError(result.message);
         return;
       }
+      // El estado confirmado no espera el commit de router.refresh(), que puede demorarse.
+      setAccess({ suspended: !suspended, reason: suspended ? null : reason.trim() });
       setEditing(false);
       setReason('');
       router.refresh();
-    });
+    } catch {
+      setError('No pudimos confirmar el cambio. Actualizá la página antes de volver a intentarlo.');
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -82,7 +98,7 @@ function UserRow({ user }: { user: AdminUserRow }) {
           {suspended ? 'Suspendida' : user.emailVerifiedAt ? 'Activa' : 'Email pendiente'}
         </p>
         {suspended && (
-          <p className="mt-1 break-words text-xs text-ink-2">Motivo: {user.disabledReason}</p>
+          <p className="mt-1 break-words text-xs text-ink-2">Motivo: {access.reason}</p>
         )}
         {editing ? (
           <form
