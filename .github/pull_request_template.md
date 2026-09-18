@@ -92,7 +92,7 @@ Si abriste deuda técnica nueva (TODO, FIXME, "esto se arregla en US-XYZ"), link
 ## Pre-merge checklist
 
 - [ ] CI verde
-- [ ] Tests del PR pasan localmente (`just ci`)
+- [ ] Checks afectados ejecutados o reutilizados con evidencia; pendientes locales/remotos identificados
 - [ ] Conventional Commit format en cada commit (Lefthook lo enforcea local; CI lo enforcea en PR title si es Squash)
 - [ ] ADRs nuevos / actualizados linkeados desde la US relevante o este PR
 - [ ] No commiteé secrets, archivos de IDE, ni `.env`

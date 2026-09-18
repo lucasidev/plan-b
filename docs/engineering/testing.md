@@ -53,8 +53,8 @@ just test
 
 # backend solo
 just backend-test
-just backend-test-unit            # próximamente, cuando US-T03 separe los proyectos
-just backend-test-integration     # próximamente
+just backend-test-unit
+just backend-test-integration
 
 # frontend solo
 just frontend-test                # vitest, rápido
@@ -70,11 +70,14 @@ sin correr todo. **No** lo uses después de un rebase largo, con cambios en `sha
 `Directory.*.props` o `package.json`, o cuando tu branch ya acumuló muchos commits desde
 `origin/main`: en cualquiera de esos casos "lo afectado" se vuelve casi todo el árbol de
 dependencias (en particular arrastra `Planb.IntegrationTests`, la parte lenta de la suite), y ahí
-corré `just test` entero. CI corre todo siempre, este atajo es solo local.
+corré el check correspondiente con `just verify --only backend-unit` o `backend-integration`.
+Este atajo por dependencias sigue siendo local; la política compartida con CI es `just verify`.
 
 ### CI
 
-`just ci` corre las mismas gates que GitHub Actions. Antes de pushear, si tu cambio toca código real, corré `just ci` o al menos `just lint && just test`. Pre-push hooks corren build + typecheck pero NO tests largos (E2E queda para CI on-demand).
+`just verify --plan` explica qué checks corresponden y qué evidencia sigue vigente. `just verify`
+ejecuta los checks locales seleccionados; pre-push llama al mismo comando y conserva sus resultados.
+`just ci` sigue disponible para una verificación amplia, sin E2E. No es un requisito previo a cada push.
 
 ## Backend
 
@@ -451,17 +454,65 @@ tarea de orden del sprint siguiente lo arregla o lo borra.
 (`frontend/test-results/results.json`, solo CI), además lista los `status: "flaky"` de esa
 corrida sin romper el build.
 
-#### Selección de checks en CI
+#### Selección y reutilización local y en CI
 
-**E2E verifica cambios en `backend/**`, `frontend/**`, el workflow de CI y `scripts/check-flaky.ts`**, que consume el reporte de Playwright. Los cambios exclusivos de documentación, scripts locales o configuración de agentes no levantan el stack. `scripts/run-e2e.ts` prepara el entorno local; CI prepara el suyo en el workflow y no ejecuta ese runner.
+La política compartida vive en `scripts/lib/verification-policy.ts`. Separa backend unitario,
+integración, frontend, herramientas y E2E. Un archivo desconocido conserva todos los checks.
+E2E consume `backend/**`, `frontend/**`, el workflow, la política de verificación y
+`scripts/check-flaky.ts`. `scripts/run-e2e.ts` prepara solo el stack local. Frontend conserva
+`e2e/**` entre sus inputs porque su lint y su typecheck también lo leen.
 
-Los filtros de `.github/workflows/ci.yml` separan producto, herramientas y E2E. El job Frontend conserva su nombre y comparte la instalación de dependencias: para cambios de herramientas corre lint, typecheck, tests de scripts y validación de agentes; solo ejecuta lint, build, tests y cobertura de frontend cuando cambia frontend. `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/` y `.codex/` activan las verificaciones de herramientas. Si falla el detector se ejecutan todas las gates; una corrida cancelada no inicia jobs nuevos.
+| Circunstancia | Comando / comportamiento |
+|---|---|
+| Ver la decisión sin ejecutar | `just verify --plan` |
+| Checks locales habituales | `just verify` |
+| Un check concreto | `just verify --only frontend-unit` |
+| Varios checks | `just verify --only scripts-lint,scripts-types,scripts-test` |
+| Repetir un check aunque haya verde | `just verify --only frontend-unit --force` |
+| Todos los checks locales disponibles, incluidos integración y E2E | `just verify --full` (necesita infra y puertos libres) |
+| Delegar esta validación a CI | `just verify --ci-only`; para pre-push, variable `PLANB_VERIFY_MODE=ci` |
+| Forzar todos los jobs remotos | Actions, workflow CI, **Run workflow** (`workflow_dispatch`) |
+| Reintentar después de diagnosticar una falla remota | `gh run rerun <run-id> --failed` |
 
-`scripts/ci-selection.test.ts` prueba la selección sobre el YAML real: herramientas, docs, frontend, backend, dependencias de E2E, cambios mixtos y detector fallido. Agregar una dependencia al job exige revisar su filtro y su caso de prueba.
+Los resultados muestran `run`, `reuse` o `not-applicable`, con su motivo y la evidencia cuando
+se reutiliza. Delegar a CI muestra `deferred-to-ci`: no escribe un recibo verde local. La lista
+de comandos y los checks opcionales está en `scripts/verify.ts`; `--only` rechaza nombres desconocidos.
+
+Local compara contenido, archivos nuevos y borrados, comando, entorno y versiones. Los recibos
+quedan en el directorio privado de Git de cada worktree; guardan un hash, resultado, duración
+y ruta del log, nunca valores de secretos. Un cambio durante el check invalida su resultado.
+Integración y E2E locales siempre se ejecutan si se seleccionan: la base y los servicios locales
+son mutables. Una interrupción deja evidencia incompleta. Los recibos se escriben de forma
+atómica y cada ejecución tiene el suyo: dos procesos no sobrescriben sus resultados. La
+reutilización evita repeticiones consecutivas; dos comandos lanzados simultáneamente pueden
+ejecutar el mismo check. No hay locks persistentes que bloqueen los pushes.
+
+CI consulta jobs reales del mismo PR o de `main`. Después del merge también consulta el PR
+asociado al commit. Un job exitoso debe tener el marcador de sus inputs; un job omitido no crea
+evidencia nueva. El hash incluye los inputs versionados, el workflow y el entorno consumido:
+imagen del runner, versiones resueltas de Bun/.NET y digests de los contenedores. Los jobs usan
+esas versiones y digests. Un rebase con los mismos inputs conserva el resultado aunque cambie
+el SHA. La búsqueda se limita a 30 runs recientes y hasta 10 runs pertinentes; si no alcanza,
+se ejecuta el check. La reutilización vence a las 24 horas para no extender indefinidamente
+resultados frente a dependencias externas cambiantes, como auditorías de vulnerabilidades.
+
+Un fallo, cancelación o ejecución incompleta posterior invalida un verde anterior. Si no se
+puede consultar evidencia, no se reutiliza. Si falla la selección o falta un output, los jobs
+conservan la ejecución. Los nombres requeridos por el ruleset se mantienen; Frontend agrega
+los resultados de producto y herramientas. Docs, escenarios y auditoría de workflows conservan
+sus gates existentes. El resumen de Actions enlaza los jobs reutilizados y suma su duración
+previa como referencia de cómputo evitado, sin presentarla como ahorro facturado.
+
+`scripts/ci-selection.test.ts` prueba las condiciones del YAML real. Los tests de la política
+y del runner cubren invalidación, fallos posteriores, procedencia y working tree sin commitear.
+Agregar un consumidor exige revisar sus inputs y su caso de prueba. El ahorro efectivo de CI
+se mide con las corridas posteriores al despliegue del workflow; una simulación no lo certifica.
 
 **Pre-push hook NO corre E2E.** El hook se queda con gates rápidos (lint, typecheck, build, unit). Si el dev tocó código real y quiere validar antes de pushear, corre `just frontend-test-e2e-show` manualmente. La elección queda en el dev, no en el hook.
 
-**Regla cultural** (vive en la disciplina del dev, no en tooling): cuando termines un slice que toque rutas reales (no mocks/ComingSoon), corré `just frontend-test-e2e-show <spec>` local con browser visible y verificá verde antes de declarar la US "lista" o pedir revisión. Esto vale especialmente para el asistente IA: el OK para commit/push viene después de mostrar el output del spec corrido, no antes.
+Una ruta nueva o corregida necesita evidencia del recorrido afectado, local o remota según
+el riesgo y la disponibilidad del entorno. No se repite un check verde si sus inputs siguen
+vigentes. Una prueba con dobles no sustituye la comprobación del recorrido real.
 
 #### Dominio vs infra: cuándo un helper directo está OK
 

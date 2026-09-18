@@ -3,154 +3,106 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import test from 'node:test';
+import { consumes, groups, jobNames } from './lib/verification-policy.ts';
 
-// Reutilizamos los parsers instalados por frontend; no hay un detector paralelo en producción.
-const requireFrontend = createRequire(resolve('frontend/package.json'));
-const { parse } = requireFrontend('yaml');
-const picomatch = requireFrontend('picomatch');
-type Step = { name?: string; if?: string; with?: Record<string, string> };
-type Job = { if?: string; needs?: string; outputs?: Record<string, string>; steps: Step[] };
-const { jobs } = parse(readFileSync('.github/workflows/ci.yml', 'utf8')) as {
+const { parse } = createRequire(resolve('frontend/package.json'))('yaml');
+type Step = { name?: string; run?: string; env?: Record<string, string> };
+type Job = {
+  name: string;
+  if?: string;
+  needs?: string | string[];
+  steps: Step[];
+  outputs?: Record<string, string>;
+};
+const workflow = parse(readFileSync('.github/workflows/ci.yml', 'utf8')) as {
+  on: Record<string, unknown>;
   jobs: Record<string, Job>;
 };
-const filters = parse(
-  jobs.changes.steps.find((step) => step.with?.filters)?.with?.filters,
-) as Record<string, string[]>;
+const { jobs } = workflow;
+const consumers = {
+  backend_unit: 'backend-unit',
+  backend: 'backend',
+  frontend: 'frontend_checks',
+  tooling: 'tooling',
+  e2e: 'e2e',
+};
 
-function select(paths: string[], result = 'success', cancelled = false) {
-  const filterOutputs = Object.fromEntries(
-    Object.entries(filters).map(([key, patterns]) => [
-      key,
-      String(paths.some(picomatch(patterns, { dot: true }))),
-    ]),
-  );
-  const outputs = Object.fromEntries(
-    Object.entries(jobs.changes.outputs ?? {}).map(([key, expression]) => {
-      const output = expression.match(/^\$\{\{ steps\.filter\.outputs\.(\w+) \}\}$/)?.[1];
-      assert.ok(output && output in filterOutputs, `Unknown detector output: ${expression}`);
-      return [key, result === 'success' ? filterOutputs[output] : ''];
-    }),
-  );
-  // Las condiciones actuales solo usan igualdad de strings, &&, || y estas dos funciones.
-  // Evaluamos el YAML real: cambiar un if o su output debe romper los casos de selección.
-  const enabled = (expression?: string) =>
-    expression === undefined ||
+function enabled(
+  id: string,
+  outputs: Record<string, string>,
+  result = 'success',
+  cancelled = false,
+) {
+  const expression = jobs[id].if;
+  assert.ok(expression);
+  return Boolean(
     new Function(
       'needs',
       'cancelled',
-      'always',
       `return (${expression.replace(/^\$\{\{\s*|\s*\}\}$/g, '')});`,
-    )(
-      { changes: { result, outputs } },
-      () => cancelled,
-      () => true,
+    )({ changes: { outputs, result } }, () => cancelled),
+  );
+}
+
+test('el YAML consume la política compartida y conserva nombres requeridos', () => {
+  assert.ok(jobs.changes.steps.some((step) => step.run === 'bun scripts/verify-ci.ts'));
+  for (const group of groups) {
+    assert.equal(jobs[consumers[group]].name, jobNames[group]);
+    assert.equal(jobs.changes.outputs?.[group], `\${{ steps.select.outputs.${group} }}`);
+    assert.ok(
+      jobs[consumers[group]].steps.some(
+        (step) =>
+          step.name === `Evidence ${group} \${{ needs.changes.outputs.${group}_fingerprint }}`,
+      ),
     );
-  const jobRuns = (name: string) => Boolean(enabled(jobs[name].if));
-  const stepRuns = (name: string) => {
-    const step = jobs.frontend.steps.find((candidate) => candidate.name === name);
-    assert.ok(step, `Missing step: ${name}`);
-    return jobRuns('frontend') && Boolean(enabled(step.if));
-  };
-  return { jobRuns, stepRuns };
-}
-
-const frontendSteps = ['Lint', 'Typecheck', 'Build', 'Test', 'Upload coverage'];
-const toolingSteps = [
-  'Install',
-  'Lint scripts',
-  'Typecheck scripts',
-  'Test scripts',
-  'Agent config in sync',
-];
-
-for (const path of [
-  'scripts/run-check.ts',
-  'scripts/run-e2e.ts',
-  'scripts/lib/dev-stack.ts',
-  'biome.json',
-  '.claude/workflows/deep-review.js',
-  '.claude/agents/reviewer.md',
-  '.claude/settings.json',
-  '.codex/agents/reviewer.toml',
-  '.agents/hooks/guard-tool-budget.mjs',
-  'AGENTS.md',
-  'CLAUDE.md',
-]) {
-  test(`herramientas: ${path} verifica el harness sin levantar producto`, () => {
-    const { jobRuns, stepRuns } = select([path]);
-    for (const step of toolingSteps) assert.equal(stepRuns(step), true, step);
-    for (const step of frontendSteps) assert.equal(stepRuns(step), false, step);
-    for (const job of ['backend-unit', 'backend', 'e2e']) assert.equal(jobRuns(job), false, job);
-  });
-}
-
-test('documentación y workflows ajenos no levantan el stack', () => {
-  const { jobRuns } = select([
-    'docs/engineering/agent-workflow.md',
-    '.github/workflows/docs-links.yml',
-  ]);
-  for (const job of ['frontend', 'backend-unit', 'backend', 'e2e'])
-    assert.equal(jobRuns(job), false);
+  }
+  assert.equal(jobs.frontend.name, 'Frontend (Next.js 15 / Bun)');
+  assert.deepEqual(jobs.frontend.needs, ['changes', 'frontend_checks', 'tooling']);
+  assert.ok('workflow_dispatch' in workflow.on);
 });
 
-for (const path of [
-  'frontend/src/app/page.tsx',
-  'frontend/e2e/home.spec.ts',
-  'frontend/playwright.config.ts',
-  'frontend/bun.lock',
-  'frontend/package.json',
-]) {
-  test(`frontend: ${path} conserva build, tests y E2E`, () => {
-    const { jobRuns, stepRuns } = select([path]);
-    for (const step of [...frontendSteps, ...toolingSteps])
-      assert.equal(stepRuns(step), true, step);
-    assert.equal(jobRuns('e2e'), true);
-    assert.equal(jobRuns('backend'), false);
-  });
-}
-
-test('backend activa sus suites y E2E sin el job de frontend', () => {
-  const { jobRuns } = select(['backend/host/Planb.Api/Program.cs']);
-  for (const job of ['backend-unit', 'backend', 'e2e']) assert.equal(jobRuns(job), true);
-  assert.equal(jobRuns('frontend'), false);
-});
-
-test('el script de migraciones conserva el job que lo ejecuta sin levantar E2E', () => {
-  const { jobRuns } = select(['scripts/check-migrations.ts']);
-  assert.equal(jobRuns('backend-unit'), true);
-  assert.equal(jobRuns('frontend'), true);
-  assert.equal(jobRuns('e2e'), false);
-});
-
-test('el consumidor del reporte de Playwright activa herramientas y E2E', () => {
-  const { jobRuns, stepRuns } = select(['scripts/check-flaky.ts']);
-  assert.equal(jobRuns('e2e'), true);
-  for (const step of toolingSteps) assert.equal(stepRuns(step), true);
-  for (const step of frontendSteps) assert.equal(stepRuns(step), false);
-});
-
-test('cambios mixtos conservan la cobertura de producto', () => {
-  const { jobRuns, stepRuns } = select(['scripts/run-check.ts', 'frontend/src/app/page.tsx']);
-  assert.equal(jobRuns('e2e'), true);
-  assert.equal(stepRuns('Build'), true);
-});
-
-for (const [paths, result] of [
-  [['.github/workflows/ci.yml'], 'success'],
-  [[], 'failure'],
-  [[], 'skipped'],
+for (const [path, selected] of [
+  ['docs/engineering/testing.md', []],
+  ['scripts/run-check.ts', ['tooling']],
+  ['scripts/run-e2e.ts', ['tooling']],
+  ['scripts/check-migrations.ts', ['backend_unit', 'tooling']],
+  ['scripts/check-flaky.ts', ['tooling', 'e2e']],
+  ['frontend/src/app/page.tsx', ['frontend', 'e2e']],
+  ['frontend/e2e/home.spec.ts', ['frontend', 'e2e']],
+  ['frontend/bun.lock', ['frontend', 'tooling', 'e2e']],
+  ['backend/host/Planb.Api/Program.cs', ['backend_unit', 'backend', 'e2e']],
+  ['.claude/skills/ship/SKILL.md', ['tooling']],
+  ['.github/workflows/docs-links.yml', ['tooling']],
+  ['unknown-runtime.config', groups],
+  ['.github/workflows/ci.yml', groups],
+  ['scripts/lib/verification-policy.ts', groups],
 ] as const) {
-  test(`workflow modificado o detector ${result}: conserva todas las gates`, () => {
-    const { jobRuns, stepRuns } = select([...paths], result);
-    for (const job of ['frontend', 'backend-unit', 'backend', 'e2e'])
-      assert.equal(jobRuns(job), true, job);
-    for (const step of [...frontendSteps, ...toolingSteps])
-      assert.equal(stepRuns(step), true, step);
+  test(`${path}: selecciona consumidores y no otras suites`, () => {
+    const outputs = Object.fromEntries(
+      groups.map((group) => [group, String(consumes(group, path))]),
+    );
+    for (const group of groups)
+      assert.equal(
+        enabled(consumers[group], outputs),
+        (selected as readonly string[]).includes(group),
+        group,
+      );
   });
 }
 
-test('una corrida cancelada no inicia jobs de producto', () => {
-  const { jobRuns } = select(['.github/workflows/ci.yml'], 'failure', true);
-  for (const job of ['frontend', 'backend-unit', 'backend', 'e2e'])
-    assert.equal(jobRuns(job), false);
+for (const result of ['failure', 'skipped', 'cancelled']) {
+  test(`selector ${result}: una omisión no aprueba checks`, () => {
+    for (const group of groups) {
+      assert.equal(enabled(consumers[group], { [group]: 'false' }, result), true);
+      assert.equal(enabled(consumers[group], {}, result), true);
+      assert.equal(enabled(consumers[group], {}, result, true), false);
+    }
+  });
+}
+
+test('un output ausente con selector verde también conserva la ejecución', () => {
+  for (const group of groups) {
+    assert.equal(enabled(consumers[group], {}), true);
+    assert.equal(enabled(consumers[group], { [group]: 'false' }), false);
+  }
 });

@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 # Default mínimo. Los jobs no escriben al repo: ni push, ni labels, ni
 # comments. Si en el futuro un job necesita más, lo declara local.
@@ -19,47 +20,49 @@ jobs:
   # Producto, herramientas y E2E tienen alcances separados. Compartir la
   # instalación de Bun no implica que scripts/ necesite compilar el producto.
   changes:
-    name: Detect changes
+    name: Select verification
     runs-on: ubuntu-latest
     timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
-      frontend: ${{ steps.filter.outputs.frontend }}
-      tooling: ${{ steps.filter.outputs.tooling }}
-      e2e: ${{ steps.filter.outputs.e2e }}
+      backend_unit: ${{ steps.select.outputs.backend_unit }}
+      backend: ${{ steps.select.outputs.backend }}
+      frontend: ${{ steps.select.outputs.frontend }}
+      tooling: ${{ steps.select.outputs.tooling }}
+      e2e: ${{ steps.select.outputs.e2e }}
+      backend_unit_fingerprint: ${{ steps.select.outputs.backend_unit_fingerprint }}
+      backend_fingerprint: ${{ steps.select.outputs.backend_fingerprint }}
+      frontend_fingerprint: ${{ steps.select.outputs.frontend_fingerprint }}
+      tooling_fingerprint: ${{ steps.select.outputs.tooling_fingerprint }}
+      e2e_fingerprint: ${{ steps.select.outputs.e2e_fingerprint }}
+      bun_version: ${{ steps.select.outputs.bun_version }}
+      dotnet_version: ${{ steps.select.outputs.dotnet_version }}
+      runner_image: ${{ steps.select.outputs.runner_image }}
+      postgres_image: ${{ steps.select.outputs.postgres_image }}
+      mailpit_image: ${{ steps.select.outputs.mailpit_image }}
+      redis_image: ${{ steps.select.outputs.redis_image }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
-        id: filter
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with: { bun-version: 1.3.x }
+      - name: Detect required runtimes
+        id: impact
+        run: bun scripts/verify-ci.ts --impact
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        if: ${{ steps.impact.outputs.need_dotnet != 'false' }}
         with:
-          filters: |
-            backend:
-              - 'backend/**'
-              - '.github/workflows/ci.yml'
-              - 'scripts/check-migrations.ts'
-            frontend:
-              - 'frontend/**'
-              - '.github/workflows/ci.yml'
-            tooling:
-              - 'scripts/**'
-              - 'biome.json'
-              - '.agents/**'
-              - '.claude/**'
-              - '.codex/**'
-              - 'AGENTS.md'
-              - 'CLAUDE.md'
-              - 'frontend/package.json'
-              - 'frontend/bun.lock'
-              - '.github/workflows/ci.yml'
-            e2e:
-              - 'backend/**'
-              - 'frontend/**'
-              - '.github/workflows/ci.yml'
-              # Este script consume el reporte de Playwright en este job.
-              # run-e2e.ts prepara el stack local; CI no lo invoca.
-              - 'scripts/check-flaky.ts'
+          dotnet-version: '10.0.x'
+      - name: Select checks and valid evidence
+        id: select
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bun scripts/verify-ci.ts
 
   # Partido en dos a propósito (R4, #420): unit y arquitectura tardan segundos y no necesitan
   # contenedores, así que un error de dominio se ve en menos de dos minutos en vez de esperar a
@@ -68,16 +71,20 @@ jobs:
   backend-unit:
     name: Backend unit (.NET 10)
     needs: changes
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend == 'true') }}
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend_unit != 'false') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Evidence backend_unit ${{ needs.changes.outputs.backend_unit_fingerprint }}
+        env:
+          EXPECTED_IMAGE: ${{ needs.changes.outputs.runner_image }}
+        run: test -z "$EXPECTED_IMAGE" || test "$ImageVersion" = "$EXPECTED_IMAGE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: ${{ needs.changes.outputs.dotnet_version || '10.0.x' }}
           # Cachea la carpeta global de paquetes con el hash de los packages.lock.json
           # (RestorePackagesWithLockFile en Directory.Build.props): sin lock files la acción falla.
           cache: true
@@ -101,7 +108,7 @@ jobs:
       # Después de Build: un cambio de modelo sin migrar compila y formatea igual, y los tests de
       # integración solo lo cazan si alguno toca esa tabla.
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with: { bun-version: 1.3.x }
+        with: { bun-version: "${{ needs.changes.outputs.bun_version || '1.3.x' }}" }
       # dotnet-ef es una tool local (backend/.config/dotnet-tools.json), pineada para que CI y
       # local corran la misma: sin el restore el chequeo no encuentra el comando.
       - name: Restore dotnet tools
@@ -147,12 +154,12 @@ jobs:
     # Sin esto un `changes` fallido deja el job en "skipped", y GitHub cuenta
     # skipped como aprobado para un required check: el PR podía mergear sin
     # haber corrido format, build ni tests.
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend == 'true') }}
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend != 'false') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
       postgres:
-        image: pgvector/pgvector:pg17
+        image: ${{ needs.changes.outputs.postgres_image || 'pgvector/pgvector:pg17' }}
         env:
           POSTGRES_USER: planb
           POSTGRES_PASSWORD: planb_test
@@ -170,7 +177,7 @@ jobs:
       # latter hasn't seen a release since 2020 and has known SMTP-binding quirks in GHA
       # service containers that leave HTTP reachable while SMTP silently refuses connections.
       mailpit:
-        image: axllent/mailpit:v1.29
+        image: ${{ needs.changes.outputs.mailpit_image || 'axllent/mailpit:v1.29' }}
         ports:
           - 1025:1025
           - 8025:8025
@@ -187,7 +194,7 @@ jobs:
       # command arg, and CI Redis is inherently scoped to a single ephemeral runner. Dev
       # keeps AUTH on for prod parity (see docker-compose.yml).
       redis:
-        image: redis:7-alpine
+        image: ${{ needs.changes.outputs.redis_image || 'redis:7-alpine' }}
         ports:
           - 6379:6379
         options: >-
@@ -209,12 +216,16 @@ jobs:
       JWT__Issuer: planb-test
       JWT__Audience: planb-test
     steps:
+      - name: Evidence backend ${{ needs.changes.outputs.backend_fingerprint }}
+        env:
+          EXPECTED_IMAGE: ${{ needs.changes.outputs.runner_image }}
+        run: test -z "$EXPECTED_IMAGE" || test "$ImageVersion" = "$EXPECTED_IMAGE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: ${{ needs.changes.outputs.dotnet_version || '10.0.x' }}
           cache: true
           cache-dependency-path: backend/**/packages.lock.json
       - name: Restore
@@ -238,8 +249,8 @@ jobs:
           path: "**/coverage.cobertura.xml"
           retention-days: 14
 
-  frontend:
-    name: Frontend (Next.js 15 / Bun)
+  frontend_checks:
+    name: Frontend checks
     needs: changes
     # `!cancelled()` es lo que habilita a este job a correr aunque `changes`
     # no haya terminado bien, y `result != 'success'` lo hace correr en ese
@@ -247,11 +258,15 @@ jobs:
     # Sin esto un `changes` fallido deja el job en "skipped", y GitHub cuenta
     # skipped como aprobado para un required check: el PR podía mergear sin
     # haber corrido format, build ni tests.
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' || needs.changes.outputs.tooling == 'true') }}
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.frontend != 'false') }}
     runs-on: ubuntu-latest
     # install+lint+typecheck+build+test local ≈ 3-5 min. 10 min de headroom.
     timeout-minutes: 10
     steps:
+      - name: Evidence frontend ${{ needs.changes.outputs.frontend_fingerprint }}
+        env:
+          EXPECTED_IMAGE: ${{ needs.changes.outputs.runner_image }}
+        run: test -z "$EXPECTED_IMAGE" || test "$ImageVersion" = "$EXPECTED_IMAGE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -260,12 +275,49 @@ jobs:
           # Pineado al rango minor estable que matchea el del dev local
           # (frontend/package.json engines.bun >= 1.3.0). `latest` rompe CI
           # silenciosamente si Bun publica un breaking release nocturno.
-          bun-version: 1.3.x
+          bun-version: "${{ needs.changes.outputs.bun_version || '1.3.x' }}"
       - name: Install
         run: cd frontend && bun install --frozen-lockfile
       - name: Lint
-        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend != 'false' }}
         run: cd frontend && bun run lint
+      - name: Typecheck
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend != 'false' }}
+        run: cd frontend && bunx tsc --noEmit
+      - name: Build
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend != 'false' }}
+        run: cd frontend && bun run build
+      - name: Test
+        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend != 'false' }}
+        run: cd frontend && bun run test:coverage
+      # Reporte de cobertura (v8), sin gate (ADR-0036): docs/engineering/testing.md#cobertura.
+      - name: Upload coverage
+        if: ${{ always() && (needs.changes.result != 'success' || needs.changes.outputs.frontend != 'false') }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/lcov.info
+          retention-days: 14
+
+  tooling:
+    name: Tooling checks
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.tooling != 'false') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Evidence tooling ${{ needs.changes.outputs.tooling_fingerprint }}
+        env:
+          EXPECTED_IMAGE: ${{ needs.changes.outputs.runner_image }}
+        run: test -z "$EXPECTED_IMAGE" || test "$ImageVersion" = "$EXPECTED_IMAGE"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ needs.changes.outputs.bun_version || '1.3.x' }}
+      - name: Install
+        run: cd frontend && bun install --frozen-lockfile
       - name: Lint scripts
         # El binario local, no `bunx biome`: desde la raíz no hay package.json y
         # `bunx biome` resuelve a otro paquete de npm que se llama igual.
@@ -277,23 +329,27 @@ jobs:
       - name: Agent config in sync
         # Cada agente de .claude/agents tiene su par en .codex/agents con el mismo cuerpo.
         run: bun scripts/check-agent-config.ts --strict
-      - name: Typecheck
-        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
-        run: cd frontend && bunx tsc --noEmit
-      - name: Build
-        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
-        run: cd frontend && bun run build
-      - name: Test
-        if: ${{ needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true' }}
-        run: cd frontend && bun run test:coverage
-      # Reporte de cobertura (v8), sin gate (ADR-0036): docs/engineering/testing.md#cobertura.
-      - name: Upload coverage
-        if: ${{ always() && (needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true') }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: frontend-coverage
-          path: frontend/coverage/lcov.info
-          retention-days: 14
+
+  frontend:
+    name: Frontend (Next.js 15 / Bun)
+    needs: [changes, frontend_checks, tooling]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Validate selected checks
+        env:
+          SELECTOR: ${{ needs.changes.result }}
+          PRODUCT_SELECTED: ${{ needs.changes.outputs.frontend }}
+          TOOLING_SELECTED: ${{ needs.changes.outputs.tooling }}
+          PRODUCT_RESULT: ${{ needs.frontend_checks.result }}
+          TOOLING_RESULT: ${{ needs.tooling.result }}
+        run: |
+          validate() {
+            [ "$2" = success ] || { [ "$SELECTOR" = success ] && [ "$1" = false ] && [ "$2" = skipped ]; }
+          }
+          validate "$PRODUCT_SELECTED" "$PRODUCT_RESULT"
+          validate "$TOOLING_SELECTED" "$TOOLING_RESULT"
 
   # Playwright verifica el producto y el entorno que este job usa realmente.
   # Si falla el detector se ejecuta; una cancelación no inicia trabajo nuevo.
@@ -302,7 +358,7 @@ jobs:
     runs-on: ubuntu-latest
     # El check conserva su nombre requerido aunque no corresponda ejecutar el stack.
     needs: changes
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.e2e == 'true') }}
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.e2e != 'false') }}
     # Local típico ≈ 1min para la suite actual (6 specs). Setup de servicios +
     # build backend + build frontend + install browsers + run = ~10-12min en
     # CI sin caches frías. 25 min absorbe el peor escenario.
@@ -310,7 +366,7 @@ jobs:
 
     services:
       postgres:
-        image: pgvector/pgvector:pg17
+        image: ${{ needs.changes.outputs.postgres_image || 'pgvector/pgvector:pg17' }}
         env:
           POSTGRES_USER: planb
           POSTGRES_PASSWORD: planb_test
@@ -321,7 +377,7 @@ jobs:
           --health-interval 5s --health-timeout 5s --health-retries 10
 
       mailpit:
-        image: axllent/mailpit:v1.29
+        image: ${{ needs.changes.outputs.mailpit_image || 'axllent/mailpit:v1.29' }}
         ports: ['1025:1025', '8025:8025']
         options: >-
           --health-cmd "/mailpit readyz"
@@ -329,7 +385,7 @@ jobs:
           --health-start-period 5s
 
       redis:
-        image: redis:7-alpine
+        image: ${{ needs.changes.outputs.redis_image || 'redis:7-alpine' }}
         ports: ['6379:6379']
         options: >-
           --health-cmd "redis-cli ping"
@@ -361,18 +417,22 @@ jobs:
       REDIS_CONTAINER_CMD: ''
 
     steps:
+      - name: Evidence e2e ${{ needs.changes.outputs.e2e_fingerprint }}
+        env:
+          EXPECTED_IMAGE: ${{ needs.changes.outputs.runner_image }}
+        run: test -z "$EXPECTED_IMAGE" || test "$ImageVersion" = "$EXPECTED_IMAGE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: ${{ needs.changes.outputs.dotnet_version || '10.0.x' }}
           cache: true
           cache-dependency-path: backend/**/packages.lock.json
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with: { bun-version: 1.3.x }
+        with: { bun-version: "${{ needs.changes.outputs.bun_version || '1.3.x' }}" }
 
       - name: Restore + build backend
         working-directory: backend
