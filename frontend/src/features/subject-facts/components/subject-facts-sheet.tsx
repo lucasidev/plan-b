@@ -189,7 +189,7 @@ function CompletionCard({
 }
 
 /**
- * Sus cátedras: cada una con reseñas trae el nombre, la conclusión de su frase con la moda más
+ * Sus cátedras: cada una con reseñas trae el nombre, la conclusión de su pregunta con la moda más
  * marcada (o que todavía no tiene una) y quién está a cargo. Las que todavía no tienen ni una
  * reseña se pliegan en una sola línea al final, para no repetir veinte veces "sin reseñas todavía".
  */
@@ -247,7 +247,7 @@ function ChairRow({ chair }: { chair: SubjectChair }) {
   );
 }
 
-/** La frase de conclusión de una cátedra, o el estado honesto de que todavía no tiene una. */
+/** La conclusión de una cátedra, o el estado de que todavía no tiene una. */
 function chairConclusion(chair: SubjectChair): string {
   const reviewsLabel = chair.reviewCount === 1 ? 'reseña' : 'reseñas';
 
@@ -305,7 +305,7 @@ function SubjectOrChair({ facts }: { facts: SubjectFacts }) {
   );
 }
 
-/** Una frase donde las cátedras difieren: la moda negativa y cuánto la marca cada una. */
+/** Una pregunta donde las cátedras difieren: la moda negativa y cuánto la marca cada una. */
 function SpreadItem({ item }: { item: Spread }) {
   return (
     <div className="pb-item">
@@ -334,7 +334,7 @@ function SpreadItem({ item }: { item: Spread }) {
   );
 }
 
-/** Las frases que todas las cátedras marcan parejo: son de la materia, no de quien la dicta. */
+/** Las preguntas que todas las cátedras marcan parejo: son de la materia, no de quien la dicta. */
 function SharedItem({ shared }: { shared: Shared[] }) {
   return (
     <div className="pb-item">

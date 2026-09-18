@@ -57,7 +57,9 @@ export function DistilItemForm() {
 
   return (
     <form ref={formRef} action={action} className="rounded-lg border border-line bg-bg-card p-4">
-      <p className="mb-1 text-[13px] font-medium text-ink">Destilar una pregunta</p>
+      <p className="mb-1 text-[13px] font-medium text-ink">
+        Agregar una pregunta a partir de comentarios
+      </p>
       <p className="mb-3 text-[11.5px] leading-relaxed text-ink-3">
         Entra al cuestionario como versión nueva y arranca su propia serie: lo que se responda desde
         ahora se cuenta bajo esta pregunta, sin compararse con lo de antes, que no la tenía.
@@ -210,7 +212,7 @@ export function DistilItemForm() {
           className="rounded-lg px-3.5 py-2 text-[13px] font-medium disabled:opacity-60"
           style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
         >
-          {pending ? 'Destilando…' : 'Destilar'}
+          {pending ? 'Agregando…' : 'Agregar pregunta'}
         </button>
       </div>
 

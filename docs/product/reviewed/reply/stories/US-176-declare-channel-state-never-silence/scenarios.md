@@ -16,7 +16,7 @@ Entonces el estado del canal se muestra como "docente sin identidad verificada",
 
 **N1.** Dado cualquiera de los dos casos anteriores (pendiente de verificación, o nunca verificado)
 Cuando se muestra el estado del canal
-Entonces en ningún caso aparece el texto "no quiso responder" ni ninguna frase que presuma la intención del docente.
+Entonces en ningún caso aparece el texto "no quiso responder" ni ninguna pregunta que presuma la intención del docente.
 
 ## Edge cases
 

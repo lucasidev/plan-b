@@ -160,7 +160,7 @@ export function UniversityForm({ mode, university }: Props) {
           Cancelar
         </Button>
         <Button type="submit" size="sm" disabled={isPending || !hydrated}>
-          {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Afiliar universidad'}
+          {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Agregar universidad'}
         </Button>
       </div>
     </form>

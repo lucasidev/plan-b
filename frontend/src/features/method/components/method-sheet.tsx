@@ -8,7 +8,7 @@ import { PageFrame } from '@/components/layout/page-frame';
  * nada: es "confiá en mí". Esta pantalla existe para que cualquiera pueda rastrear un número hasta
  * la regla que lo calculó **sin leer código**, y para que pueda descartarlo con fundamento.
  *
- * El catálogo de frases sale del mismo endpoint que usa la pantalla de reseñar: publicar una copia
+ * El catálogo de preguntas sale del mismo endpoint que usa la pantalla de reseñar: publicar una copia
  * escrita a mano garantizaría que un día diga algo distinto de lo que se pregunta.
  */
 export function MethodSheet({
@@ -304,8 +304,8 @@ function ItemCatalog({ instrument }: { instrument: CurrentInstrument | null }) {
         Salen del mismo lugar del que las lee la pantalla de reseñar.
       </p>
       <p className="mb-2 text-[12px] text-ink-3">
-        Las que escribimos nosotros para arrancar son las <b>semilla</b>. Las que salieron de lo que
-        muchos escribieron en el campo libre van marcadas como <b>destilada</b>
+        Las preguntas <b>iniciales</b> las escribió el equipo al preparar el cuestionario. Las que
+        incorporamos al revisar el campo libre se identifican como <b>a partir de comentarios</b>
         {distilled === 0
           ? ': todavía no hay ninguna.'
           : `: hay ${distilled === 1 ? 'una' : distilled}.`}
@@ -338,7 +338,7 @@ function ItemRow({ item }: { item: InstrumentItem }) {
         {item.text}
         {item.origin === 'Distilled' && (
           <span className="ml-1.5 rounded bg-bg-elev px-1.5 py-0.5 font-mono text-[9.5px] text-ink-3">
-            destilada
+            a partir de comentarios
           </span>
         )}
       </p>

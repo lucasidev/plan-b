@@ -1,5 +1,5 @@
 /**
- * El catálogo de frases como lo ve quien lo cura (US-198). Espeja `GetItemsResponse`.
+ * El catálogo de preguntas como lo ve quien lo cura (US-198). Espeja `GetItemsResponse`.
  *
  * `answerCount` no es adorno: es lo que hace concreta la consecuencia de cortar la serie. Son las
  * respuestas que se quedan bajo el código viejo y dejan de compararse con las nuevas.
@@ -13,7 +13,7 @@ export type CatalogItem = {
   subject: string;
   origin: string;
   isActive: boolean;
-  /** El código de la frase a la que esta reemplazó, cuando nació de un cambio de significado. */
+  /** El código de la pregunta a la que esta reemplazó, cuando nació de un cambio de significado. */
   supersedesCode: string | null;
   /** El código que la reemplazó a ella, si se lo retiró abriendo uno nuevo. */
   supersededByCode: string | null;

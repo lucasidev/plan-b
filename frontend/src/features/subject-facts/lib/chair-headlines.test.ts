@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CHAIR_CONDUCT_CATALOG, chairHeadlineSentence } from './chair-headlines';
 
 /**
- * SC-007 ("Sus cátedras"): cada opción de cada ítem de conducta observable tiene su frase de
+ * SC-007 ("Sus cátedras"): cada opción de cada ítem de conducta observable tiene su pregunta de
  * conclusión. Este test compara `chairHeadlineSentence` contra `CHAIR_CONDUCT_CATALOG`, la copia
  * literal que espeja `CatalogSeedData.cs` (backend): si alguien agrega una plantilla acá sin
  * agregarla también en `CHAIR_CONDUCT_CATALOG`, o al revés, este test lo agarra. Lo que NO agarra
@@ -50,7 +50,7 @@ describe('chairHeadlineSentence', () => {
   });
 
   /**
-   * Un corte de serie (US-198) abre una frase nueva con sufijo `_V<n>`, mismo layer y mismas
+   * Un corte de serie (US-198) abre una pregunta nueva con sufijo `_V<n>`, mismo layer y mismas
    * opciones: la conclusión de la ficha de materia busca por el código base, para no dejar sin
    * conclusión a una cátedra que solo respondió el tramo nuevo.
    */

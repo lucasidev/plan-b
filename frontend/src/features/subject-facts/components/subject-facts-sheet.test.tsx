@@ -331,7 +331,7 @@ describe('SubjectFactsSheet', () => {
 
   /**
    * SC-007, "¿es la materia o es una cátedra?" (la propuesta aprobada sobre la ficha de materia):
-   * una frase donde las cátedras difieren lista la moda negativa de cada una con su "de N".
+   * una pregunta donde las cátedras difieren lista la moda negativa de cada una con su "de N".
    */
   it('spread publicado: cada cátedra que difiere lista su moda con su bar y su "de N"', () => {
     renderSheet(
@@ -360,7 +360,7 @@ describe('SubjectFactsSheet', () => {
   });
 
   /** Lo que todas las cátedras marcan parejo se publica aparte, como un rasgo de la materia. */
-  it('shared publicado: la frase pareja se lee como un rasgo de la materia, con su rango', () => {
+  it('shared publicado: la pregunta pareja se lee como un rasgo de la materia, con su rango', () => {
     renderSheet(
       facts({
         shared: [
@@ -487,10 +487,10 @@ describe('SubjectFactsSheet', () => {
   });
 
   /**
-   * SC-007, "sus cátedras": con headline, la fila arma "La cátedra {nombre} {frase}: lo dice el
+   * SC-007, "sus cátedras": con headline, la fila arma "La cátedra {nombre} {pregunta}: lo dice el
    * {percent} % de sus {respondents} reseñas.", con el docente a cargo y la última reseña.
    */
-  it('ChairRow con headline: la conclusión cita la frase, el docente y la última reseña', () => {
+  it('ChairRow con headline: la conclusión cita la pregunta, el docente y la última reseña', () => {
     renderSheet(
       facts({
         chairs: [

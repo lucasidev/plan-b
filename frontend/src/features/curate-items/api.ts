@@ -3,7 +3,7 @@ import { clientApiFetch } from '@/lib/api-client';
 import type { CatalogItem } from './types';
 
 /**
- * Query client-side del catálogo de frases (US-198). La RSC prefetchea con el fetcher server-only
+ * Query client-side del catálogo de preguntas (US-198). La RSC prefetchea con el fetcher server-only
  * (`api.server`) seedeando este mismo queryKey; la pantalla consume con useSuspenseQuery, y guardar
  * un cambio invalida el query, que refetchea client-side.
  *

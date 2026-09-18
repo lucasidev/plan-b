@@ -4,7 +4,7 @@ import { ADMIN } from '../helpers/personas';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
- * E2E de Frases (US-198): el catálogo de lo que el producto pregunta, editable en un solo lugar.
+ * E2E de Preguntas (US-198): el catálogo de lo que el producto pregunta, editable en un solo lugar.
  *
  * Lo que se prueba acá y no en un componente: que la declaración de quien cura llegue hasta el
  * catálogo real y hasta lo que el cuestionario ofrece. Los dos caminos tienen consecuencias
@@ -39,8 +39,8 @@ async function signIn(page: Page, email: string, password: string) {
 }
 
 /**
- * Siembra una frase propia del test y la deja seleccionada. Se crea destilando: es el único alta
- * de frases que el producto tiene, y curar una del catálogo sembrado le cambiaría el corpus a los
+ * Siembra una pregunta propia del test y la deja seleccionada. Se crea destilando: es el único alta
+ * de preguntas que el producto tiene, y curar una del catálogo sembrado le cambiaría el corpus a los
  * otros specs.
  */
 async function seedPhrase(page: Page, suffix: string) {
@@ -52,7 +52,7 @@ async function seedPhrase(page: Page, suffix: string) {
   await page.getByLabel('La pregunta').fill(question);
   await page.getByLabel(/etiqueta de la opción 1/i).fill('Sí');
   await page.getByLabel(/etiqueta de la opción 2/i).fill('No');
-  await page.getByRole('button', { name: 'Destilar' }).click();
+  await page.getByRole('button', { name: 'Agregar pregunta' }).click();
   await expect(page.getByRole('status')).toContainText(/entró en la versión \d+/i, {
     timeout: 15_000,
   });
@@ -63,14 +63,14 @@ async function seedPhrase(page: Page, suffix: string) {
   return { code, question };
 }
 
-/** Elige una frase del catálogo por su código, filtrando primero para no depender del orden. */
+/** Elige una pregunta del catálogo por su código, filtrando primero para no depender del orden. */
 async function selectPhrase(page: Page, code: string) {
   await page.getByLabel(/buscar en el catálogo/i).fill(code);
   await page.getByRole('button', { name: new RegExp(`^${code}\\b`) }).click();
 }
 
 /**
- * Una reseña que contesta la frase del test. El período rota porque hay una sola voz por cuenta,
+ * Una reseña que contesta la pregunta del test. El período rota porque hay una sola voz por cuenta,
  * materia y período, y el desenlace también, para que la ficha no dependa de un número redondo.
  */
 async function answer(request: APIRequestContext, code: string, index: number) {
@@ -89,7 +89,7 @@ async function answer(request: APIRequestContext, code: string, index: number) {
   expect(published.status()).toBe(201);
 }
 
-test.describe('Frases (US-198)', () => {
+test.describe('Preguntas (US-198)', () => {
   test.setTimeout(180_000);
 
   /**
@@ -184,7 +184,7 @@ test.describe('Frases (US-198)', () => {
       const newQuestionText = page.getByText(newQuestion);
       await expect(newQuestionText).toBeVisible({ timeout: 15_000 });
       // Acotado a la fila de ESTA pregunta: "todavía nadie respondió" es el mismo texto para
-      // cualquier frase recién destilada, y `--repeat-each` dejó más de una en la misma corrida
+      // cualquier pregunta recién destilada, y `--repeat-each` dejó más de una en la misma corrida
       // (cada repetición destila la suya y ninguna se borra, así que conviven en el instrumento).
       const newQuestionRow = newQuestionText.locator('xpath=..');
       await expect(
@@ -200,7 +200,7 @@ test.describe('Frases (US-198)', () => {
     }
   });
 
-  test('un alumno no llega al catálogo de frases', async ({ page, context, request }) => {
+  test('un alumno no llega al catálogo de preguntas', async ({ page, context, request }) => {
     const student = await createStudent(request, { emailPrefix: 'e2e-items-guard' });
 
     try {
@@ -208,7 +208,7 @@ test.describe('Frases (US-198)', () => {
       await signIn(page, student.email, student.password);
       await page.goto('/admin/items');
 
-      // Es el único lugar donde se edita lo que el producto pregunta: una frase mal definida es un
+      // Es el único lugar donde se edita lo que el producto pregunta: una pregunta mal definida es un
       // error en todas las fichas que la usan.
       await expect(page).not.toHaveURL(/\/admin\/items/);
     } finally {

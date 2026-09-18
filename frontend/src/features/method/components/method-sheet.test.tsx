@@ -133,7 +133,7 @@ describe('MethodSheet', () => {
     expect(screen.getByText('Qué hizo la cátedra')).toBeInTheDocument();
     expect(screen.getByText('Qué te pasó a vos')).toBeInTheDocument();
 
-    // Y el catálogo entero, no una muestra: las tres opciones de la frase de conducta, completas.
+    // Y el catálogo entero, no una muestra: las tres opciones de la pregunta de conducta, completas.
     expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
     expect(screen.getByText(/Casi todas · Faltaron algunas · Faltaron muchas/)).toBeInTheDocument();
   });
@@ -229,7 +229,7 @@ describe('MethodSheet', () => {
   it('sin ninguna destilada todavía, lo dice en vez de callarlo', () => {
     render(<MethodSheet instrument={INSTRUMENT} chairFloor={7} pairFloor={4} />);
 
-    expect(screen.getByText(/semilla/)).toBeInTheDocument();
+    expect(screen.getByText(/iniciales/)).toBeInTheDocument();
     expect(screen.getByText(/todavía no hay ninguna/i)).toBeInTheDocument();
   });
 
@@ -255,9 +255,9 @@ describe('MethodSheet', () => {
     render(<MethodSheet instrument={withDistilled} chairFloor={7} pairFloor={4} />);
 
     // La marca va al lado de su pregunta, que es donde sirve para auditar ese número. Se busca
-    // dentro del párrafo de la frase: la palabra también aparece en la explicación de arriba.
+    // dentro del párrafo de la pregunta: la palabra también aparece en la explicación de arriba.
     const question = screen.getByText(/sabías con qué se rendía el final/i);
-    expect(question).toHaveTextContent('destilada');
+    expect(question).toHaveTextContent('a partir de comentarios');
 
     // Y el conteo, que es lo que deja ver cuánto evolucionó el instrumento desde lo cualitativo.
     expect(screen.getByText(/hay una\./)).toBeInTheDocument();

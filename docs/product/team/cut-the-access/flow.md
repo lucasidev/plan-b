@@ -5,7 +5,7 @@
 ```mermaid
 flowchart TD
   A([Alguien se suma al equipo]) --> B[Equipo: Admin da de alta la cuenta]
-  B --> C[Asigna un rol: catálogo, curaduría de frases,<br/>moderación o verificación]
+  B --> C[Asigna un rol: catálogo, curaduría de preguntas,<br/>moderación o verificación]
   C --> D{¿Choca con la exclusión de US-217,<br/>o es el Admin pidiéndose un rol operativo?}
   D -->|sí, moderación y verificación juntas, o autoasignación| E([Imposible: no auditado, US-217])
   D -->|no| F[Rol asignado]
@@ -15,7 +15,7 @@ flowchart TD
   K --> L{Alguien se va del equipo}
   L --> M([El acceso se corta en el momento<br/>y su registro de acciones queda, US-219])
   K --> N{Quién revisa el registro, US-218}
-  N -->|primera capa, construible| N1([Se publica en agregado: notas editoriales,<br/>frases destiladas y reclamos resueltos, por categoría, sin contenido])
+  N -->|primera capa, construible| N1([Se publica en agregado: notas editoriales,<br/>preguntas destiladas y reclamos resueltos, por categoría, sin contenido])
   N -->|segunda capa, decisión de gobierno| N2([Una persona externa lee el registro<br/>ya disociado, nunca en bruto])
 ```
 

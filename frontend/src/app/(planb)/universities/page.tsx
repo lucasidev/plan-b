@@ -62,7 +62,7 @@ export default async function UniversitiesPage() {
   });
 
   // "Cinco instituciones..." (ADR-0096, maqueta aprobada: números chicos en palabras, mayúscula
-  // inicial porque abre la frase).
+  // inicial porque abre la oración).
   const institutionsWord = numberInWords(universities.length);
   const institutionsWordCapitalized =
     institutionsWord.charAt(0).toUpperCase() + institutionsWord.slice(1);

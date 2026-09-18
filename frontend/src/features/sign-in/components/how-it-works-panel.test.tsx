@@ -25,11 +25,11 @@ describe('HowItWorksPanel', () => {
   });
 
   /**
-   * Auditoría R6: la frase, las opciones, la materia y el período del ejemplo tienen que salir del
+   * Auditoría R6: la pregunta, las opciones, la materia y el período del ejemplo tienen que salir del
    * catálogo vigente (`docs/product/phrases.md`, `CatalogSeedData`, `AcademicSeedData`), nunca de
    * un tercer cuestionario inventado para esta pantalla.
    */
-  it('la frase y las opciones del ejemplo son las del instrumento vigente, no uno inventado', () => {
+  it('la pregunta y las opciones del ejemplo son las del instrumento vigente, no uno inventado', () => {
     render(<HowItWorksPanel />);
 
     expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('HowItWorksPanel', () => {
     expect(screen.getByText('Siempre')).toBeInTheDocument();
     expect(screen.getByText('Nadie preguntaba')).toBeInTheDocument();
 
-    // La frase y las opciones que este panel mostraba antes no pertenecen a ningún instrumento.
+    // La pregunta y las opciones que este panel mostraba antes no pertenecen a ningún instrumento.
     expect(screen.queryByText(/se dieron todas las clases/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/se cayeron clases sin reprogramar/i)).not.toBeInTheDocument();
   });

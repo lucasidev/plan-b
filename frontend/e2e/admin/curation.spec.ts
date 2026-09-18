@@ -6,7 +6,7 @@ import { createStudent, deleteStudent } from '../helpers/students';
 /**
  * E2E de Curaduría (ADR-0084): el campo libre, para que el equipo lo lea.
  *
- * El ADR le prometió dos salidas al campo libre, destilar frases nuevas y escribir notas
+ * El ADR le prometió dos salidas al campo libre, destilar preguntas nuevas y escribir notas
  * editoriales, y ninguna se puede hacer sin leerlo. Hasta esta pantalla lo único que lo leía era su
  * propio autor: la curaduría existía en el papel y no en el producto.
  */
@@ -111,7 +111,7 @@ test.describe('Curaduría del campo libre (ADR-0084)', () => {
     await page.getByLabel('La pregunta').fill(question);
     await page.getByLabel(/etiqueta de la opción 1/i).fill('Sí');
     await page.getByLabel(/etiqueta de la opción 2/i).fill('No');
-    await page.getByRole('button', { name: 'Destilar' }).click();
+    await page.getByRole('button', { name: 'Agregar pregunta' }).click();
 
     // Dice en qué versión del cuestionario entró: ese número es el corte de la serie.
     await expect(page.getByRole('status')).toContainText(/entró en la versión \d+/i, {
@@ -123,7 +123,7 @@ test.describe('Curaduría del campo libre (ADR-0084)', () => {
     await page.goto('/method');
     const marked = page.getByText(question);
     await expect(marked).toBeVisible({ timeout: 15_000 });
-    await expect(marked).toContainText('destilada');
+    await expect(marked).toContainText('a partir de comentarios');
   });
 
   /**

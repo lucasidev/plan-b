@@ -4,8 +4,8 @@ import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import type { CatalogItem } from './types';
 
 /**
- * El catálogo de frases (US-198). Gateado por rol en el backend: es el único lugar donde se edita lo
- * que el producto pregunta, y una frase mal definida es un error en todas las fichas que la usan.
+ * El catálogo de preguntas (US-198). Gateado por rol en el backend: es el único lugar donde se edita lo
+ * que el producto pregunta, y una pregunta mal definida es un error en todas las fichas que la usan.
  *
  * Sin paginar: son decenas de filas y curar es mirar el conjunto, no una página de él.
  */

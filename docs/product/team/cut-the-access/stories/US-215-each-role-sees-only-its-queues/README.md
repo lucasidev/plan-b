@@ -13,5 +13,5 @@ Como quien administra, quiero que cada rol vea solo sus colas, porque catálogo 
 
 ## Dónde se resuelve
 
-- [Equipo](../../screens/SC-033-team/README.md): cada rol entra solo a sus colas (catálogo a Pedidos, Catálogo, Correcciones y Frases; moderación a Reportes; verificación a Verificaciones); ninguno llega a la de otro, ni por URL directa.
+- [Equipo](../../screens/SC-033-team/README.md): cada rol entra solo a sus colas (catálogo a Pedidos, Catálogo, Correcciones y Preguntas; moderación a Reportes; verificación a Verificaciones); ninguno llega a la de otro, ni por URL directa.
 - [Pedidos](../../../sustain-the-catalog/screens/SC-030-requests/README.md): el rol catálogo no llega a las colas de moderación ni de verificación, ni por acceso directo.

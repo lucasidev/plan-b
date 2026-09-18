@@ -162,7 +162,7 @@ function nonReportingSummaryLine(university: University, fact: OfficialFact): st
   return `${name} no informa`;
 }
 
-/** La primera letra en minúscula, para citar el valor de un hecho a mitad de frase (ADR-0096, maqueta aprobada). */
+/** La primera letra en minúscula, para citar el valor de un hecho a mitad de pregunta (ADR-0096, maqueta aprobada). */
 function lowerFirst(text: string): string {
   return text.length === 0 ? text : text.charAt(0).toLowerCase() + text.slice(1);
 }

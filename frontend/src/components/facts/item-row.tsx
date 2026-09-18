@@ -1,13 +1,13 @@
 import type { PublishedItem } from './types';
 
 /**
- * Una frase publicada: qué se preguntó, qué contestó la mayoría (badge con la etiqueta literal), la
+ * Una pregunta publicada: qué se preguntó, qué contestó la mayoría (badge con la etiqueta literal), la
  * distribución completa como barra segmentada, y los conteos crudos abajo con su "de N".
  *
  * Tres reglas del boceto que no son estética (ADR-0083):
  *   - El badge lleva la **etiqueta literal** elegida, nunca un número inventado: "Casi nunca · 80 %"
  *     y jamás "2,4 sobre 3".
- *   - El rojo pinta **solo** la opción negativa, y solo una por frase. Si la moda no es la negativa,
+ *   - El rojo pinta **solo** la opción negativa, y solo una por pregunta. Si la moda no es la negativa,
  *     el badge va neutro aunque el rojo aparezca en la barra.
  *   - La distribución se muestra **completa**, con los ceros incluidos: que nadie haya elegido
  *     "siempre" es información, no una fila para omitir.

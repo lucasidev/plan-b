@@ -20,7 +20,7 @@
  *  8. Toda pantalla la pide una story de su propia épica. La simetría del 6 no alcanza: una
  *     pantalla citada solo por stories de otras épicas existe sin que nadie la haya pedido.
  *  9. "ítem" como palabra en prosa, fuera de docs/history/ y docs/decisions/: el glosario fija
- *     que el concepto del producto se llama frase; `Item` es solo el identificador de código.
+ *     que el concepto del producto se llama pregunta; `Item` es solo el identificador de código.
  *
  * Señala, no bloquea: exit 0 siempre, salvo con --strict (para CI si algún día se quiere gate).
  * Uso: bun scripts/check-docs.ts [--strict]
@@ -134,7 +134,7 @@ for (const f of all.filter(
 }
 
 // 9. "ítem" en prosa, fuera de docs/history/ y docs/decisions/: el glosario dice que el
-//    concepto del producto es la frase, y `Item` es solo el identificador en el código. Se
+//    concepto del producto es la pregunta, y `Item` es solo el identificador en el código. Se
 //    exceptúan los tramos entre backticks y la fila de Desambiguación del propio glosario
 //    que nombra "ítem" para prohibirlo.
 const ITEM_WORD = /(?<!\p{L})ítems?(?!\p{L})/iu;

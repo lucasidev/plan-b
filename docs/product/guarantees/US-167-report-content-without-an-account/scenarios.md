@@ -32,7 +32,7 @@ Entonces el sistema no le pide crear una cuenta ni iniciar sesión en ningún pa
 Cuando Nahuel abre la cola.
 Entonces cuenta como un solo reporte, no dos: el mail confirmado deduplica.
 
-**N4.** Dado que un reporte dice que la cátedra de Análisis Matemático II, Cátedra Paredes, es un desastre y que toda la facultad debería revisarla, sobre un testimonio que solo marca frases duras contra esa cátedra, sin exponer a ninguna persona.
+**N4.** Dado que un reporte dice que la cátedra de Análisis Matemático II, Cátedra Paredes, es un desastre y que toda la facultad debería revisarla, sobre un testimonio que solo marca preguntas duras contra esa cátedra, sin exponer a ninguna persona.
 Cuando Nahuel lo revisa.
 Entonces no lo baja: una queja dura contra la cátedra o la institución no es causal, aunque sea muy dura.
 

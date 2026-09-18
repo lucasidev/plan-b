@@ -1,5 +1,5 @@
 /**
- * Las frases de conclusión de "Sus cátedras" (SC-007, US-129): una por opción de cada ítem de
+ * Las preguntas de conclusión de "Sus cátedras" (SC-007, US-129): una por opción de cada ítem de
  * conducta observable del catálogo. El backend manda `itemCode` + `optionValue` (la identidad
  * estable de la opción: es lo que se persiste, ADR-0082); acá se traduce a la oración de apertura
  * de la conclusión ("La cátedra {nombre} dictó casi todas sus clases"), a la que el caller le suma
@@ -8,7 +8,7 @@
  * Cada plantilla lleva `{chair}` en el lugar del nombre porque tres opciones afirman más que la
  * cátedra sola ("nadie preguntaba", "faltaron algunas clases", "el programa nunca se vio" son
  * hechos de la cursada, no una acción puntual de la cátedra) y no encajan en el molde fijo "La
- * cátedra {chair} {frase}"; esas tres arrancan "En la cátedra {chair} ...". Las otras 21 siguen
+ * cátedra {chair} {pregunta}"; esas tres arrancan "En la cátedra {chair} ...". Las otras 21 siguen
  * ese molde, ahora como plantilla propia en vez de un fragmento que un wrapper fijo completaba.
  */
 
@@ -55,7 +55,7 @@ const CHAIR_HEADLINE_TEMPLATES: Record<string, Record<number, string>> = {
 /**
  * Espeja el catálogo real (`CatalogSeedData.Items`, backend, líneas 98-196): los 7 ítems de la
  * capa de conducta observable, con sus opciones en el orden en que se declaran ahí. Nada más lo
- * usa `chair-headlines.test.ts`, para que agregar una opción al catálogo sin agregar su frase acá
+ * usa `chair-headlines.test.ts`, para que agregar una opción al catálogo sin agregar su pregunta acá
  * rompa el test en vez de mostrar una cátedra sin conclusión.
  */
 export const CHAIR_CONDUCT_CATALOG: ReadonlyArray<{ itemCode: string; optionOrders: number[] }> = [
@@ -72,7 +72,7 @@ export const CHAIR_CONDUCT_CATALOG: ReadonlyArray<{ itemCode: string; optionOrde
  * La oración de apertura de la conclusión para un `(itemCode, optionValue)`, con `chairName` ya
  * puesto en su lugar, o null si no hay una plantilla mapeada.
  *
- * `itemCode` se busca por su código base: un corte de serie (US-198) abre una frase nueva con
+ * `itemCode` se busca por su código base: un corte de serie (US-198) abre una pregunta nueva con
  * sufijo `_V<n>` (mismo layer, mismas opciones, nuevo código) para no comparar tramos que
  * preguntan cosas distintas, pero la conclusión de la ficha de materia no distingue tramos, así
  * que `CHAIR_SYLLABUS_UPFRONT_V2` busca la plantilla de `CHAIR_SYLLABUS_UPFRONT`.

@@ -5,17 +5,17 @@
 
 ## Historia
 
-Como quien investiga, quiero saber que el catálogo se reprocesa y cuál frase es destilada, porque una cita que mañana no se reproduce no me sirve, y una síntesis no es una cita textual.
+Como quien investiga, quiero saber que el catálogo se reprocesa y cuál pregunta es destilada, porque una cita que mañana no se reproduce no me sirve, y una síntesis no es una cita textual.
 
 ## Listo cuando
 
-- La ficha declara que el catálogo se reprocesa a medida que entran reseñas y con qué fecha se está leyendo, y cada frase destilada se ve marcada como destilada (síntesis del campo libre, no cita de nadie); el CSV lleva la misma marca.
+- La ficha declara que el catálogo se reprocesa a medida que entran reseñas y con qué fecha se está leyendo, y cada pregunta destilada se ve marcada como destilada (síntesis del campo libre, no cita de nadie); el CSV lleva la misma marca.
 
 ## Dónde se resuelve
 
 - [Método](../../screens/SC-021-method/README.md): declara que el catálogo se reprocesa y con qué fecha se está leyendo.
-- [Ficha de cátedra](../../../choose-where-to-study/screens/SC-002-chair/README.md): donde una frase destilada se ve marcada como tal.
-- [Frases](../../../../team/sustain-the-catalog/screens/SC-029-phrases/README.md): la cola de curaduría donde una candidata aprobada recién ahí se ofrece marcada como destilada.
+- [Ficha de cátedra](../../../choose-where-to-study/screens/SC-002-chair/README.md): donde una pregunta destilada se ve marcada como tal.
+- [Preguntas](../../../../team/sustain-the-catalog/screens/SC-029-phrases/README.md): la cola de curaduría donde una candidata aprobada recién ahí se ofrece marcada como destilada.
 
 ## Notas
 

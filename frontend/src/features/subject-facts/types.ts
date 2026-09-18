@@ -38,7 +38,7 @@ export interface SubjectCompletion {
   total: number;
 }
 
-/** Una frase donde las cátedras difieren: la respuesta depende de con quién te toque. */
+/** Una pregunta donde las cátedras difieren: la respuesta depende de con quién te toque. */
 export interface Spread {
   itemCode: string;
   itemText: string;
@@ -53,7 +53,7 @@ export interface ChairShare {
   total: number;
 }
 
-/** Una frase que todas las cátedras marcan parejo: es de la materia, no de quien la dicta. */
+/** Una pregunta que todas las cátedras marcan parejo: es de la materia, no de quien la dicta. */
 export interface Shared {
   itemCode: string;
   itemText: string;
@@ -75,10 +75,10 @@ export interface SubjectChair {
 }
 
 /**
- * La frase de conducta con la moda más marcada de una cátedra publicada (US-129): mismo ítem,
+ * La pregunta de conducta con la moda más marcada de una cátedra publicada (US-129): mismo ítem,
  * opción y porcentaje que su propia ficha ya publica como moda (ADR-0083). `optionValue` identifica
  * la opción de forma estable (es lo que se persiste; el texto se afina y el orden se puede
- * reordenar en la curaduría, el valor no); `chair-headlines.ts` lo traduce a la frase de
+ * reordenar en la curaduría, el valor no); `chair-headlines.ts` lo traduce a la pregunta de
  * conclusión.
  */
 export interface SubjectChairHeadline {

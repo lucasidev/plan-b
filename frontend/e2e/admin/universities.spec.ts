@@ -61,7 +61,7 @@ test.describe('Alta de universidades desde el backoffice (US-191, US-203)', () =
     createdUniversityIds = [];
   });
 
-  test('el admin afilia una universidad y aparece en el backoffice y en el catálogo público, en su lugar alfabético', async ({
+  test('el admin agrega una universidad y aparece en el backoffice y en el catálogo público, en su lugar alfabético', async ({
     page,
   }) => {
     await signIn(page, ADMIN);
@@ -75,7 +75,7 @@ test.describe('Alta de universidades desde el backoffice (US-191, US-203)', () =
     const domain = `e2e-${suffix.toLowerCase()}.edu.ar`;
 
     await page.goto('/admin/universities/new');
-    await expect(page.getByRole('heading', { name: /afiliar universidad/i })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /agregar universidad/i })).toBeVisible({
       timeout: 30_000,
     });
 
@@ -87,7 +87,7 @@ test.describe('Alta de universidades desde el backoffice (US-191, US-203)', () =
     // que su texto completo es "{domain}×" (la × del botón), no el dominio solo.
     await expect(page.getByText(domain)).toBeVisible();
 
-    await page.getByRole('button', { name: /afiliar universidad/i }).click();
+    await page.getByRole('button', { name: /agregar universidad/i }).click();
 
     await expect(page).toHaveURL(/\/admin\/universities$/, { timeout: 30_000 });
     createdUniversityIds.push(await universityIdBySlug(page, slug));
@@ -106,14 +106,14 @@ test.describe('Alta de universidades desde el backoffice (US-191, US-203)', () =
     await signIn(page, ADMIN);
 
     await page.goto('/admin/universities/new');
-    await expect(page.getByRole('heading', { name: /afiliar universidad/i })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /agregar universidad/i })).toBeVisible({
       timeout: 30_000,
     });
 
     await page.getByLabel(/^nombre$/i).fill(`Universidad Duplicada ${randomSuffix()}`);
     // "unsta" es el slug de la universidad seed: siempre está tomado.
     await page.getByLabel(/^slug$/i).fill('unsta');
-    await page.getByRole('button', { name: /afiliar universidad/i }).click();
+    await page.getByRole('button', { name: /agregar universidad/i }).click();
 
     await expect(page.locator('form').getByRole('alert')).toContainText(/ese slug ya está en uso/i);
     await expect(page).toHaveURL(/\/admin\/universities\/new$/);

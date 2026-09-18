@@ -5,12 +5,12 @@ import { ItemCatalog } from '@/features/curate-items/components/item-catalog';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = { title: 'Frases · planb' };
+export const metadata = { title: 'Preguntas · planb' };
 
 /**
- * Frases (SC-029, US-198). El catálogo de lo que el producto pregunta, editable en un solo lugar.
+ * Preguntas (SC-029, US-198). El catálogo de lo que el producto pregunta, editable en un solo lugar.
  *
- * Es la pantalla más cara de equivocar del backoffice: una frase mal definida no rompe una fila, sino
+ * Es la pantalla más cara de equivocar del backoffice: una pregunta mal definida no rompe una fila, sino
  * todas las fichas que lo usan, y lo hace en silencio. Por eso editar no es un formulario suelto
  * sino una declaración de qué se está cambiando (ver `ItemEditor`): afinar la redacción conserva la
  * serie, cambiar lo que se pregunta la corta, y esa diferencia no la puede deducir el sistema.
@@ -31,15 +31,15 @@ export default async function AdminItemsPage() {
   return (
     <div className="mx-auto w-full max-w-[1100px] px-4 py-8">
       <div className="mb-5">
-        <h1 className="mb-1 font-serif text-[24px] font-semibold text-ink">Frases</h1>
+        <p className="mb-1 text-xs text-ink-3">Cuestionarios</p>
+        <h1 className="mb-1 font-serif text-[24px] font-semibold text-ink">Preguntas</h1>
         <p className="max-w-[640px] text-[13px] leading-relaxed text-ink-2">
-          Las preguntas del cuestionario, con sus opciones y su capa. Se editan acá y en ningún otro
-          lado. La capa decide qué bloque de la ficha cuenta cada una.
+          Administrá las preguntas del cuestionario de cursada, sus opciones de respuesta y la capa
+          a la que pertenecen.
         </p>
         <p className="mt-1.5 max-w-[640px] text-[11.5px] leading-relaxed text-ink-3">
-          El código es lo que mantiene comparable una serie a través del tiempo: el texto se puede
-          afinar, pero si cambia lo que la pregunta pregunta, es una frase nueva y la serie se
-          corta.
+          Corregir la redacción conserva las respuestas anteriores. Cambiar el significado crea otra
+          pregunta y una versión nueva del cuestionario; sus respuestas se cuentan por separado.
         </p>
       </div>
 

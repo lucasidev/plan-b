@@ -23,4 +23,4 @@ Entonces tampoco accede: mismo resultado que con Reportes.
 - Alguien copia el link de una cola ajena desde la sesión de otra persona del equipo y lo pega en la propia: el bloqueo depende del rol y la sesión de quien lo abre, no del link en sí.
 - El Admin no tiene ningún rol operativo asignado: si puede leer el contenido de una cola sin operarla no está decidido (README de la épica).
 - Una cuenta recién dada de alta en Equipo, todavía sin ningún rol asignado, intenta entrar a cualquier cola antes de que el Admin le asigne uno.
-- El rol "curaduría de frases" no tiene a nadie asignado todavía y ninguna fuente dice si es un rol aparte de catálogo o el mismo (README de la épica): a qué cola exacta entraría queda abierto.
+- El rol "curaduría de preguntas" no tiene a nadie asignado todavía y ninguna fuente dice si es un rol aparte de catálogo o el mismo (README de la épica): a qué cola exacta entraría queda abierto.

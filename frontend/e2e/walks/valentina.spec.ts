@@ -437,8 +437,8 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     await page.goto(`/subjects/${SUBJECT_FUNDAMENTOS_ID}`);
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    // El link es la fila entera, "Cátedra {nombre}" como texto de apertura, y debajo su frase de
-    // conclusión ("La cátedra {nombre} {frase}: lo dice el N % de sus M reseñas.") o, sin
+    // El link es la fila entera, "Cátedra {nombre}" como texto de apertura, y debajo su pregunta de
+    // conclusión ("La cátedra {nombre} {pregunta}: lo dice el N % de sus M reseñas.") o, sin
     // conclusión todavía, "N reseñas, todavía sin conclusiones."; las cátedras sin ninguna reseña
     // se pliegan en "K cátedras más" + "sin reseñas todavía".
     const perezRow = page.getByRole('link', { name: /^Cátedra Pérez/ });
@@ -586,18 +586,21 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     const q2Dist = page.getByText(
       'casi todas 19 · faltaron algunas 25 · faltaron muchas 56 · de 16',
     );
-    const hasQ1 = await checkVisible(q1, 'cada frase debe estar a la vista');
+    const hasQ1 = await checkVisible(q1, 'cada pregunta debe estar a la vista');
     const hasQ1Mode = await checkVisible(q1Mode, 'con la opción más marcada y su porcentaje');
     const hasQ1Dist = await checkVisible(
       q1Dist,
       'y la distribución entera con el total de voces ("de 14")',
     );
-    const hasQ2Dist = await checkVisible(q2Dist, 'lo mismo para la segunda frase de este bloque');
+    const hasQ2Dist = await checkVisible(
+      q2Dist,
+      'lo mismo para la segunda pregunta de este bloque',
+    );
     record({
       step: 7,
       story: 'US-130 / US-131',
       expected:
-        'Por cada frase: la opción más marcada con su porcentaje, y la distribución entera con el total de voces.',
+        'Por cada pregunta: la opción más marcada con su porcentaje, y la distribución entera con el total de voces.',
       observed: `"${await textOf(q1)}" -> ${await textOf(q1Mode)} (${await textOf(q1Dist)}). "¿Se dictaron las clases?" -> Faltaron muchas · 56 % (${await textOf(q2Dist)})`,
       verdict: combineVerdict([hasQ1, hasQ1Mode, hasQ1Dist, hasQ2Dist]),
       screenshot: '07-chair-publishing.png',
@@ -618,7 +621,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       story: 'US-130',
       expected:
         'Dos bloques separados ("qué hizo la cátedra" / "qué pasó"), sin sumarse en un solo número.',
-      observed: `Aparecen como títulos de sección separados: "${await textOf(whatChairDid)}" y "${await textOf(whatHappened)}", cada uno con sus propias frases.`,
+      observed: `Aparecen como títulos de sección separados: "${await textOf(whatChairDid)}" y "${await textOf(whatHappened)}", cada uno con sus propias preguntas.`,
       verdict: combineVerdict([hasWhatChairDid, hasWhatHappened]),
       screenshot: '07-chair-publishing.png',
     });
@@ -698,7 +701,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       story: 'US-131',
       expected:
         'Ningún puntaje, promedio, estrella, reseña individual, texto libre ni nombre de alumno.',
-      observed: `Menciones a "puntaje/promedio/estrella/★//5": ${hasForbiddenWord ? 'aparece' : 'no aparece'}. Menciones a "alumno": ${hasStudentName ? 'aparece' : 'no aparece'}. Reseñas individuales visibles: ninguna (solo conteos agregados). Frases publicadas en esta ficha: 3 (dos en "Qué hizo la cátedra", una en "Qué les pasó a los que cursaron").`,
+      observed: `Menciones a "puntaje/promedio/estrella/★//5": ${hasForbiddenWord ? 'aparece' : 'no aparece'}. Menciones a "alumno": ${hasStudentName ? 'aparece' : 'no aparece'}. Reseñas individuales visibles: ninguna (solo conteos agregados). Preguntas publicadas en esta ficha: 3 (dos en "Qué hizo la cátedra", una en "Qué les pasó a los que cursaron").`,
       verdict: !hasForbiddenWord && !hasStudentName ? 'cumple' : 'no cumple',
       screenshot: '07-chair-publishing.png',
     });
@@ -982,7 +985,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     const distilledMark = page.getByText(/van marcadas como destilada/);
     const hasQuestionsCount = await checkVisible(
       questionsCount,
-      'debe publicar el catálogo entero de frases del cuestionario vigente',
+      'debe publicar el catálogo entero de preguntas del cuestionario vigente',
     );
     const hasDistilledMark = await checkVisible(
       distilledMark,
@@ -992,7 +995,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       step: 10,
       story: 'US-130',
       expected:
-        'El catálogo de frases entero, con la marca de las que salieron destiladas del campo libre.',
+        'El catálogo de preguntas entero, con la marca de las que salieron destiladas del campo libre.',
       observed: `"${await textOf(questionsCount)}" "${await textOf(distilledMark)}"`,
       verdict: combineVerdict([hasQuestionsCount, hasDistilledMark]),
       screenshot: '10-method.png',

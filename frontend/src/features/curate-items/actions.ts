@@ -28,7 +28,7 @@ const MESSAGES: Record<string, string> = {
 };
 
 /**
- * Edita una frase sin cortar su serie (US-198, E1). Mutación pura (ADR-0046): hace el write y
+ * Edita una pregunta sin cortar su serie (US-198, E1). Mutación pura (ADR-0046): hace el write y
  * devuelve el status; la pantalla reacciona.
  */
 export async function editItemAction(
@@ -77,7 +77,7 @@ export async function editItemAction(
 
 /**
  * Abre un código nuevo porque cambió lo que se pregunta (US-198, E2). Del lado del backend es una
- * sola operación: nace la frase nueva, se retira la vieja y se publica la versión siguiente del
+ * sola operación: nace la pregunta nueva, se retira la vieja y se publica la versión siguiente del
  * cuestionario, así que acá no hay dos pasos que puedan quedar a medias.
  *
  * Que el significado haya cambiado lo declara quien cura en la pantalla. El sistema no puede

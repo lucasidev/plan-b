@@ -9,7 +9,7 @@ export default function NewUniversityPage() {
     <div className="mx-auto max-w-2xl">
       <AdminPageHeader
         eyebrow="Universidades"
-        title="Afiliar universidad"
+        title="Agregar universidad"
         subtitle="Alta en el catálogo. Después queda disponible para carreras, materias y docentes."
       />
       <UniversityForm mode="create" />

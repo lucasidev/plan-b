@@ -6,37 +6,29 @@ import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
 import { AvatarMenu } from './avatar-menu';
 
-/**
- * Nav del backoffice (port de `admin-shell.jsx::ADM_NAV`). Los items con `href` navegan a páginas
- * reales; el resto se muestra inerte para fidelidad del shell.
- *
- * Un item inerte dice por qué lo está, y eso importa: Carreras y Materias SÍ existen, pero cuelgan
- * de una universidad (`/admin/universities/[id]/careers`, y las materias de su plan), así que no hay
- * ruta de primer nivel a la que linkear. Anunciarlas como "Próximamente" le miente justo a la
- * persona cuyo trabajo es cargarlas, así que llevan `hint` con dónde se gestionan. Lo que todavía no
- * está construido no lleva `hint` y cae en el "Próximamente" por defecto.
- */
-type NavItem = { label: string; href?: string; hint?: string };
-
-const DENTRO_DE_UNA_UNIVERSIDAD = 'Se gestionan dentro de cada universidad';
+/** Cada entrada navega. La jerarquía del catálogo se recorre desde la universidad. */
+type NavItem = { label: string; href: string };
 
 const NAV: { group: string; items: NavItem[] }[] = [
   {
-    group: 'Datos académicos',
+    group: 'Catálogo académico',
     items: [
       { label: 'Universidades', href: '/admin/universities' },
-      { label: 'Carreras', hint: DENTRO_DE_UNA_UNIVERSIDAD },
-      { label: 'Materias', hint: DENTRO_DE_UNA_UNIVERSIDAD },
       { label: 'Docentes', href: '/admin/teachers' },
       { label: 'Cátedras', href: '/admin/chairs' },
     ],
   },
   {
+    group: 'Cuestionarios',
+    items: [{ label: 'Preguntas', href: '/admin/items' }],
+  },
+  {
     group: 'Curaduría',
-    items: [
-      { label: 'Frases', href: '/admin/items' },
-      { label: 'Campo libre', href: '/admin/curation' },
-    ],
+    items: [{ label: 'Comentarios y notas', href: '/admin/curation' }],
+  },
+  {
+    group: 'Usuarios',
+    items: [{ label: 'Alumnos', href: '/admin/users' }],
   },
 ];
 
@@ -62,22 +54,21 @@ export function AdminSidebar({ email }: { email: string }) {
               {g.group}
             </div>
             {g.items.map((it) => {
-              const live = Boolean(it.href);
-              const active = live && pathname.startsWith(it.href as string);
+              const active = pathname === it.href || pathname.startsWith(`${it.href}/`);
               const className = cn(
                 'flex items-center gap-2 rounded-md px-2 py-1.5 text-[12.5px]',
                 active && 'bg-bg-card text-ink shadow-card',
-                !active && live && 'text-ink-2 hover:bg-white/50 hover:text-ink',
-                !live && 'cursor-default text-ink-4',
+                !active && 'text-ink-2 hover:bg-white/50 hover:text-ink',
               );
-              return live ? (
-                <Link key={it.label} href={it.href as string} className={className}>
+              return (
+                <Link
+                  key={it.label}
+                  href={it.href}
+                  className={className}
+                  aria-current={active ? 'page' : undefined}
+                >
                   {it.label}
                 </Link>
-              ) : (
-                <span key={it.label} className={className} title={it.hint}>
-                  {it.label}
-                </span>
               );
             })}
           </Fragment>
