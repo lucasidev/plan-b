@@ -5,12 +5,13 @@
 
 ## Historia
 
-Como quien carga el catálogo, quiero cargar la cátedra como el equipo docente a cargo de una materia, porque es lo que el alumno recuerda al reseñar y hoy en el catálogo no existe.
+Como quien carga el catálogo, quiero mantener la cátedra y su equipo docente dentro de una materia, porque permiten identificar la cursada y conservar su historial.
 
 ## Listo cuando
 
-- La cátedra es una entidad propia (materia más equipo docente, con su titular), persiste entre períodos, y es la lista que Reseñar ofrece cuando el alumno la recuerda.
-- Cada integrante del equipo se carga con su nombre, y ese dato nunca se completa a partir de lo que declara quien pide verificarse: es contra lo cargado que después se lo verifica ([ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md)).
+- La cátedra persiste entre períodos. Su alta, detalle y edición del equipo muestran materia, plan, carrera y universidad; se llega desde la materia o un acceso directo y se vuelve conservando el contexto.
+- El backoffice permite agregar integrantes y cerrar sus tramos con nombre, rol y períodos coherentes de la misma universidad. El nombre nunca se completa a partir de lo que declara quien pide verificarse: se verifica contra lo cargado ([ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md)).
+- Archivar conserva la ficha pública y sus reseñas, con el estado archivada visible. Un alumno puede aportar después una cursada anterior al cierre efectivo; una cursada posterior no es elegible. La acción administrativa de archivar no determina cuándo se dictó la última cursada.
 
 ## Dónde se resuelve
 
@@ -21,4 +22,4 @@ Como quien carga el catálogo, quiero cargar la cátedra como el equipo docente 
 
 ## Notas
 
-se parte al planificar
+El cambio de titular no define por sí solo si continúa la misma identidad: ese caso sigue pendiente. La representación del cierre efectivo, su frontera por período, el tratamiento de archivos sin fecha y la reactivación deben precisarse antes de implementar el archivo. Los [escenarios](scenarios.md) conservan los casos decididos y sus límites.

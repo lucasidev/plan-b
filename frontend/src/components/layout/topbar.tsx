@@ -106,9 +106,11 @@ function MobileExploreLink() {
  * nombre accesible en "Escribir reseña" sin importar el breakpoint.
  */
 function WriteReviewButton({ session }: { session: ShellSession }) {
+  const href = reviewCtaHref(session);
+  if (!href) return null;
   return (
     <FallbackLink
-      href={reviewCtaHref(session)}
+      href={href}
       aria-label="Escribir reseña"
       // Mismo motivo que el sidebar: siempre montado, y su prefetch en viewport compite con la
       // navegación posterior a guardar un formulario (#477).

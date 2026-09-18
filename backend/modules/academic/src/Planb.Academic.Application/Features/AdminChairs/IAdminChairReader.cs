@@ -12,6 +12,8 @@ namespace Planb.Academic.Application.Features.AdminChairs;
 /// </summary>
 public interface IAdminChairReader
 {
+    Task<ChairSubjectContext?> GetSubjectContextAsync(Guid subjectId, CancellationToken ct = default);
+
     Task<IReadOnlyList<AdminChairListItem>> ListBySubjectAsync(
         Guid subjectId, CancellationToken ct = default);
 }
@@ -33,5 +35,12 @@ public sealed record AdminChairMemberItem(
     string FirstName,
     string LastName,
     string Role,
+    Guid SinceTermId,
     string SinceTermLabel,
     string? UntilTermLabel);
+
+public sealed record ChairSubjectContext(
+    Guid SubjectId, string SubjectName, bool SubjectIsActive,
+    Guid CareerPlanId, int PlanYear,
+    Guid CareerId, string CareerName,
+    Guid UniversityId, string UniversityName);

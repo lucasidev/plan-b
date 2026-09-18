@@ -12,6 +12,8 @@ type Props = {
   mode: 'create' | 'edit';
   universities: University[];
   teacher?: TeacherDetail;
+  initialUniversityId?: string;
+  returnTo?: string;
 };
 
 const inputClass =
@@ -23,7 +25,13 @@ const inputClass =
  * no la cambia) y se muestra read-only. Mutación pura (ADR-0046): en success redirige al listado.
  * La foto es una URL con preview en vivo (opción A; el upload de archivos es una US aparte).
  */
-export function TeacherForm({ mode, universities, teacher }: Props) {
+export function TeacherForm({
+  mode,
+  universities,
+  teacher,
+  initialUniversityId,
+  returnTo = '/admin/teachers',
+}: Props) {
   const router = useRouter();
   const isEdit = mode === 'edit';
   const [state, formAction, isPending] = useActionState(
@@ -48,8 +56,8 @@ export function TeacherForm({ mode, universities, teacher }: Props) {
   // docstring.
   useEffect(() => {
     if (state.status !== 'success') return;
-    navigateAfterMutation('/admin/teachers');
-  }, [state]);
+    navigateAfterMutation(returnTo);
+  }, [state, returnTo]);
 
   const universityName =
     universities.find((u) => u.id === teacher?.universityId)?.name ?? 'Universidad';
@@ -68,7 +76,7 @@ export function TeacherForm({ mode, universities, teacher }: Props) {
             id={ids.university}
             name="universityId"
             required
-            defaultValue={universities[0]?.id ?? ''}
+            defaultValue={initialUniversityId ?? universities[0]?.id ?? ''}
             className={inputClass}
           >
             {universities.map((u) => (
@@ -158,7 +166,7 @@ export function TeacherForm({ mode, universities, teacher }: Props) {
           variant="ghost"
           size="sm"
           disabled={isPending}
-          onClick={() => router.push('/admin/teachers')}
+          onClick={() => router.push(returnTo)}
         >
           Cancelar
         </Button>

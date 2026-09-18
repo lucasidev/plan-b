@@ -29,6 +29,7 @@ export default async function PlanbLayout({
     <>
       <OfflineBanner />
       <AppShell session={session} crumbsSlot={crumbs}>
+        <div className="px-4 pt-4 lg:hidden">{crumbs}</div>
         {children}
       </AppShell>
     </>

@@ -39,6 +39,8 @@ const MESSAGES: Record<string, string> = {
   'academic.chair.teacher_not_found': 'Ese docente no existe.',
   'academic.chair.teacher_inactive': 'Ese docente está archivado.',
   'academic.chair.term_not_found': 'Ese período no existe.',
+  'academic.chair.member_period_inverted':
+    'El período de cierre no puede ser anterior al de inicio.',
   'academic.chair.teacher_already_in_chair': 'Ese docente ya integra la cátedra.',
   'academic.chair.teacher_not_in_chair': 'Ese docente no integra la cátedra.',
   'academic.chair.lead_already_assigned': 'La cátedra ya tiene un titular vigente.',
@@ -74,7 +76,9 @@ export async function createChairAction(
         body: JSON.stringify({ name: parsed.data.name }),
       },
     );
-    return await toFormState(response);
+    if (!response.ok) return await toFormState(response);
+    const created = (await response.json()) as { id: string };
+    return { status: 'success', chairId: created.id };
   } catch {
     return { status: 'error', message: NO_CONNECTION };
   }

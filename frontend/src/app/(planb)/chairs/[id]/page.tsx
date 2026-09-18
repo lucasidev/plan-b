@@ -63,7 +63,7 @@ export default async function ChairPage({ params }: { params: Promise<{ id: stri
       facts={facts}
       siblings={siblings}
       hasPublishedSibling={hasPublishedSibling}
-      reviewHref={reviewCtaHref(session)}
+      reviewHref={reviewCtaHref(session, { subjectId: facts.subjectId, chairId: facts.chairId })}
     />
   );
 }

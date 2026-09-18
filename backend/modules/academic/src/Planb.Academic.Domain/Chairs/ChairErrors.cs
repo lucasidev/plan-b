@@ -5,6 +5,9 @@ namespace Planb.Academic.Domain.Chairs;
 /// <summary>Errores de negocio del aggregate <see cref="Chair"/> (US-196).</summary>
 public static class ChairErrors
 {
+    public static readonly Error MemberPeriodInverted =
+        Error.Validation("academic.chair.member_period_inverted", "The membership cannot end before it starts.");
+
     public static readonly Error NameRequired =
         Error.Validation("academic.chair.name_required", "Chair name is required.");
 

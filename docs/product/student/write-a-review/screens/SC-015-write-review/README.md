@@ -8,7 +8,9 @@
 
 ## Qué stories resuelve
 
-US-146 (menos de dos minutos, respondiendo frases), US-147 (una materia sola), US-148 (qué se publica y qué no), US-150 (la frase "¿Se dictaron las clases?", en frecuencia gruesa), US-151 y US-153 (quien dejó reseña igual y suma igual), US-152 (el año en que me fui, por el camino de "período viejo"), US-154 (cómo terminó), US-155 (cuándo entré, una vez), US-159 (el piso y el contrato antes de enviar), US-160 (la materia que no está), US-161 (retomar), US-162 (qué sumó, al terminar), US-163 (la recursada) y [US-233](../../stories/US-233-share-private-course-context/README.md) (modalidad y cantidad de cursadas como contexto privado). Los mails que traen hasta acá viven en [Avisos](../../../../notices/README.md). La letra de cada una: [README de la épica](../../README.md#stories).
+US-146 (menos de dos minutos, respondiendo preguntas), US-147 (una materia sola), US-148 (qué se publica y qué no), US-150 (la pregunta "¿Se dictaron las clases?", en frecuencia gruesa), US-151 y US-153 (quien dejó reseña igual y suma igual), US-152 (el año en que me fui, por el camino de "período viejo"), US-154 (cómo terminó), US-155 (cuándo entré, una vez), US-159 (el piso y el contrato antes de enviar), US-160 (la materia que no está), US-161 (retomar), US-162 (qué sumó, al terminar), US-163 (la recursada) y [US-233](../../stories/US-233-share-private-course-context/README.md) (modalidad y cantidad de cursadas como contexto privado). Los mails que traen hasta acá viven en [Avisos](../../../../notices/README.md). La letra de cada una: [README de la épica](../../README.md#stories).
+
+Al llegar desde la ficha de cátedra, el formulario conserva materia y cátedra después del ingreso. La selección se valida contra las materias del plan del alumno y las cátedras de esa materia. Un enlace inválido muestra una explicación y permite elegir otra cursada sin cambiar el perfil. El período se elige al responder. Si falla la consulta de cátedras, muestra el error y permite reintentar conservando la selección.
 
 ## Qué muestra
 
@@ -17,22 +19,22 @@ Un formulario de una sola página, sin navegación entre pasos ni barra de progr
 1. **¿Qué cursaste?** Buscar la materia entre las de tu plan, por nombre o código, y elegir una.
 2. **¿Cuándo y con quién?** El período, entre los que ofrece tu universidad; la cátedra, opcional (chips de las cátedras de la materia, o "No me acuerdo"); y cómo cursaste (presencial, a distancia o mezcla), también opcional. Si la materia todavía no tiene cátedras cargadas, se dice: la reseña cuenta igual en la materia.
 3. **¿Cómo terminó?** Un toque entre cuatro: la aprobé, me quedó regular, la recursé, la dejé (US-154); y cuántas veces la cursaste, contando esta (una, dos, tres o más). La pantalla dice que esto no se publica con la reseña: sirve para leer bien los números ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)).
-4. **¿Qué hizo la cátedra?** Las siete frases de conducta observable del [catálogo](../../../../phrases.md): si contestaba las preguntas en clase, si se dictaron las clases, si el práctico daba lo mismo que el teórico, si respondía consultas fuera de clase, con cuánta anticipación avisó el parcial, si entregó el programa al inicio, si tomó temas fuera de programa. Cada frase es una pregunta con sus opciones en frecuencias gruesas, nunca un conteo fino; responder es opcional en cada una, y saltear no cuenta en ningún denominador (US-146). Si la cátedra quedó en "No me acuerdo" en el paso 2, este paso no aparece: no hay a quién atribuirle la conducta.
-5. **¿Qué te pasó a vos?** Las cuatro frases de vivencia del catálogo: si salías de la clase entendiendo, si el material alcanzaba para el parcial, si pudiste seguir el ritmo, si podías preguntar sin quedar mal. Misma mecánica: opciones cerradas, todo opcional.
+4. **¿Qué hizo la cátedra?** Las siete preguntas de conducta observable del [catálogo](../../../../phrases.md): si contestaba las preguntas en clase, si se dictaron las clases, si el práctico daba lo mismo que el teórico, si respondía consultas fuera de clase, con cuánta anticipación avisó el parcial, si entregó el programa al inicio, si tomó temas fuera de programa. Cada pregunta es una pregunta con sus opciones en frecuencias gruesas, nunca un conteo fino; responder es opcional en cada una, y saltear no cuenta en ningún denominador (US-146). Si la cátedra quedó en "No me acuerdo" en el paso 2, este paso no aparece: no hay a quién atribuirle la conducta.
+5. **¿Qué te pasó a vos?** Las cuatro preguntas de vivencia del catálogo: si salías de la clase entendiendo, si el material alcanzaba para el parcial, si pudiste seguir el ritmo, si podías preguntar sin quedar mal. Misma mecánica: opciones cerradas, todo opcional.
 6. **Lo último.** Un campo libre, uno solo: "¿Algo que no te preguntamos y deberíamos?", hasta 2000 caracteres, con la aclaración de que no se publica y que lo lee el equipo para mejorar las preguntas ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Debajo, el contrato antes de enviar: tus respuestas se suman al total de la cátedra; nunca se muestra una reseña individual, ni cómo terminó nadie; nadie de la facultad accede a quién respondió. Un solo botón: **Enviar la reseña**.
 
-**Al terminar**: queda registrada y suma voz a las frases que respondiste; Mis aportes muestra qué se movió con tu aporte (US-162). Salidas: la ficha de la cátedra, reseñar otra materia, Mis aportes.
+**Al terminar**: queda registrada y suma voz a las preguntas que respondiste; Mis aportes muestra qué se movió con tu aporte (US-162). Salidas: la ficha de la cátedra, reseñar otra materia, Mis aportes.
 
 ## Estados
 
 - **"Sin materias"** (paso 1): si el plan no tiene materias, o ninguna coincide con lo que buscás, se dice y no hay ninguna para elegir.
 - **"Sin períodos"** (paso 2): si tu universidad no tiene períodos para ofrecer, no hay ninguno para elegir y el envío queda bloqueado.
-- **"Sin cátedra"** (paso 2, si elige "No me acuerdo" o la materia no tiene cátedras cargadas): el paso 4 (qué hizo la cátedra) no se ofrece; las frases de vivencia del paso 5 y todo el contexto siguen contando igual.
-- **"Sin frases de una capa"** (pasos 4 o 5): si el cuestionario vigente no trae frases de esa capa, el paso no se ofrece.
+- **"Sin cátedra"** (paso 2, si elige "No me acuerdo" o la materia no tiene cátedras cargadas): el paso 4 (qué hizo la cátedra) no se ofrece; las preguntas de vivencia del paso 5 y todo el contexto siguen contando igual.
+- **"Sin preguntas de una capa"** (pasos 4 o 5): si el cuestionario vigente no trae preguntas de esa capa, el paso no se ofrece.
 
 ## Lo que no muestra nunca
 
-El nombre, la cuenta ni el rol de quien reseña (US-148); ninguna reseña individual, ni cómo terminó una cursada en particular (ADR-0083); ningún puntaje ni escala, solo moda y distribución por frase ([ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md)); ningún color de alarma sobre lo que estás por responder (la alarma es de la lectura, no de la recolección); ninguna pregunta que la cuenta ya contestó (US-169); ningún paso obligatorio que no sea elegir la materia, el período y cómo terminó (US-146: se publica respondiendo frases, sin escribir nada); el campo libre, jamás (ADR-0084).
+El nombre, la cuenta ni el rol de quien reseña (US-148); ninguna reseña individual, ni cómo terminó una cursada en particular (ADR-0083); ningún puntaje ni escala, solo moda y distribución por pregunta ([ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md)); ningún color de alarma sobre lo que estás por responder (la alarma es de la lectura, no de la recolección); ninguna pregunta que la cuenta ya contestó (US-169); ningún paso obligatorio que no sea elegir la materia, el período y cómo terminó (US-146: se publica respondiendo preguntas, sin escribir nada); el campo libre, jamás (ADR-0084).
 
 ## Adónde va
 
@@ -46,7 +48,7 @@ A la ficha de la cátedra o de la materia ([Ficha de cátedra](../../../choose-w
 
 - **El testimonio publicado desaparece del todo**: no hay comentario por tema ni campo final que se publique; el único texto es el campo libre de "lo último", y nunca se publica ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). El chequeo previo, el aviso de sospecha como paso aparte y la réplica que citaba un comentario dejan de aplicar acá (se explica en la story que quedó rebasada, US-158).
 - **La rama del evento institucional se retira del paso 1**: [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) separa el instrumento administrativo (trámites, título, mesas) de la reseña de cursada, con disparador propio; esta pantalla ya no lo ofrece (US-157 queda rebasada).
-- **La cátedra se pregunta en el paso 2, no antes de las frases**: ya no hay frases con sujeto mixto que decidir, así que la cátedra es un dato de contexto más, junto con el período y la modalidad.
+- **La cátedra se pregunta en el paso 2, no antes de las preguntas**: ya no hay preguntas con sujeto mixto que decidir, así que la cátedra es un dato de contexto más, junto con el período y la modalidad.
 - **"Cómo terminó" pierde la opción "sigo cursando"**: la reseña es sobre una cursada que ya terminó de alguna forma; las cuatro opciones vigentes son la aprobé, me quedó regular, la recursé, la dejé ([`phrases.md`](../../../../phrases.md)).
 
 ## Lo que esta ficha deja abierto
@@ -54,4 +56,4 @@ A la ficha de la cátedra o de la materia ([Ficha de cátedra](../../../choose-w
 - **Cuánto tiempo se guarda lo que quedó a medias** (US-161).
 - **Si una cursada sin cátedra recordada necesita ofrecerse igual como «cátedra sin identificar»**: hoy la oferta directamente quita el paso 4.
 - **Si el selector de cátedra acepta texto libre** cuando la cátedra no está en la lista del catálogo.
-- **El orden y el colapso por defecto de las frases de los pasos 4 y 5** si el catálogo de frases crece: el boceto las muestra todas abiertas.
+- **El orden y el colapso por defecto de las preguntas de los pasos 4 y 5** si el catálogo de preguntas crece: el boceto las muestra todas abiertas.

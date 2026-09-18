@@ -1,11 +1,13 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { useHydrated } from '@/lib/use-hydrated';
 import { createChairAction } from '../actions';
 import { adminChairQueries } from '../api';
 import { initialManageChairState } from '../types';
+import { chairDetailHref } from './chair-context';
 
 /**
  * Alta de una cátedra sobre la materia abierta (US-196).
@@ -27,12 +29,15 @@ export function CreateChairForm({ subjectId }: { subjectId: string }) {
   const hydrated = useHydrated();
   const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement>(null);
+  const [name, setName] = useState('');
 
   useEffect(() => {
     if (state.status !== 'success') return;
     formRef.current?.reset();
+    setName('');
     queryClient.invalidateQueries({ queryKey: adminChairQueries.forSubject(subjectId).queryKey });
-  }, [state.status, queryClient, subjectId]);
+    if (state.chairId) navigateAfterMutation(chairDetailHref(subjectId, state.chairId));
+  }, [state, queryClient, subjectId]);
 
   return (
     <form ref={formRef} action={action} className="rounded-lg border border-line bg-bg-card p-4">
@@ -41,14 +46,16 @@ export function CreateChairForm({ subjectId }: { subjectId: string }) {
       <label htmlFor="chair-name" className="mb-1.5 block text-[13px] text-ink">
         Nombre de la cátedra
       </label>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <input
           id="chair-name"
           name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
           maxLength={100}
           required
           placeholder="Pérez"
-          className="flex-1 rounded-lg border border-line bg-bg px-3 py-2 text-[13.5px] text-ink"
+          className="min-w-0 flex-1 rounded-lg border border-line bg-bg px-3 py-2 text-[13.5px] text-ink"
         />
         <button
           type="submit"

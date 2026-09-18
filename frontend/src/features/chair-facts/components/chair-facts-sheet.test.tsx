@@ -111,7 +111,7 @@ describe('ChairFactsSheet', () => {
 
   /**
    * US-131 N2: ninguna proporción se publica sin su "de N" al lado. La fama enuncia el porcentaje
-   * de cada frase que converge ("el 80 %"); tiene que poder verificarse sin bajar al detalle, y
+   * de cada pregunta que converge ("el 80 %"); tiene que poder verificarse sin bajar al detalle, y
    * eso incluye saber sobre cuántas voces sale ese porcentaje ahí mismo, no en otro bloque de la
    * misma ficha.
    */
@@ -122,7 +122,7 @@ describe('ChairFactsSheet', () => {
     const section = heading.closest('section');
     expect(section).not.toBeNull();
 
-    // Pegado al mismo porcentaje, no en cualquier parte de la sección: las tres frases traen su
+    // Pegado al mismo porcentaje, no en cualquier parte de la sección: las tres preguntas traen su
     // propio "de N" en su propio <li>, así que un regex separado para "de \d+" matchea a las tres
     // a la vez y le rompe a getByText la unicidad que pide.
     expect(within(section as HTMLElement).getByText(/80 % de \d+ voces\./)).toBeInTheDocument();
@@ -165,7 +165,7 @@ describe('ChairFactsSheet', () => {
   /**
    * US-131 N1 y US-129 E1: "qué hizo la cátedra" (conducta, atribuible a esta cátedra puntual) y
    * "qué les pasó a los que cursaron" (vivencia) son bloques separados, cada uno con su propio
-   * "de N"; el denominador de una frase no se completa con las voces de otra frase de la misma
+   * "de N"; el denominador de una pregunta no se completa con las voces de otra pregunta de la misma
    * cursada.
    */
   it('US-131 N1: cada bloque lleva su propio "de N", uno no se completa con el otro', () => {
@@ -212,7 +212,7 @@ describe('ChairFactsSheet', () => {
 
     expect(within(conduct as HTMLElement).getByText(/de 37/)).toBeInTheDocument();
     expect(within(experience as HTMLElement).getByText(/de 34/)).toBeInTheDocument();
-    // El "de N" de una frase no aparece adentro del bloque de la otra.
+    // El "de N" de una pregunta no aparece adentro del bloque de la otra.
     expect(within(conduct as HTMLElement).queryByText(/de 34/)).not.toBeInTheDocument();
     expect(within(experience as HTMLElement).queryByText(/de 37/)).not.toBeInTheDocument();
   });
@@ -230,7 +230,7 @@ describe('ChairFactsSheet', () => {
 
   /**
    * Sin contrastes pero con alguna hermana ya publicada, ningún contraste sobrevivió la regla de
-   * los intervalos: eso no es "sin base", así que la sección calla en vez de repetir una frase que
+   * los intervalos: eso no es "sin base", así que la sección calla en vez de repetir una pregunta que
    * no aplica (línea 562 de la maqueta: sin señal, silencio).
    */
   it('sin contrastes pero con alguna hermana publicada, la sección calla', () => {

@@ -8,6 +8,10 @@
 Cuando abre Reseñar.
 Entonces el paso 1 le pide elegir una sola materia con un buscador, sin mostrarle un checklist con las tres materias del período para tildar juntas.
 
+**E2.** Dado que una persona sin sesión abre una ficha de cátedra y elige reseñarla.
+Cuando ingresa con su cuenta y la materia pertenece a su plan.
+Entonces Reseñar conserva la materia y la cátedra, muestra la materia elegida aunque no esté entre las primeras ocho y deja que el alumno declare el período. Cambiar de materia limpia la cátedra anterior.
+
 ## Negativos
 
 **N1.** Dado que Lucía está en el paso 1 del buscador, Cuando intenta tildar más de una materia a la vez (por ejemplo Bases de Datos y Programación I juntas), Entonces el sistema no lo permite: elegir una materia abre su propio flujo de seis pasos, y para la otra hay que empezar de nuevo.

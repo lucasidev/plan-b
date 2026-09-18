@@ -5,6 +5,7 @@ import {
   fetchTermsServer,
   ReviewForm,
 } from '@/features/write-review';
+import { fetchChairsServer } from '@/features/write-review/api.server';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 export const metadata = {
@@ -24,7 +25,12 @@ export const dynamic = 'force-dynamic';
  * cliente. Lo único que se pide en el browser son las cátedras, porque dependen de la materia que
  * todavía no eligió.
  */
-export default async function WriteReviewPage() {
+export default async function WriteReviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ subjectId?: string; chairId?: string }>;
+}) {
+  const selection = await searchParams;
   const profile = await fetchStudentProfile();
   if (!profile) {
     // Las materias que se ofrecen salen del plan de la persona, así que sin carrera declarada
@@ -43,8 +49,27 @@ export default async function WriteReviewPage() {
     profile.universityId ? fetchTermsServer(profile.universityId) : Promise.resolve([]),
   ]);
 
+  const subject = subjects.find((s) => s.id === selection.subjectId);
+  const chairs = subject ? await fetchChairsServer(subject.id) : [];
+  const chair = chairs.find((c) => c.id === selection.chairId);
+  const invalidSelection = (selection.subjectId && !subject) || (selection.chairId && !chair);
+
   return (
     <div className="mx-auto w-full max-w-[560px] px-4 py-8">
+      {invalidSelection && (
+        <div
+          role="alert"
+          className="mb-4 rounded-md border border-line bg-bg-card p-4 text-[13px] text-ink"
+        >
+          <p>
+            No pudimos usar la cursada del enlace: la materia debe pertenecer a tu plan y la cátedra
+            a esa materia. Podés elegir otra cursada abajo.
+          </p>
+          <Link href="/my-profile" className="mt-2 inline-block underline">
+            Revisar mi carrera y plan
+          </Link>
+        </div>
+      )}
       {instrument === null ? (
         <div className="rounded-lg border border-line bg-bg-card p-6">
           <h1 className="font-serif text-[22px] font-semibold text-ink">
@@ -55,7 +80,14 @@ export default async function WriteReviewPage() {
           </p>
         </div>
       ) : (
-        <ReviewForm instrument={instrument} subjects={subjects} terms={terms} />
+        <ReviewForm
+          instrument={instrument}
+          subjects={subjects}
+          terms={terms}
+          initialSubjectId={subject?.id}
+          initialChairId={chair?.id}
+          initialChairs={chairs}
+        />
       )}
     </div>
   );

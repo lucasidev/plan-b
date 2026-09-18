@@ -34,25 +34,13 @@ async function signIn(page: Page, persona: typeof ADMIN) {
   await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 }
 
-/** Docente descartable de esta corrida. Es setup, no el flujo bajo prueba, así que va por API. */
-async function createTeacher(page: Page, suffix: string): Promise<string> {
-  const response = await page.request.post('/api/academic/teachers', {
-    data: {
-      universityId: UNSTA_ID,
-      firstName: `Ada${suffix}`,
-      lastName: `Lovelace${suffix}`,
-    },
-  });
-  expect(response.status()).toBe(201);
-  return (await response.json()).id as string;
-}
-
 test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
   // El recorrido pasa por cuatro pantallas del backoffice y la ficha pública; sobre el dev
   // server, que compila cada ruta la primera vez, tarda entre 20 y 40 segundos solo y agota los
   // 60 por default cuando corre con la suite entera.
   test.setTimeout(120_000);
 
+  // US-196 E4: materia, cátedra, equipo y retorno con contexto.
   test('se carga una cátedra, se le suma y se le cierra un integrante, y la ficha pública la muestra', async ({
     page,
   }) => {
@@ -70,39 +58,43 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
     const chairRow = page.getByRole('heading', { name: new RegExp(`Cátedra ${chairName}`, 'i') });
     await expect(chairRow).toBeVisible({ timeout: 15_000 });
 
-    // Todo lo que sigue se afirma sobre ESTA cátedra y no sobre la pantalla: los otros tests del
-    // archivo cargan las suyas sobre la misma materia (y --repeat-each multiplica cada uno), así
-    // que un locator suelto ("Integraron antes") las matchea a todas. La base sí arranca limpia en
-    // cada corrida: run-e2e la dropea y recrea al arrancar.
-    const chairCard = page.getByRole('listitem').filter({
-      has: page.getByRole('heading', { name: new RegExp(`Cátedra ${chairName}`, 'i') }),
-    });
-
-    // 2. El equipo. La UI de sumar integrantes no está construida todavía, así que este paso va por
-    //    API contra los endpoints que sí lo están: lo que el issue exige verificar de punta a punta
-    //    es que la cátedra cargada llegue a la ficha pública.
-    const chairId = await chairIdByName(page, chairName);
-    const teacherId = await createTeacher(page, suffix);
-
-    const added = await page.request.post(`/api/academic/chairs/${chairId}/members`, {
-      data: { teacherId, role: 'Lead', sinceTermId: UNSTA_TERM },
-    });
-    expect(added.status()).toBe(204);
-
-    await page.reload();
-    await expect(chairCard.getByText(new RegExp(`Ada${suffix}`, 'i'))).toBeVisible();
-    await expect(chairCard.getByText(/titular/i)).toBeVisible();
-
-    // 3. Cerrar el tramo no borra al docente: sigue listado, ahora entre los que integraron antes.
-    const closed = await page.request.post(
-      `/api/academic/chairs/${chairId}/members/${teacherId}/close`,
-      { data: { untilTermId: UNSTA_TERM_LATER } },
+    await expect(
+      page
+        .getByRole('navigation', { name: 'Ruta de navegación' })
+        .locator(`a[href="/admin/universities/${UNSTA_ID}"]`),
+    ).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Ruta de navegación' })).toContainText(
+      'Plan 2018',
     );
-    expect(closed.status()).toBe(204);
+    await expect(page.getByText('Sin equipo cargado todavía.')).toBeVisible();
+    await expect(page).toHaveURL(/\/admin\/chairs\/[a-f0-9-]+\?subjectId=/);
+    const chairId = new URL(page.url()).pathname.split('/').at(-1) ?? '';
 
-    await page.reload();
-    await expect(chairCard.getByText(/integraron antes/i)).toBeVisible();
-    await expect(chairCard.getByText(new RegExp(`Ada${suffix}`, 'i'))).toBeVisible();
+    await page.getByRole('combobox', { name: 'Rol', exact: true }).selectOption('Lead');
+    await page.getByLabel('Desde qué período').selectOption(UNSTA_TERM);
+    await page.getByRole('link', { name: 'Cargar un docente que falta' }).click();
+    await expect(page.getByLabel('Universidad', { exact: true })).toHaveValue(UNSTA_ID);
+    await page.getByLabel('Nombre', { exact: true }).fill(`Ada${suffix}`);
+    await page.getByLabel('Apellido', { exact: true }).fill(`Lovelace${suffix}`);
+    await page.getByRole('button', { name: 'Crear docente', exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/admin/chairs/${chairId}`));
+    await expect(page.getByRole('combobox', { name: 'Rol', exact: true })).toHaveValue('Lead');
+    await expect(page.getByLabel('Desde qué período')).toHaveValue(UNSTA_TERM);
+    await page
+      .getByLabel('Docente', { exact: true })
+      .selectOption({ label: `Lovelace${suffix}, Ada${suffix}` });
+    await page.getByRole('button', { name: 'Agregar integrante', exact: true }).click();
+    const current = page.getByRole('region', { name: 'Equipo actual', exact: true });
+    await expect(current).toContainText(`Ada${suffix}`);
+    await expect(current).toContainText('Titular');
+    await current.getByRole('button', { name: 'Cerrar tramo' }).click();
+    await current.getByLabel('Último período que integró').selectOption(UNSTA_TERM_LATER);
+    await current.getByRole('button', { name: 'Confirmar cierre' }).click();
+    await expect(page.getByRole('region', { name: 'Integraron antes' })).toContainText(
+      `Ada${suffix}`,
+    );
+    await page.getByRole('link', { name: /Volver a las cátedras/ }).click();
+    await expect(page).toHaveURL(`/admin/chairs?subjectId=${SUBJECT_211}`);
 
     // 4. Y el criterio del issue: la ficha pública la muestra, sin haber tocado el seed.
     await page.goto(`/chairs/${chairId}`);
@@ -123,6 +115,7 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
       page.getByRole('heading', { name: new RegExp(`Cátedra ${chairName}`, 'i') }),
     ).toBeVisible({ timeout: 15_000 });
 
+    await page.getByRole('link', { name: /Volver a las cátedras/ }).click();
     await page.getByLabel(/nombre de la cátedra/i).fill(chairName);
     await page.getByRole('button', { name: /cargar cátedra/i }).click();
 
@@ -162,13 +155,3 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
     await expect(page.getByLabel(/nombre de la cátedra/i)).toBeVisible();
   });
 });
-
-/** El id de la cátedra recién creada, leído del listado del backoffice. */
-async function chairIdByName(page: Page, name: string): Promise<string> {
-  const response = await page.request.get(`/api/academic/chairs?subjectId=${SUBJECT_211}`);
-  expect(response.status()).toBe(200);
-  const chairs = (await response.json()) as { id: string; name: string }[];
-  const found = chairs.find((c) => c.name === name);
-  if (!found) throw new Error(`no apareció la cátedra ${name} en el listado`);
-  return found.id;
-}

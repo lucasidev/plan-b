@@ -1,4 +1,5 @@
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { fetchPlanServer } from '@/features/browse-catalog/api.server';
 import { fetchSubjectFactsServer } from '@/features/subject-facts';
 import { genericCrumbs } from '@/lib/member-shell';
 import { subjectLabel } from '@/lib/subject-label';
@@ -28,6 +29,7 @@ export default async function SubjectCrumbs({ params }: { params: Params }) {
   }
 
   const university = await universityCrumbByPlan(facts.careerPlanId);
+  const plan = await fetchPlanServer(facts.careerPlanId).catch(() => null);
   if (!university) {
     return <Breadcrumbs items={genericCrumbs(pathname)} />;
   }
@@ -39,6 +41,10 @@ export default async function SubjectCrumbs({ params }: { params: Params }) {
         { label: 'Explorar', href: '/universities' },
         university,
         { label: facts.careerName, href: `/careers/${facts.careerId}`, truncate: true },
+        {
+          label: plan ? `Plan ${plan.year}` : 'Plan de estudios',
+          href: `/plans/${facts.careerPlanId}/subjects`,
+        },
         { label: subjectLabel(facts.subjectCode, facts.subjectName) },
       ]}
     />

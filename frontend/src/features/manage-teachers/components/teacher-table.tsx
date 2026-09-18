@@ -14,7 +14,13 @@ const GRID = 'minmax(0,1.6fr) minmax(0,1fr) minmax(0,0.9fr) 96px 168px';
  * (registro admin del design system). Trae activos + inactivos; cada fila ofrece Editar + Desactivar
  * (activos) o Reactivar (inactivos). Mutación pura (ADR-0046): los toggles refrescan la RSC.
  */
-export function TeacherTable({ teachers }: { teachers: AdminTeacherRow[] }) {
+export function TeacherTable({
+  teachers,
+  returnTo = '/admin/teachers',
+}: {
+  teachers: AdminTeacherRow[];
+  returnTo?: string;
+}) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -69,6 +75,7 @@ export function TeacherTable({ teachers }: { teachers: AdminTeacherRow[] }) {
         <TeacherRow
           key={t.id}
           teacher={t}
+          returnTo={returnTo}
           isActive={activeOverrides[t.id] ?? t.isActive}
           busy={busyId === t.id}
           error={rowErrors[t.id] ?? null}
@@ -81,12 +88,14 @@ export function TeacherTable({ teachers }: { teachers: AdminTeacherRow[] }) {
 
 function TeacherRow({
   teacher,
+  returnTo,
   isActive,
   busy,
   error,
   onToggle,
 }: {
   teacher: AdminTeacherRow;
+  returnTo: string;
   isActive: boolean;
   busy: boolean;
   error: string | null;
@@ -114,7 +123,7 @@ function TeacherRow({
         <div className="flex items-center justify-end gap-1">
           {isActive && (
             <Link
-              href={`/admin/teachers/${teacher.id}/edit`}
+              href={`/admin/teachers/${teacher.id}/edit?from=${encodeURIComponent(returnTo)}`}
               className="rounded-md px-2 py-1 text-[11.5px] text-ink-2 hover:bg-bg-elev hover:text-ink"
             >
               Editar

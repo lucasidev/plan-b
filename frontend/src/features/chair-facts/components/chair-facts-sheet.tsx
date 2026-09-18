@@ -38,7 +38,7 @@ type Props = {
    * decir para qué). Lo decide la página (`reviewCtaHref`, que sabe si hay sesión); el default
    * acá es el camino directo, para no forzar a cada test a pasarlo.
    */
-  reviewHref?: string;
+  reviewHref?: string | null;
 };
 
 export function ChairFactsSheet({
@@ -100,7 +100,7 @@ function chairStats(facts: ChairFacts): PageFrameStat[] {
     stats.push([`${facts.completion.outOfTen} de 10`, 'llegan al final']);
   }
   stats.push([`${facts.reviewCount}`, 'reseñas']);
-  stats.push([`${facts.fame ? facts.fame.itemsAgreeing : 0}`, 'frases convergen']);
+  stats.push([`${facts.fame ? facts.fame.itemsAgreeing : 0}`, 'preguntas convergen']);
   stats.push([`${facts.contrasts.length}`, 'contrastes con hermanas']);
   return stats;
 }
@@ -167,7 +167,7 @@ function Main({
 }: {
   facts: ChairFacts;
   hasPublishedSibling?: boolean;
-  reviewHref: string;
+  reviewHref: string | null;
 }) {
   return (
     <div className="min-w-0">
@@ -229,7 +229,7 @@ function BelowFloor({ facts }: { facts: ChairFacts }) {
 }
 
 /**
- * La fama: lo primero que la ficha dice, porque varias frases distintas apuntando al mismo lado
+ * La fama: lo primero que la ficha dice, porque varias preguntas distintas apuntando al mismo lado
  * valen más que muchas marcas en una sola. Se enuncia con su sustento a la vista: la afirmación
  * de arriba tiene que poder verificarse sin bajar al detalle.
  */
@@ -248,7 +248,7 @@ function Fame({ facts }: { facts: ChairFacts }) {
           {fame.itemsAgreeing} respuestas distintas apuntan al mismo lado.
         </p>
         {/* La pregunta y la respuesta van como par, no fundidas en una oración: el boceto enuncia
-            la fama como afirmación ("Acá no se aprende preguntando"), pero esa frase editorial no
+            la fama como afirmación ("Acá no se aprende preguntando"), pero esa pregunta editorial no
             existe en ningún catálogo, y derivarla del texto de la pregunta produce castellano
             roto. Se muestra lo que se preguntó y lo que se contestó, que es verificable. */}
         <ul style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -385,7 +385,7 @@ function Contrasts({
  * Se muestra tanto publicada como bajo el piso: bajo el piso es cuando más sentido tiene invitar
  * a sumar la reseña que falta.
  */
-function Footer({ reviewHref }: { reviewHref: string }) {
+function Footer({ reviewHref }: { reviewHref: string | null }) {
   return (
     <div className="pb-foot">
       <FallbackLink
@@ -397,9 +397,11 @@ function Footer({ reviewHref }: { reviewHref: string }) {
       >
         ¿Cómo calculamos esto?
       </FallbackLink>
-      <FallbackLink href={reviewHref} className="pb-cta">
-        ¿La cursaste? Reseñala
-      </FallbackLink>
+      {reviewHref && (
+        <FallbackLink href={reviewHref} className="pb-cta">
+          ¿La cursaste? Reseñala
+        </FallbackLink>
+      )}
     </div>
   );
 }
