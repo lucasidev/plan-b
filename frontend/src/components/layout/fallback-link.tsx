@@ -94,9 +94,9 @@ function LinkStatusProbe({ href }: { href: string }) {
  * aportes. En el shell son los seis-siete links que quedan montados en toda pantalla del área con
  * cuenta, donde el fix del 2026-09-09 (apagar el prefetch de esos mismos links, `prefetch={false}`
  * en `sidebar.tsx` y `topbar.tsx`) no alcanzó (issue #525, con #510 y #477 adentro). El backoffice
- * (`admin-sidebar.tsx`, `admin-topbar.tsx`) queda fuera a propósito: `admin/chairs.spec.ts` (#477)
- * muestra la misma familia de falla, pero el alcance de este fix es el shell del alumno, el
- * catálogo y Mis aportes, no cada lugar donde Next puede repetirla.
+ * (`admin-sidebar.tsx`, `admin-topbar.tsx`) conserva sus links propios. Los enlaces al detalle de
+ * una universidad y de regreso al listado de cátedras usan esta defensa tras reproducir la
+ * navegación trabada en los dos intentos de la corrida 35400879158 de CI (#568).
  *
  * La traza de una falla real de CI (2026-09-14, corrida 34803080787, `settings.spec.ts`) confirma
  * el mecanismo: el click en "Ajustes" dispara el fetch RSC real de `/settings` (sin el header
@@ -138,10 +138,8 @@ function LinkStatusProbe({ href }: { href: string }) {
  * de la ráfaga fue de ~230ms, así que 2000ms deja margen de sobra sin alargar perceptiblemente un
  * click que hoy, cuando falla, no se recupera nunca (los 30s del timeout del test lo prueban).
  *
- * Fuera de acá: autenticación, backoffice, landing y páginas de error. El backoffice ya tiene su
- * propia evidencia de esta familia de falla (#477, arriba), pero queda afuera por disciplina de
- * alcance; autenticación, landing y páginas de error no tienen ninguna todavía, y el timer tiene un
- * costo (un reload completo) que no se paga sin ella.
+ * Autenticación, landing y páginas de error no tienen esta defensa: el timer tiene un costo
+ * (un reload completo) que no se paga sin evidencia de navegación trabada.
  */
 export function FallbackLink({ href, onClick, children, ...rest }: Props) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {

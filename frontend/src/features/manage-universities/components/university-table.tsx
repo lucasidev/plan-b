@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { cn } from '@/lib/utils';
 import { deactivateUniversityAction, reactivateUniversityAction } from '../actions';
 import type { AdminUniversityRow } from '../types';
@@ -77,12 +78,12 @@ function UniversityRow({ university }: { university: AdminUniversityRow }) {
         style={{ gridTemplateColumns: GRID }}
       >
         <div className="min-w-0">
-          <Link
+          <FallbackLink
             href={`/admin/universities/${university.id}`}
             className="block truncate font-medium text-ink underline underline-offset-2"
           >
             {university.name}
-          </Link>
+          </FallbackLink>
           <div className="truncate font-mono text-[10px] text-ink-4">{university.slug}</div>
         </div>
         <div className="truncate text-ink-2">

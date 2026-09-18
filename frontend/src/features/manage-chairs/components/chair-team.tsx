@@ -3,6 +3,7 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useActionState, useEffect, useId, useState } from 'react';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { AdminTeacherRow } from '@/features/manage-teachers/types';
 import type { AdminTermRow } from '@/features/manage-terms/types';
 import { useHydrated } from '@/lib/use-hydrated';
@@ -89,9 +90,12 @@ export function ChairTeam({
           </ul>
         </section>
       )}
-      <Link className="text-[13px] text-ink underline" href={chairListHref(context.subjectId)}>
+      <FallbackLink
+        className="text-[13px] text-ink underline"
+        href={chairListHref(context.subjectId)}
+      >
         Volver a las cátedras de {context.subjectName}
-      </Link>
+      </FallbackLink>
     </div>
   );
 }
