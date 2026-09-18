@@ -105,7 +105,9 @@ test('resuelve y valida digest OCI antes de usar una imagen como evidencia', asy
   assert.equal(image, `library/redis@sha256:${'b'.repeat(64)}`);
   await assert.rejects(
     dockerImage('library/redis', '7-alpine', async (url) =>
-      url.includes('auth.docker.io') ? Response.json({ token: 'test' }) : new Response(null),
+      new URL(url).origin === 'https://auth.docker.io'
+        ? Response.json({ token: 'test' })
+        : new Response(null),
     ),
     /digest unavailable/,
   );

@@ -11,3 +11,15 @@ rules:
       # package.json, y pushea con un token de GitHub App de vida corta, no con
       # un GITHUB_TOKEN con permisos elevados.
       - dependabot-bun-lockfile.yml
+  unpinned-images:
+    ignore:
+      # Estos outputs solo contienen repositorios constantes con @sha256 validado
+      # por dockerImage; si falla el selector, usan los tags explícitos anteriores.
+      # El análisis estático no resuelve outputs. Se exceptúan solo estas seis
+      # referencias; moverlas o agregar otro servicio requiere revisar la excepción.
+      - ci.yml:162
+      - ci.yml:180
+      - ci.yml:197
+      - ci.yml:369
+      - ci.yml:380
+      - ci.yml:388
