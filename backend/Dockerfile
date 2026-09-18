@@ -42,7 +42,7 @@ RUN dotnet publish "host/Planb.Api/Planb.Api.csproj" \
     --output /app/publish \
     --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:3a494b8a73ec3248c237c9438592ff1e04587edf65863212bc1027e54dcb6f36 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:1fe86375600b62e6566b465da9553eef0621f13c67f40fe764cd8dbb1dee1497 AS runtime
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
