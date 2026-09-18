@@ -1,7 +1,7 @@
 # ADR-0072: The story lives in its epic, the plan only references it, and the ID never changes
 
 - **Estado**: aceptado
-- **Fecha**: 2026-08-19 (reescrito el 2026-08-20, antes de pushear)
+- **Fecha**: 2026-08-19 (reescrito el 2026-08-20; convención `TK-NNN` agregada el 2026-09-18)
 
 ## Contexto
 
@@ -28,7 +28,7 @@ Y había una segunda deuda, medida sobre las 126 fichas de la versión anterior:
 5. **El ID no lleva semántica adentro.** Ni el grupo, ni la capa, ni la partición, ni la prioridad: todo lo que se codifica en un ID se vuelve mentira cuando cambia, y acá ya se volvió mentira dos veces. El nombre del archivo suma un **slug descriptivo** (`US-127-review-in-under-five-minutes`), igual que los ADRs de este repo: el número identifica, el slug dice de qué trata, y la épica la dice la carpeta. El slug se congela al crear.
 6. **La story no se parte por razones de ejecución.** Si es grande, se planifica en varias tareas y el ID no se toca. Se parte solo si describía dos cosas distintas, o sea si estaba mal escrita, y entonces son dos stories nuevas y la vieja se marca superada. La capa (backend, frontend, infra) es un atributo de la tarea, no del identificador.
 7. **El criterio de aceptación es la fuente del test.** Cada "listo cuando" se traduce al test que lo verifica ([ADR-0036](0036-testing-pyramid-cross-stack.md)) y el test cita el ID. Un criterio que no se puede traducir a test está mal escrito ([living documentation](https://gojko.net/books/specification-by-example/)).
-8. **Lo que no es una story no se disfraza de story.** Los requisitos no funcionales (accesibilidad, Ley 25.326, moderación pública, rendimiento) son las Restricciones de [`product/README.md`](../product/README.md) y se verifican en el Definition of Done, en cada story. El trabajo técnico sin producto atrás (migrar EF, arreglar el CI, la poda) es una tarea de sprint sin ID de producto.
+8. **Lo que no es una story no se disfraza de story.** Los requisitos no funcionales (accesibilidad, Ley 25.326, moderación pública, rendimiento) son las Restricciones de [`product/README.md`](../product/README.md) y se verifican en el Definition of Done, en cada story. El trabajo técnico sin producto atrás (migrar EF, arreglar el CI, la poda) usa `TK-NNN`, con el número de su issue de GitHub: es un ID de trabajo, no un ID de producto, y no crea una carpeta paralela en `docs/product/`.
 
 ## Alternativas consideradas
 

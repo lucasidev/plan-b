@@ -24,6 +24,7 @@ Cada una en su archivo, con su criterio de aceptación; el estado y el sprint vi
 |---|---|
 | [US-207](stories/US-207-see-the-minimum-of-a-credential/README.md) | Ver lo mínimo para verificar una constancia |
 | [US-208](stories/US-208-separate-verification-from-contributions/README.md) | No cruzar verificación con lo aportado |
+| [US-209](stories/US-209-review-filtered-free-text/README.md) | Revisar el campo libre que el filtro retuvo |
 | [US-210](stories/US-210-separate-the-teacher-identity-queue/README.md) | Separar la cola de identidad docente |
 | [US-211](stories/US-211-reject-a-tampered-credential-without-marking/README.md) | Detectar una constancia adulterada |
 | [US-212](stories/US-212-show-the-moderation-queue-under-backlog/README.md) | Mostrar la cola desbordada de Reportes |

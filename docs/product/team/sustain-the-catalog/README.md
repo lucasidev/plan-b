@@ -16,7 +16,7 @@ Es también la operación diaria que el mapa agrupaba aparte como temas, porque 
 
 ## Stories
 
-Las 15 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
+Las 16 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
 
 | ID | De qué trata |
 |---|---|
@@ -35,6 +35,7 @@ Las 15 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 | [US-203](stories/US-203-seed-the-queue-on-day-one/README.md) | Decidir qué cargar el primer día |
 | [US-204](stories/US-204-survive-a-curriculum-reform/README.md) | Que la reforma no parta el corpus |
 | [US-224](stories/US-224-normalize-institutional-position/README.md) | Normalizar el cargo institucional |
+| [US-234](stories/US-234-maintain-a-complete-institution/README.md) | Cargar una institución completa |
 
 Las stories con "tema del mapa" en sus notas vienen de los grupos transversales del mapa (BO4 · Cuando la carga no da abasto; BO5 · Cuando el corpus está bajo ataque): son temas, no actividades, y cada una vive en la única épica que la implementa. El índice del [catálogo](../../README.md) conserva el tema como lista.
 

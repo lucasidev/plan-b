@@ -56,13 +56,27 @@ Como <rol>, quiero <lo que quiere>, porque <por qué le importa>.
 ## Lo que no es una story
 
 - **Los requisitos no funcionales** (accesibilidad, Ley 25.326, política de moderación pública, rendimiento): nadie los pide en primera persona y no se terminan nunca, se sostienen. Son las [Restricciones](../product/README.md) y se verifican en el [Definition of Done](definition-of-done.md), en cada story.
-- **El trabajo técnico sin producto atrás** (migrar EF, arreglar el CI, la poda del planificador): no hay usuario ni valor que describir. Es una tarea de sprint, se anota en [`status.md`](status.md) y no tiene story que citar; su commit ya se identifica con el scope de Conventional Commits.
+- **El trabajo técnico sin producto atrás** (migrar EF, arreglar el CI, la poda del planificador): no hay usuario ni valor que describir. Es una tarea `TK-NNN`, se anota en [`status.md`](status.md) y no inventa una story que citar.
+
+## La tarea
+
+Una tarea usa `TK-NNN`, donde `NNN` es el número de su issue de GitHub. El identificador no es de producto y no crea una carpeta paralela a las stories: identifica el trabajo que se planifica, implementa y cierra.
+
+El título del issue es `TK-NNN: <resultado concreto>`. Su cuerpo contiene:
+
+- **Tipo**: implementación, fix, test, documentación, datos, infraestructura, investigación o poda.
+- **Trazabilidad**: las `US-NNN` que implementa o protege; si no hay ninguna, la decisión, invariante o evidencia técnica que justifica el trabajo.
+- **Problema actual**: evidencia concreta de qué falta o qué falla.
+- **Alcance**: qué entra y qué queda afuera.
+- **Listo cuando**: resultados verificables, no una lista de archivos a tocar.
+
+En GitHub lleva el label `tarea-tecnica`; si corrige un defecto, suma `bug`. Una tarea puede servir a varias stories. Una story grande puede dividirse en varias tareas sin cambiar su ID.
 
 ---
 
 ## La planificación
 
-Una story entra a un sprint cuando está lista para construirse, y ahí se le define el trabajo. Eso vive en [`status.md`](status.md), en la sección de su sprint:
+Una story entra a un sprint cuando está lista para construirse, y ahí se le define el trabajo en una o más `TK-NNN`. Eso vive en [`status.md`](status.md), en la sección de su sprint:
 
 ```markdown
 ### US-NNN · <título de la story>  → [la story](../product/<recorrido>/<épica>/stories/US-NNN-slug/README.md)
@@ -75,8 +89,8 @@ Una story entra a un sprint cuando está lista para construirse, y ahí se le de
 - Emite `<Algo>Changed` por el outbox.
 
 **Tareas**:
-- [ ] backend: <qué>
-- [ ] frontend: <qué>
+- [ ] TK-NNN · backend: <qué>
+- [ ] TK-NNN · frontend: <qué>
 
 **Escenarios de test**: viven en la carpeta de la story, en su `scenarios.md`, no acá. Un Dado/Cuando/Entonces con valores concretos no dice en qué sprint entra ni quién lo hace: es el criterio hecho preciso, así que vive pegado al criterio. El plan los cita por ID de story. Los que cruzan varias stories quedan en el `scenarios.md` de la épica.
 

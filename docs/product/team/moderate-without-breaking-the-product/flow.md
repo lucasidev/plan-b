@@ -1,6 +1,6 @@
 # Moderar sin romper el producto: el flujo
 
-> Reemplaza a las filas BO-3 (Moderar sin bajar la queja incómoda), BO-4 (Ver un nombre una sola vez), BO-8 (Lo que el chequeo previo retenía) y BO-6 (Cuando alguien intenta inflar el corpus) de la tabla de flujos del [mapa](../../map.md); ya no hay contenido público que reportar, así que BO-3 y BO-8 se reemplazan por el filtro grueso del campo libre y el canal de reclamos. Personas: Nahuel (filtro grueso, reclamos, cuentas correlacionadas), Camila (verificaciones). Disparador: una reseña que carga su campo libre, una institución que objeta un dato publicado, una constancia, una identidad docente o un cargo institucional que alguien sube para verificar, que pase un año desde la última verificación, o un patrón de cuentas que no se explica por cuánta gente vivió lo mismo. Stories que cubre: US-207, US-208, US-210, US-211, US-212, US-213, US-214, US-225, US-226.
+> Reemplaza a las filas BO-3 (Moderar sin bajar la queja incómoda), BO-4 (Ver un nombre una sola vez), BO-8 (Lo que el chequeo previo retenía) y BO-6 (Cuando alguien intenta inflar el corpus) de la tabla de flujos del [mapa](../../map.md); ya no hay contenido público que reportar, así que BO-3 y BO-8 se reemplazan por el filtro grueso del campo libre y el canal de reclamos. Personas: Nahuel (filtro grueso, reclamos, cuentas correlacionadas), Camila (verificaciones). Disparador: una reseña que carga su campo libre, una institución que objeta un dato publicado, una constancia, una identidad docente o un cargo institucional que alguien sube para verificar, que pase un año desde la última verificación, o un patrón de cuentas que no se explica por cuánta gente vivió lo mismo. Stories que cubre: US-207, US-208, US-209, US-210, US-211, US-212, US-213, US-214, US-225, US-226.
 
 ### El filtro grueso del campo libre
 
@@ -9,9 +9,9 @@ flowchart TD
   A([Una reseña carga su campo libre]) --> B{El filtro automático<br/>ADR-0055, repropuesto}
   B -->|no dispara| C([Pasa a la cola normal de curaduría:<br/>Sostener el catálogo])
   B -->|dispara: agresión dirigida o dato personal de un tercero| D[Reportes: cola de campo libre filtrado]
-  D --> E{Nahuel lo mira}
+  D --> E{Nahuel lo mira, US-209}
   E -->|lo libera| C
-  E -->|lo descarta| F([No pasa a curaduría: no se destila ni se cita, nunca se publicó])
+  E -->|lo descarta| F([No pasa a curaduría: no se destila ni se cita, nunca se publicó;<br/>las respuestas cerradas siguen contando])
 ```
 
 Pantalla: [Reportes](screens/SC-031-reports/README.md).

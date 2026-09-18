@@ -36,10 +36,10 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
-| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138, US-143) | Valentina, Silvia, Lucía, quien lee | 14 | 8 |
+| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138, US-143) | Valentina, Silvia, Lucía, quien lee | 15 | 8 |
 | [Pedir una carrera](student/request-a-career/README.md) | O2 | Ana | 4 | 2 |
 | [Entrar](student/enter/README.md) | el umbral | cualquiera que va a producir | 5 | 5 |
-| [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163) | Lucía, Matías, Diego | 18 | 3 |
+| [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163) | Lucía, Matías, Diego | 19 | 3 |
 | [Cuidar lo publicado](student/care-for-what-is-published/README.md) | T1 | quien ya aportó, quien vuelve | 2 | 1 |
 | [Deshacer](student/undo/README.md) | O5 | quien ya aportó | 2 | 4 |
 | [Llevarse el dato](student/take-the-data/README.md) | O8 | Rocío | 7 | 1 |
@@ -54,9 +54,9 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
-| [Sostener el catálogo](team/sustain-the-catalog/README.md) | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 15 | 5 |
-| [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md) | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 9 | 2 |
-| [Cortar los accesos](team/cut-the-access/README.md) | BO3 (+ US-218, US-219) | Admin | 5 | 1 |
+| [Sostener el catálogo](team/sustain-the-catalog/README.md) | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 16 | 5 |
+| [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md) | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 10 | 2 |
+| [Cortar los accesos](team/cut-the-access/README.md) | BO3 (+ US-218, US-219) | Admin | 6 | 1 |
 
 ### Lo que no es un tramo
 

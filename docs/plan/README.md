@@ -11,7 +11,7 @@
 
 ## La separación, en una línea
 
-**La story dice qué quiere el usuario; el plan dice cuándo se hace y cómo va.**
+**La story dice qué quiere el usuario; la tarea dice qué trabajo se hace; el plan dice cuándo entra y cómo va.**
 
 La story vive en su épica, en `product/<épica>/stories/US-NNN-slug/`, y no tiene estado ni sprint ni estimación. Acá se la cita por ID y se le agrega todo lo de ejecución: en qué sprint entra, en qué tareas se parte, su contrato técnico, su estado.
 
@@ -24,7 +24,7 @@ La story vive en su épica, en `product/<épica>/stories/US-NNN-slug/`, y no tie
 
 ## Lo que no tiene story
 
-El trabajo técnico sin producto atrás (migrar EF, arreglar el CI, la poda del planificador en retiro) es una tarea de sprint: se anota en [`status.md`](status.md), no cita ningún ID de producto, y su commit se identifica con el scope de Conventional Commits.
+El trabajo técnico sin producto atrás (migrar EF, arreglar el CI, la poda del planificador en retiro) usa `TK-NNN`: el número es el de su issue de GitHub, lleva el label `tarea-tecnica` y se anota en [`status.md`](status.md). No inventa una `US-NNN`; cita la decisión, el invariante o la evidencia que lo justifica. Un fix suma el label `bug`.
 
 ## Lo que no vive acá
 
