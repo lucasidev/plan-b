@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
+import { AvatarMenu } from './avatar-menu';
 
 /**
  * Nav del backoffice (port de `admin-shell.jsx::ADM_NAV`). Los items con `href` navegan a páginas
@@ -41,7 +42,6 @@ const NAV: { group: string; items: NavItem[] }[] = [
 
 export function AdminSidebar({ email }: { email: string }) {
   const pathname = usePathname();
-  const initials = email.slice(0, 2).toUpperCase();
 
   return (
     <aside className="flex flex-col border-r border-line bg-bg-elev px-2.5 py-3">
@@ -84,14 +84,8 @@ export function AdminSidebar({ email }: { email: string }) {
         ))}
       </nav>
 
-      <div className="mt-auto flex items-center gap-2 border-t border-line px-2 pt-2.5 text-[11.5px] text-ink-2">
-        <div className="grid h-6 w-6 flex-shrink-0 place-items-center rounded bg-ink font-mono text-[10px] font-semibold text-white">
-          {initials}
-        </div>
-        <div className="min-w-0">
-          <div className="truncate">{email}</div>
-          <small className="block font-mono text-[10px] text-ink-3">plan-b · admin</small>
-        </div>
+      <div className="mt-auto">
+        <AvatarMenu email={email} accountRole="admin" />
       </div>
     </aside>
   );

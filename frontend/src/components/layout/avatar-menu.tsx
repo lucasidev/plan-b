@@ -2,37 +2,29 @@
 
 import { ChevronUp } from 'lucide-react';
 import { useActionState, useEffect, useRef, useState } from 'react';
-import { initialSignOutState, signOutAction } from '@/features/sign-out';
+import { initialSignOutState, signOut } from '@/features/sign-out';
 import { displayNameFromEmail, getInitialsFromEmail } from '@/lib/member-shell';
 import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
+import type { Session } from '@/lib/session';
 import { cn } from '@/lib/utils';
 import { FallbackLink } from './fallback-link';
 
 type Props = {
   email: string;
+  accountRole?: Session['role'];
+  placement?: 'sidebar' | 'header';
 };
 
-/**
- * Avatar + contextual dropdown at the bottom of the sidebar. Per
- * `docs/design/reference/components/shell.jsx::Sidebar` (the `me` section).
- *
- * Menu states:
- *  - **idle** (closed): shows only avatar + email + rotated chevron.
- *  - **open**: panel above the avatar with links to Mi perfil, Configuración,
- *    Onboarding (not implemented, go to stubs), Ayuda, and "Cerrar sesión".
- *
- * Sign-out uses the existing US-029-i server action. The form submit fires the
- * action; the redirect to `/sign-in` it returns unmounts this dropdown naturally
- * (navigation pulls the user out of the authenticated area). There is no
- * onClick={onClose} on the submit button: if there were, the state change could
- * unmount the form before the action executes (race observable in E2E with very fast
- * clicks).
- *
- * Clicking outside the dropdown closes it (event listener on `document`).
- */
-export function AvatarMenu({ email }: Props) {
+/** Menú de cuenta compartido por header y sidebar, para alumno y admin. */
+export function AvatarMenu({ email, accountRole = 'member', placement = 'sidebar' }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const [signOutState, signOutFormAction, pending] = useActionState(async () => {
+    const result = await signOut();
+    if (result.status === 'success') navigateAfterMutation(result.redirectTo);
+    return result;
+  }, initialSignOutState);
 
   // Click outside closes the menu.
   useEffect(() => {
@@ -50,43 +42,61 @@ export function AvatarMenu({ email }: Props) {
   useEffect(() => {
     if (!open) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') setOpen(false);
+      if (event.key === 'Escape') {
+        setOpen(false);
+        trigger.current?.focus();
+      }
     }
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
   const initials = getInitialsFromEmail(email);
+  const inHeader = placement === 'header';
 
   return (
-    <div ref={ref} className="relative w-full">
+    <div ref={ref} className={cn('relative', inHeader ? 'shrink-0' : 'w-full')}>
       <button
+        ref={trigger}
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
+        aria-label={inHeader ? `Menú de cuenta: ${email}` : undefined}
         className={cn(
-          'w-full flex items-center gap-2.5 text-left cursor-pointer',
+          'flex items-center gap-2.5 text-left cursor-pointer',
           'border-0 bg-transparent text-inherit',
-          'border-t border-line',
+          inHeader ? 'rounded-full' : 'w-full border-t border-line',
         )}
-        style={{ padding: '10px 8px', font: 'inherit' }}
+        style={{ padding: inHeader ? 0 : '10px 8px', font: 'inherit' }}
       >
         <Avatar initials={initials} />
-        <Identity email={email} />
-        <ChevronUp
-          size={11}
-          className="text-ink-3"
-          style={{
-            marginRight: 6,
-            transform: open ? 'rotate(0deg)' : 'rotate(180deg)',
-            transition: 'transform 0.15s',
-          }}
-          aria-hidden
-        />
+        {!inHeader && <Identity email={email} />}
+        {!inHeader && (
+          <ChevronUp
+            size={11}
+            className="text-ink-3"
+            style={{
+              marginRight: 6,
+              transform: open ? 'rotate(0deg)' : 'rotate(180deg)',
+              transition: 'transform 0.15s',
+            }}
+            aria-hidden
+          />
+        )}
       </button>
 
-      {open && <Dropdown email={email} onClose={() => setOpen(false)} />}
+      {open && (
+        <Dropdown
+          email={email}
+          accountRole={accountRole}
+          placement={placement}
+          onClose={() => setOpen(false)}
+          signOutFormAction={signOutFormAction}
+          pending={pending}
+          error={signOutState.status === 'error' ? signOutState.message : undefined}
+        />
+      )}
     </div>
   );
 }
@@ -122,24 +132,28 @@ function Identity({ email }: { email: string }) {
   );
 }
 
-function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
-  const [signOutState, signOutFormAction] = useActionState(signOutAction, initialSignOutState);
-
-  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el status.
-  // `navigateAfterMutation` y no `router.push`: el porqué está medido en su docstring.
-  useEffect(() => {
-    if (signOutState.status !== 'success') return;
-    navigateAfterMutation(signOutState.redirectTo);
-  }, [signOutState]);
-
+function Dropdown({
+  email,
+  accountRole,
+  placement,
+  onClose,
+  signOutFormAction,
+  pending,
+  error,
+}: Required<Props> & {
+  onClose: () => void;
+  signOutFormAction: () => void;
+  pending: boolean;
+  error?: string;
+}) {
   return (
     <div
       role="menu"
       className="absolute bg-bg border border-line shadow-card"
       style={{
-        bottom: 'calc(100% + 6px)',
-        left: 8,
-        right: 8,
+        ...(placement === 'header'
+          ? { top: 'calc(100% + 6px)', right: 0, width: 'min(260px, calc(100vw - 32px))' }
+          : { bottom: 'calc(100% + 6px)', left: 8, right: 8 }),
         borderRadius: 'var(--radius)',
         boxShadow: '0 12px 32px rgba(0,0,0,0.10)',
         padding: 6,
@@ -168,12 +182,20 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
         </div>
       </div>
 
-      <MenuLink href="/my-profile" onClick={onClose}>
-        Mi perfil
-      </MenuLink>
-      <MenuLink href="/settings" onClick={onClose}>
-        Ajustes
-      </MenuLink>
+      {accountRole === 'member' ? (
+        <>
+          <MenuLink href="/my-profile" onClick={onClose}>
+            Mi perfil
+          </MenuLink>
+          <MenuLink href="/settings" onClick={onClose}>
+            Ajustes
+          </MenuLink>
+        </>
+      ) : (
+        <MenuLink href="/admin" onClick={onClose}>
+          Backoffice
+        </MenuLink>
+      )}
       <MenuLink href="/help" onClick={onClose}>
         Ayuda y contacto
       </MenuLink>
@@ -181,14 +203,16 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
       <div style={{ height: 1, background: 'var(--color-line-2)', margin: '4px 0' }} />
 
       <form action={signOutFormAction}>
+        {error && (
+          <p role="alert" className="px-2.5 py-2 text-sm text-ink">
+            {error}
+          </p>
+        )}
         <button
           type="submit"
           role="menuitem"
-          // No `onClick={onClose}` here: the server action redirects to `/sign-in`,
-          // which unmounts this dropdown naturally via navigation. If we closed the
-          // dropdown manually in the same event, React could re-render before the
-          // submit and discard the whole form (race observable in E2E with very
-          // fast clicks).
+          disabled={pending}
+          // Mantener el form montado durante el submit evita descartar el envío.
           className={cn(
             'w-full text-left cursor-pointer border-0 bg-transparent',
             'text-st-failed-fg hover:bg-bg-elev',

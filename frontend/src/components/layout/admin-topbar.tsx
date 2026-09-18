@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
+import { AvatarMenu } from './avatar-menu';
 
 /**
  * Topbar del backoffice (port de `admin-shell.jsx::AdmShell` topbar). Breadcrumbs derivados del
@@ -32,7 +33,7 @@ function crumbsFor(pathname: string): string[] {
     .map((s) => SEGMENT_LABELS[s] ?? s);
 }
 
-export function AdminTopbar() {
+export function AdminTopbar({ email }: { email: string }) {
   const pathname = usePathname();
   const crumbs = crumbsFor(pathname);
 
@@ -57,13 +58,14 @@ export function AdminTopbar() {
 
       <div className="flex-1" />
 
-      <div className="flex w-[280px] items-center gap-1.5 rounded-md border border-line bg-bg-card px-2.5 py-1 text-[12px] text-ink-3">
+      <div className="hidden w-[280px] items-center gap-1.5 rounded-md border border-line bg-bg-card px-2.5 py-1 text-[12px] text-ink-3 lg:flex">
         <span aria-hidden="true">⌕</span>
         <span className="flex-1 truncate">Buscar en el backoffice</span>
         <kbd className="rounded-sm border border-line bg-bg-elev px-1 font-mono text-[9.5px] text-ink-3">
           ⌘K
         </kbd>
       </div>
+      <AvatarMenu email={email} accountRole="admin" placement="header" />
     </header>
   );
 }

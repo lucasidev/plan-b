@@ -1,2 +1,2 @@
-export { signOutAction } from './actions';
+export { signOut } from './api';
 export { initialSignOutState, type SignOutState } from './types';

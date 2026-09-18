@@ -2,7 +2,7 @@ import type { Session } from '@/lib/session';
 import { AnonymousFooter } from './anonymous-footer';
 import { AvatarMenu } from './avatar-menu';
 import './planb.css';
-import { BackofficeFooterLink, Sidebar } from './sidebar';
+import { Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 
 export type ShellSession = Session | null;
@@ -16,15 +16,13 @@ type Props = {
 };
 
 /**
- * Chrome de toda la aplicación: sidebar (con `AvatarMenu`, `BackofficeFooterLink` o
+ * Chrome de toda la aplicación: sidebar (con `AvatarMenu` o
  * `AnonymousFooter` en el pie) + topbar + área de contenido con scroll. Un solo shell para leer
  * sin cuenta y para lo que pide cuenta: antes el catálogo público tenía su propio header mínimo,
  * separado de este.
  *
- * El pie y la nav de `member` (Mis aportes, Ajustes gateado) son del alumno, no de cualquier
- * sesión: un admin que entra a leer el catálogo antes de ir al backoffice vería, con
- * `role !== 'member'`, links que el guard de `(member)` solo rebota, así que en su lugar el pie
- * es un único link a `/admin`.
+ * La navegación de cuenta distingue alumno y admin; ambos pueden cerrar sesión desde
+ * el sidebar y el header. El admin conserva su acceso al backoffice.
  *
  * Server component (no `'use client'`): solo recibe la sesión (o `null`) resuelta en el layout y
  * compone los tres bloques. La interactividad vive en los hijos (Sidebar, Topbar, AvatarMenu
@@ -71,6 +69,5 @@ export function AppShell({ session, children, crumbsSlot }: Props) {
 
 function footerFor(session: ShellSession): React.ReactNode {
   if (!session) return <AnonymousFooter />;
-  if (session.role === 'member') return <AvatarMenu email={session.email} />;
-  return <BackofficeFooterLink />;
+  return <AvatarMenu email={session.email} accountRole={session.role} />;
 }

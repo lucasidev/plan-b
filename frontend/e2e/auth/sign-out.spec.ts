@@ -1,22 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { LUCIA } from '../helpers/personas';
+import { ADMIN, LUCIA } from '../helpers/personas';
 
-/**
- * E2E del sign-out (US-029).
- *
- * Flow: login → avatar dropdown del sidebar → "Cerrar sesión" → /sign-in.
- * Después validamos que el guard del layout (member) bloquee volver a
- * /home sin sesión, redirigiendo a /sign-in.
- *
- * El componente del avatar dropdown está en
- * `components/layout/avatar-menu.tsx`. Es un button con aria-haspopup
- * que abre un menú con role="menu" + role="menuitem" para los items.
- * La acción de "Cerrar sesión" es un <button type="submit"> dentro de
- * un <form action={signOutAction}>.
- *
- * Casos negativos del endpoint backend (sign-out con cookie inválida,
- * sin cookie) se cubren en integration tests, no acá.
- */
+/** Cerrar sesión debe ser accesible para ambos roles en cada shell y tamaño de pantalla. */
 
 test.describe('sign-out (US-029)', () => {
   test('Lucía cierra sesión desde el avatar y queda fuera del área autenticada', async ({
@@ -36,10 +21,7 @@ test.describe('sign-out (US-029)', () => {
     await page.getByRole('button', { name: /lucia mansilla/i }).click();
     await expect(page.getByRole('menu')).toBeVisible();
 
-    // 3. Click en "Cerrar sesión" del dropdown. Es un submit button dentro
-    // de <form action={signOutAction}>; el server action revoca refresh,
-    // limpia cookies y redirect('/sign-in'). Soft navigation RSC, no "load"
-    // event — usamos toHaveURL para evitar el timeout de waitForURL.
+    // 3. El action revoca el refresh y borra las cookies; el cliente navega a Ingresar.
     await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
 
@@ -47,4 +29,114 @@ test.describe('sign-out (US-029)', () => {
     await page.goto('/home');
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 10_000 });
   });
+});
+
+for (const persona of [ADMIN, LUCIA]) {
+  for (const { viewport, placement } of [
+    { viewport: { width: 1280, height: 800 }, placement: 'header' },
+    { viewport: { width: 393, height: 851 }, placement: 'header' },
+    { viewport: { width: 1280, height: 800 }, placement: 'sidebar' },
+  ]) {
+    test(`${persona === ADMIN ? 'admin' : 'alumno'} cierra sesión desde el catálogo, ${placement} a ${viewport.width}px`, async ({
+      page,
+      context,
+      playwright,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto('/sign-in');
+      await page.getByLabel(/tu email/i).fill(persona.email);
+      await page.getByLabel(/^contraseña$/i).fill(persona.password);
+      await page.getByRole('button', { name: /^entrar$/i }).click();
+      await expect(page).not.toHaveURL(/\/sign-in/, { timeout: 15_000 });
+      await page.goto('/universities');
+
+      const refresh = (await context.cookies()).find((cookie) => cookie.name === 'planb_refresh');
+      expect(refresh).toBeTruthy();
+      const trigger =
+        placement === 'header'
+          ? page.getByRole('button', { name: /menú de cuenta/i })
+          : page.locator('aside').getByRole('button', { name: persona.email });
+      await trigger.click();
+      await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();
+      await expect(page).toHaveURL(/\/sign-in(\?|$)/);
+      expect(
+        (await context.cookies()).filter((cookie) =>
+          ['planb_session', 'planb_refresh'].includes(cookie.name),
+        ),
+      ).toEqual([]);
+
+      const protectedPath = persona === ADMIN ? '/admin/universities' : '/reviews/mine';
+      await page.goto(protectedPath);
+      await expect(page).toHaveURL(/\/sign-in(\?|$)/);
+      const protectedApi =
+        persona === ADMIN ? '/api/reviews/curation/free-texts' : '/api/me/student-profile';
+      expect((await page.request.get(protectedApi)).status()).toBe(401);
+
+      // Un refresh capturado antes del cierre tampoco puede volver a abrir la sesión.
+      const replay = await playwright.request.newContext();
+      try {
+        const response = await replay.post(
+          new URL('/api/identity/refresh', page.url()).toString(),
+          {
+            headers: { Cookie: `planb_refresh=${refresh?.value}` },
+          },
+        );
+        expect(response.status()).toBe(401);
+      } finally {
+        await replay.dispose();
+      }
+    });
+  }
+}
+
+for (const placement of ['sidebar', 'header']) {
+  test(`admin cierra sesión desde el backoffice, ${placement}`, async ({ page, context }) => {
+    await page.goto('/sign-in');
+    await page.getByLabel(/tu email/i).fill(ADMIN.email);
+    await page.getByLabel(/^contraseña$/i).fill(ADMIN.password);
+    await page.getByRole('button', { name: /^entrar$/i }).click();
+    await expect(page).toHaveURL(/\/admin/);
+    const trigger =
+      placement === 'header'
+        ? page.getByRole('button', { name: /menú de cuenta/i })
+        : page.locator('aside').getByRole('button', { name: /admin@planb.local/i });
+    await trigger.click();
+    await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();
+    await expect(page).toHaveURL(/\/sign-in(\?|$)/);
+    expect(
+      (await context.cookies()).filter((cookie) =>
+        ['planb_session', 'planb_refresh'].includes(cookie.name),
+      ),
+    ).toEqual([]);
+    await page.goto('/admin/universities');
+    await expect(page).toHaveURL(/\/sign-in(\?|$)/);
+  });
+}
+
+test('si falla el cierre, informa el error y permite reintentar sin fingir una sesión cerrada', async ({
+  page,
+  context,
+}) => {
+  await page.goto('/sign-in');
+  await page.getByLabel(/tu email/i).fill(ADMIN.email);
+  await page.getByLabel(/^contraseña$/i).fill(ADMIN.password);
+  await page.getByRole('button', { name: /^entrar$/i }).click();
+  await expect(page).toHaveURL(/\/admin/);
+  await page.goto('/universities');
+  await page.route('**/api/identity/sign-out', (route) => route.abort('failed'));
+  await page.getByRole('button', { name: /menú de cuenta/i }).click();
+  await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'No pudimos cerrar la sesión' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/universities$/);
+  expect((await context.cookies()).some((cookie) => cookie.name === 'planb_session')).toBe(true);
+  await page.unroute('**/api/identity/sign-out');
+  await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();
+  await expect(page).toHaveURL(/\/sign-in(\?|$)/);
+  expect(
+    (await context.cookies()).filter((cookie) =>
+      ['planb_session', 'planb_refresh'].includes(cookie.name),
+    ),
+  ).toEqual([]);
 });
