@@ -16,7 +16,7 @@ Y lo que le pedimos a las instituciones se lo aplicamos al equipo: el registro d
 
 ## Stories
 
-Las 5 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
+Las 6 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
 
 | ID | De qué trata |
 |---|---|
@@ -25,6 +25,7 @@ Las 5 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 | [US-217](stories/US-217-make-verification-and-moderation-exclusive/README.md) | Verificación y moderación son roles excluyentes |
 | [US-218](stories/US-218-make-the-teams-actions-reviewable/README.md) | Revisar lo que hizo el equipo |
 | [US-219](stories/US-219-revoke-access-and-keep-the-log/README.md) | Dar de baja a alguien del equipo |
+| [US-236](stories/US-236-manage-student-accounts/README.md) | Gestionar el acceso de las cuentas de alumnos |
 
 Las filas con "tema del mapa" vienen de los grupos transversales del mapa (BO6 · Y quién nos mira a nosotros): son temas, no actividades, y cada uno de sus requisitos vive en la única épica que lo implementa. El índice del [catálogo](../../README.md) conserva el tema como lista.
 

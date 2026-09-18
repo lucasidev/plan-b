@@ -8,13 +8,13 @@
 
 ## Qué stories resuelve
 
-US-212 (la cola desbordada: cuánto se tarda, cómo se prioriza), US-213 (la alarma de cuentas correlacionadas y el conteo congelado), US-214 (los reclamos agrupados por objetivo y ventana de 72 horas). De [Cortar los accesos](../../../cut-the-access/README.md#stories): US-217 (moderación y verificación son roles excluyentes: quien tiene este rol no puede tener también el de verificación). La letra completa: [README de la épica](../../README.md#stories); para US-217, el [README de Cortar los accesos](../../../cut-the-access/README.md#stories).
+US-209 (revisar el campo libre que el filtro retuvo), US-212 (la cola desbordada: cuánto se tarda, cómo se prioriza), US-213 (la alarma de cuentas correlacionadas y el conteo congelado), US-214 (los reclamos agrupados por objetivo y ventana de 72 horas). De [Cortar los accesos](../../../cut-the-access/README.md#stories): US-217 (moderación y verificación son roles excluyentes: quien tiene este rol no puede tener también el de verificación). La letra completa: [README de la épica](../../README.md#stories); para US-217, el [README de Cortar los accesos](../../../cut-the-access/README.md#stories).
 
 ## Qué muestra
 
 Arriba, el criterio escrito de cada guardia a la vista (texto exacto pendiente, ver "Lo que esta ficha deja abierto").
 
-- **Filtro grueso del campo libre**: la cola de comentarios que el filtro automático marcó (ADR-0055, repropuesto para proteger al equipo de curaduría, no al feed público) antes de que pasen a destilarse o citarse en una nota editorial. Liberar lo manda a la cola normal de curaduría; descartarlo lo saca sin que llegue a destilarse ni citarse, y sin que se haya publicado nunca.
+- **Filtro grueso del campo libre**: la cola de comentarios que el filtro automático marcó (ADR-0055, repropuesto para proteger al equipo de curaduría, no al feed público) antes de que pasen a destilarse o citarse en una nota editorial. Liberar lo manda a la cola normal de curaduría; descartarlo lo saca sin que llegue a destilarse ni citarse, y sin que se haya publicado nunca. La decisión no altera las respuestas cerradas de la reseña (US-209).
 - **Canal de reclamos**: la cola de lo que una institución objeta (una nota editorial o un dato relevado como publicado), con su motivo. Resolver es contrastar contra la fuente y elegir: se corrige el dato o se retira la nota, o el dato queda igual; cualquiera de las dos queda con quién lo resolvió y cuándo. Ningún reclamo baja nada solo.
 - **La alarma de cuentas correlacionadas**: un grupo con la misma fecha de alta, el mismo patrón y sin trayectoria propia, reseñando la misma cátedra. Mira la procedencia, no el volumen: cuarenta cuentas con historia distinta no la disparan. Marcarlas les saca la voz de cualquier agregado; los conteos de la cátedra se pueden congelar sin borrar nada (US-213).
 

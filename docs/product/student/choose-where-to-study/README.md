@@ -12,7 +12,7 @@ Leer el escrutinio sin cuenta para decidir dónde estudiar. La ficha de una cát
 
 ## Stories
 
-Las 12 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
+Las 15 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
 
 > US-127 y US-133 no salen de reseñas: son datos oficiales, relevados contra fuente pública (SPU/CONEAU) y publicados siempre con su fuente y su fecha ([ADR-0085](../../../decisions/0085-three-instruments-and-official-data.md)). US-143 (la co-cursada) y US-152 (Reseñar) sí salen de lo que declara quien reseña, pero de la capa de contexto (cuándo cursaste, cómo terminó), no del catálogo de frases ([ADR-0082](../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)): se preguntan de a uno, en el momento en que aparecen, nunca como inventario, y el silencio no se infiere.
 
@@ -21,6 +21,7 @@ Las 12 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 | [US-221](stories/US-221-see-the-instrument-working-on-arrival/README.md) | Entender qué es esto viendo una ficha real |
 | [US-222](stories/US-222-browse-what-there-is-to-study/README.md) | Ver qué hay para estudiar sin saber qué buscar |
 | [US-232](stories/US-232-see-what-the-institution-publishes/README.md) | Ver qué publica cada institución y qué no |
+| [US-235](stories/US-235-see-who-and-where-the-institution-is/README.md) | Ver quién es y dónde queda la institución |
 | [US-127](stories/US-127-see-how-long-it-really-takes/README.md) | Ver cuánto tarda de verdad la carrera |
 | [US-128](stories/US-128-compare-the-same-career-side-by-side/README.md) | Comparar la misma carrera en varias instituciones |
 | [US-129](stories/US-129-attribute-difficulty-to-career-or-institution/README.md) | Atribuir la dificultad: carrera o facultad |

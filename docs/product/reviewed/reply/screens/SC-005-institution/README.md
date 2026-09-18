@@ -8,13 +8,13 @@
 
 ## Qué stories resuelve
 
-[US-232](../../../../student/choose-where-to-study/stories/US-232-see-what-the-institution-publishes/README.md) (el checklist de transparencia: qué publica y qué no, con su fecha; la lee quien está eligiendo). Dos **huecos declarados**, ver "Lo que esta ficha deja abierto": [US-177](../../stories/US-177-track-change-across-periods/README.md) (la serie de sus propios conteos por período, "si mejoré desde que lo publicaron") y el bloque de la respuesta institucional en sí (con nombre y cargo, o "Sin respuesta · avisada el [fecha]" cuando no hay nada, igual que en la Ficha de cátedra), que todavía no tiene story dueña.
+[US-232](../../../../student/choose-where-to-study/stories/US-232-see-what-the-institution-publishes/README.md) (el checklist de transparencia: qué publica y qué no, con su fecha; la lee quien está eligiendo) y [US-235](../../../../student/choose-where-to-study/stories/US-235-see-who-and-where-the-institution-is/README.md) (identidad, URL y ubicación de la institución y sus unidades). Dos **huecos declarados**, ver "Lo que esta ficha deja abierto": [US-177](../../stories/US-177-track-change-across-periods/README.md) (la serie de sus propios conteos por período, "si mejoré desde que lo publicaron") y el bloque de la respuesta institucional en sí (con nombre y cargo, o "Sin respuesta · avisada el [fecha]" cuando no hay nada, igual que en la Ficha de cátedra), que todavía no tiene story dueña.
 
 ## Qué muestra
 
 Nunca un número que mezcle plantel, transparencia y cobertura ([ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md)):
 
-1. **Cabecera**: el eyebrow con el tipo, del relevamiento ("Universidad · privada"); el nombre; y una línea con cuántas carreras tiene, en cuántas facultades, y la carrera medida cuando hay una ("56 carreras en 4 facultades. Una carrera medida: la Tecnicatura en Desarrollo y Calidad de Software."). Dice "unidades académicas" cuando alguna unidad no es una facultad.
+1. **Cabecera**: el eyebrow con el tipo, del relevamiento ("Universidad · privada"); el logo, el nombre, la URL oficial y la ubicación; y una línea con cuántas carreras tiene, en cuántas facultades, y la carrera medida cuando hay una ("56 carreras en 4 facultades. Una carrera medida: la Tecnicatura en Desarrollo y Calidad de Software."). Dice "unidades académicas" cuando alguna unidad no es una facultad. Si falta logo, URL o ubicación, lo dice sin inventar un valor.
 2. **La tira de números**: estudiantes y egresados con su período ("7.660 estudiantes en 2023"; "No publicado" cuando la fuente no los da para esta institución), carreras con reseñas y cuántos datos de transparencia publica sobre los relevados ("0 de 4 datos de transparencia que la institución publica").
 3. **Facultades y carreras**: todas las carreras de la institución, agrupadas por facultad, cada una con link a su [Ficha de carrera](../../../../student/choose-where-to-study/screens/SC-001-career/README.md) y su estado: "137 reseñas" cuando junta reseñas publicadas, "con reseñas" cuando las que tiene todavía no alcanzan, y atenuada cuando no tiene ninguna; las que no son oficiales llevan la marca "No oficial". Primero las facultades y las carreras con reseñas, de más a menos, y después el orden alfabético; las carreras sin facultad asignada, al final. Ninguna carrera se esconde.
 4. **A la derecha** (en pantalla ancha; debajo, en celular):
@@ -44,9 +44,7 @@ Llega desde: Explorar, Buscar, la [Ficha de carrera](../../../../student/choose-
 
 ## Lo que esta ficha deja abierto
 
-- **La ciudad y la provincia** en la cabecera: el catálogo no las tiene todavía ([#532](https://github.com/lucasidev/plan-b/issues/532), R8).
 - **Por qué falta el número de estudiantes o de egresados**: la tira dice "No publicado" y el relevamiento guarda la razón (el anuario no abre por facultad regional, la institución no informó), que la ficha todavía no muestra.
 - **La nota del equipo sobre la institución** ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)): la Ficha de carrera ya muestra la suya; esta todavía no lee ninguna.
 - **La serie por período** ([US-177](../../stories/US-177-track-change-across-periods/README.md)): la tira muestra el último período relevado, no la evolución.
 - **El bloque de conteos propios al que responde la institución**: [ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md) fija que la institución responde "sobre lo que se dice de ella como sujeto (trámites, título, trato)", que es el instrumento administrativo de [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md); [US-227](../../stories/US-227-claim-an-institutional-position-to-reply/README.md) no tiene todavía dónde publicarse en esta ficha.
-- **Qué story carga y mantiene la transparencia relevada**: ninguna story de ninguna épica reclama hoy esa propiedad.

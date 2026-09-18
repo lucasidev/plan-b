@@ -14,7 +14,7 @@ También es donde se resuelven las situaciones que el mapa agrupaba aparte como 
 
 ## Stories
 
-Las 18 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
+Las 19 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
 
 | ID | De qué trata |
 |---|---|
@@ -36,6 +36,7 @@ Las 18 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 | [US-161](stories/US-161-resume-a-draft-review/README.md) | Retomar una reseña a medias |
 | [US-162](stories/US-162-see-the-impact-of-my-review/README.md) | Ver qué cambió con mi aporte |
 | [US-163](stories/US-163-review-the-same-subject-twice/README.md) | Reseñar la misma materia dos veces |
+| [US-233](stories/US-233-share-private-course-context/README.md) | Contar cómo cursé y cuántas veces |
 
 Las stories que citan "tema del mapa" en su nota vienen de los grupos transversales del mapa (T2 · Cuando el riesgo es real; T3 · Cuando el catálogo no alcanza): son temas, no actividades, y cada una vive en la única épica que la implementa. El índice del [catálogo](../../README.md) conserva el tema como lista.
 
