@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { formatTermOfYear } from '@/lib/academic-terms';
 import { cn } from '@/lib/utils';
 import { deactivateSubjectAction, reactivateSubjectAction } from '../actions';
@@ -127,12 +128,12 @@ function SubjectRow({ basePath, subject }: { basePath: string; subject: AdminSub
         <div className="flex items-center justify-end gap-1">
           {/* La cátedra es de una materia, así que se entra desde acá. El buscador de
               /admin/chairs queda como atajo para quien ya sabe a qué materia va. */}
-          <Link
+          <FallbackLink
             href={`/admin/chairs?subjectId=${subject.id}`}
             className="rounded-md px-2 py-1 text-[11.5px] text-ink-2 hover:bg-bg-elev hover:text-ink"
           >
             Cátedras
-          </Link>
+          </FallbackLink>
           {subject.isActive && (
             <Link
               href={`${basePath}/${subject.id}/edit`}

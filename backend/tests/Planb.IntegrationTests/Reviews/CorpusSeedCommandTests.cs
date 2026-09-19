@@ -55,15 +55,25 @@ public class CorpusSeedCommandTests
 
     private static async Task RunCommandAsync(string command, string connectionString)
     {
+        // El host usa su salida real: la carpeta de tests contiene assemblies que su .deps.json no declara.
+        var testOutput = new DirectoryInfo(AppContext.BaseDirectory);
+        var backend = testOutput;
+        while (backend is not null && !File.Exists(Path.Combine(backend.FullName, "Planb.sln")))
+            backend = backend.Parent;
+        backend.ShouldNotBeNull("The command test requires the built backend checkout.");
+        var hostDirectory = Path.Combine(backend.FullName, "host", "Planb.Api", "bin",
+            testOutput.Parent!.Name, testOutput.Name);
+        var hostAssembly = Path.Combine(hostDirectory, "Planb.Api.dll");
+        File.Exists(hostAssembly).ShouldBeTrue("Build the API with the same configuration as the integration tests.");
         var start = new ProcessStartInfo("dotnet")
         {
-            WorkingDirectory = AppContext.BaseDirectory,
+            WorkingDirectory = hostDirectory,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true,
         };
-        start.ArgumentList.Add(typeof(Program).Assembly.Location);
+        start.ArgumentList.Add(hostAssembly);
         start.ArgumentList.Add(command);
         start.Environment["ASPNETCORE_ENVIRONMENT"] = "Production";
         start.Environment["DOTNET_ENVIRONMENT"] = "Production";

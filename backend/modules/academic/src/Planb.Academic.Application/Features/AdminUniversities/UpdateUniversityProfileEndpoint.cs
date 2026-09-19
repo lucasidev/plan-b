@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Carter;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
@@ -65,7 +66,7 @@ public sealed class UpdateUniversityProfileEndpoint : ICarterModule
 }
 
 public sealed record UpdateUniversityProfileRequest(
-    string? WebsiteUrl,
-    string? Address,
-    string? Province,
-    string? LocalityText);
+    [property: JsonRequired] string? WebsiteUrl,
+    [property: JsonRequired] string? Address,
+    [property: JsonRequired] string? Province,
+    [property: JsonRequired] string? LocalityText);

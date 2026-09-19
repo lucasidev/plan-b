@@ -68,6 +68,39 @@ public class UniversityProfileEndpointTests : IClassFixture<RegisterApiFixture>
         (await logo.Content.ReadAsByteArrayAsync()).ShouldBe(Convert.FromBase64String(FirstPng));
     }
 
+    [Fact]
+    public async Task Missing_profile_fields_do_not_clear_data_but_explicit_nulls_do()
+    {
+        var admin = await AdminAsync();
+        var id = await CreateUniversityAsync(admin.Client);
+        var path = $"/api/academic/universities/{id}/profile";
+        (await admin.Client.PutAsJsonAsync(path, new
+        {
+            websiteUrl = "https://example.edu.ar",
+            address = "Av. Central 100",
+            province = (string?)null,
+            localityText = (string?)null,
+        })).StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        (await admin.Client.PutAsJsonAsync(path, new { })).StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await admin.Client.PutAsJsonAsync(path, new { websiteUrl = (string?)null }))
+            .StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var unchanged = (await admin.Client.GetFromJsonAsync<ProfileDto>(path))!;
+        unchanged.WebsiteUrl.ShouldBe("https://example.edu.ar");
+        unchanged.Address.ShouldBe("Av. Central 100");
+
+        (await admin.Client.PutAsJsonAsync(path, new
+        {
+            websiteUrl = (string?)null,
+            address = (string?)null,
+            province = (string?)null,
+            localityText = (string?)null,
+        })).StatusCode.ShouldBe(HttpStatusCode.OK);
+        var cleared = (await admin.Client.GetFromJsonAsync<ProfileDto>(path))!;
+        cleared.WebsiteUrl.ShouldBeNull();
+        cleared.Address.ShouldBeNull();
+    }
+
     // US-234 E2: los conteos reflejan unidades, carreras y planes sin multiplicar filas.
     [Fact]
     public async Task Public_profile_returns_exact_catalog_counts()
