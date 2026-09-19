@@ -50,6 +50,7 @@ public sealed class CorpusSeedHostedService : IHostedService
         try
         {
             using var scope = _sp.CreateScope();
+            await CorpusAccountsSeed.SeedAsync(scope.ServiceProvider, ct);
             var luciaAccountId = await SeededPersonaAccountResolver.ResolveAsync(
                 scope.ServiceProvider, SeededPersonaAccountResolver.LuciaEmail, ct);
             var matiasAccountId = await SeededPersonaAccountResolver.ResolveAsync(

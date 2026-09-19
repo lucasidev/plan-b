@@ -388,6 +388,26 @@ public static class WriteEndpoints
             ValidBody: () => new { text = "Nota editorial de prueba" },
             LongStringBody: () => new { text = LongString }),
 
+        new WriteEndpointCase("Academic_UpdateUniversityProfile", HttpMethod.Put, WriteAccess.Admin,
+            ids => $"/api/academic/universities/{ids[0]}/profile", [UnstaId],
+            ValidBody: () => new { websiteUrl = "https://example.edu.ar", address = "Dirección 123", province = "Tucumán", localityText = "San Miguel de Tucumán" }),
+
+        new WriteEndpointCase("Academic_UpdateUniversityLogo", HttpMethod.Put, WriteAccess.Admin,
+            ids => $"/api/academic/universities/{ids[0]}/logo", [UnstaId],
+            ValidBody: () => new { pngBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADElEQVR42mNk+M/wHwAF/gL+e2j0xQAAAABJRU5ErkJggg==" }),
+
+        new WriteEndpointCase("Academic_CreateAcademicUnit", HttpMethod.Post, WriteAccess.Admin,
+            ids => $"/api/academic/universities/{ids[0]}/units", [UnstaId],
+            ValidBody: () => new { name = Unique("Unidad"), slug = Unique("unidad"), address = "Dirección 123", province = "Tucumán", localityText = "San Miguel de Tucumán" }),
+
+        new WriteEndpointCase("Academic_UpdateAcademicUnit", HttpMethod.Put, WriteAccess.Admin,
+            ids => $"/api/academic/universities/{ids[0]}/units/{ids[1]}", [UnstaId, Guid.NewGuid()],
+            ValidBody: () => new { name = "Unidad", slug = "unidad", address = "Dirección 123", province = "Tucumán", localityText = "San Miguel de Tucumán" }),
+
+        new WriteEndpointCase("Academic_AssignCareerAcademicUnit", HttpMethod.Put, WriteAccess.Admin,
+            ids => $"/api/academic/careers/{ids[0]}/academic-unit", [TudcsCareerId],
+            ValidBody: () => new { academicUnitId = (Guid?)null }),
+
         new WriteEndpointCase("Reviews_WithdrawEditorialNote", HttpMethod.Post, WriteAccess.Admin,
             ids => $"/api/reviews/curation/notes/{ids[0]}/withdraw", [Guid.NewGuid()]),
     ];

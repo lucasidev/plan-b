@@ -89,6 +89,8 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
                     {
                         // Siete aprueban, tres recursan: 7 de cada 10 llegan.
                         new { itemCode = "COURSE_OUTCOME", optionValue = i < 7 ? 1 : 3 },
+                        new { itemCode = "COURSE_MODALITY", optionValue = 2 },
+                        new { itemCode = "COURSE_ATTEMPTS", optionValue = 3 },
                         // Ocho de diez eligen la negativa de esta frase.
                         new { itemCode = "CHAIR_ANSWERS_IN_CLASS", optionValue = i < 8 ? 3 : 1 },
                     },
@@ -193,6 +195,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
         facts.StudentExperience.ShouldBeEmpty();
     }
 
+    // US-233 X1: las respuestas privadas existen en las diez reseñas que habilitan la publicación.
     [Fact]
     public async Task The_payload_never_carries_who_reviewed_or_how_anyone_finished()
     {
@@ -216,5 +219,15 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
         codes.ShouldNotContain("COURSE_OUTCOME");
         codes.ShouldNotContain("COURSE_MODALITY");
         codes.ShouldNotContain("COURSE_ATTEMPTS");
+        foreach (var path in new[]
+        {
+            $"/api/reviews/subjects/{Subject211}/facts",
+            "/api/reviews/careers/00000002-0000-4000-a000-000000000003/facts",
+        })
+        {
+            var aggregate = await _anonymous.GetOkStringAsync(path);
+            aggregate.ShouldNotContain("COURSE_MODALITY");
+            aggregate.ShouldNotContain("COURSE_ATTEMPTS");
+        }
     }
 }

@@ -19,4 +19,7 @@ Como Sofía, quiero cargar y mantener una institución completa desde Catálogo,
 
 ## Notas
 
+El logo se carga como PNG acotado y queda asociado al ID estable de la institución, según
+[ADR-0098](../../../../../decisions/0098-small-institution-logos-are-stored-with-the-catalog.md).
+
 Las afirmaciones oficiales siguen el modelo de [ADR-0090](../../../../../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md). La lectura pública de identidad y ubicación pertenece a [US-235](../../../../student/choose-where-to-study/stories/US-235-see-who-and-where-the-institution-is/README.md); esta story es el trabajo de Sofía que mantiene su fuente.

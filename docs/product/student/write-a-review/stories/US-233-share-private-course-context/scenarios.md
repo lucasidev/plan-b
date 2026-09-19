@@ -14,5 +14,5 @@
 
 ## Edge cases
 
-- Dado que diez cuentas respondieron ambas preguntas para la misma cátedra, Cuando una persona sin sesión consulta las fichas de cátedra, materia, carrera e institución, Entonces ninguna respuesta ni distribución de modalidad o cantidad de cursadas aparece en los payloads públicos.
+**X1.** Dado que diez cuentas respondieron ambas preguntas para la misma cátedra, Cuando una persona sin sesión consulta las fichas de cátedra, materia, carrera e institución, Entonces ninguna respuesta ni distribución de modalidad o cantidad de cursadas aparece en los payloads públicos.
 - Una reseña existente sin estas respuestas sigue siendo válida: el silencio no se convierte en una opción ni entra a ningún denominador.

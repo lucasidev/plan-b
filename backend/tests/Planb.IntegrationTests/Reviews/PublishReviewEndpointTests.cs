@@ -1,7 +1,11 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Planb.IntegrationTests.Infrastructure;
 using Planb.Reviews.Application.Features.PublishReview;
+using Planb.Reviews.Domain.Reviews;
+using Planb.Reviews.Infrastructure.Persistence;
 using Shouldly;
 using Xunit;
 
@@ -25,6 +29,44 @@ namespace Planb.IntegrationTests.Reviews;
 /// </summary>
 public class PublishReviewEndpointTests : IClassFixture<RegisterApiFixture>
 {
+    // US-233 E1, N1: el contexto se persiste solo cuando la persona lo responde.
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Optional_context_is_saved_only_when_answered(bool answerContext)
+    {
+        var auth = await SetupStudentAsync("context");
+        var answers = new List<(string Code, short Value)> { ("COURSE_OUTCOME", 1) };
+        if (answerContext) answers.AddRange([("COURSE_MODALITY", 2), ("COURSE_ATTEMPTS", 2)]);
+        var response = await auth.Client.PostAsJsonAsync("/api/reviews/courses",
+            BodyWith(Subject211, Term2025_1c, null, answers.ToArray()));
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var saved = (await response.Content.ReadFromJsonAsync<PublishReviewResponse>())!;
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ReviewsDbContext>();
+        var review = await db.Reviews.Include(r => r.Answers).SingleAsync(r => r.Id == new ReviewId(saved.Id));
+        var contextIds = await db.Items.Where(i => i.Code == "COURSE_MODALITY" || i.Code == "COURSE_ATTEMPTS")
+            .Select(i => i.Id).ToListAsync();
+        var stored = review.Answers.Where(a => contextIds.Contains(a.ItemId)).ToList();
+        stored.Count.ShouldBe(answerContext ? 2 : 0);
+        stored.ShouldAllBe(a => a.OptionValue == 2);
+    }
+
+    // US-233 N2: un cliente no puede inventar una opción del contexto.
+    [Theory]
+    [InlineData("COURSE_MODALITY")]
+    [InlineData("COURSE_ATTEMPTS")]
+    public async Task Unknown_context_option_is_rejected(string code)
+    {
+        var auth = await SetupStudentAsync("invalid-context");
+        var response = await auth.Client.PostAsJsonAsync("/api/reviews/courses",
+            BodyWith(Subject211, Term2025_1c, null, ("COURSE_OUTCOME", 1), (code, 99)));
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ReviewsDbContext>();
+        (await db.Reviews.AnyAsync(r => r.AccountId == auth.UserId.Value)).ShouldBeFalse();
+    }
+
     private readonly RegisterApiFixture _fixture;
 
     // Seed determinístico compartido con los tests de Academic.

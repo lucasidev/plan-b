@@ -29,6 +29,24 @@ Alumna avanzada de 3° año Sistemas, con historial cargado. Es la persona con l
 
 **Hubo también un alumno recién entrando (Mateo Giménez), y se fue el 2026-08-30** con el onboarding que cubría. Existía solo para probar "usuario sin profile va a onboarding"; con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) esa pantalla se retiró (la cuenta se crea en el Registro y desde ahí se lee y se reseña, sin paso intermedio), así que la persona se quedó sin camino que cubrir. Vuelve si aparece un caso de uso real para un alumno recién registrado sin nada más declarado.
 
+## Cuentas sintéticas del corpus (R8)
+
+`seed-db` y el arranque en Development con `PLANB_SEED_CORPUS` crean las cuentas del rango
+`00000020-…` antes de sembrar sus reseñas. Cada cuenta tiene email verificado y un perfil en el
+plan de las materias que reseña; el manifiesto rechaza una cuenta usada en dos planes distintos.
+Los correos tienen la forma `estudiante.0001@corpus.planb.invalid`, en un dominio reservado.
+Las fechas de registro se distribuyen determinísticamente a lo largo de 2023, antes de las reseñas.
+
+El hash `CORPUS_NO_LOGIN` no es una contraseña válida. Las cuentas además quedan deshabilitadas:
+no pueden iniciar sesión, recuperar contraseña ni renovar una sesión. El dominio rechaza su
+reactivación y el listado administrativo de alumnos las excluye. La siembra no emite eventos
+de registro ni envía correos. Al repetirse conserva cuentas, perfiles y reseñas; si un ID reservado
+ya existe con otra identidad o estado, falla en vez de sobrescribirlo.
+
+El host deriva las cuentas de `CorpusSeedData.AccountSubjects` y resuelve sus planes y carreras
+contra `AcademicSeedData`. Incluye las seis cuentas del tramo posterior al corte de serie. Lucía
+y Matías conservan sus credenciales de prueba y sus reseñas propias.
+
 ## Member personas: R6 (corpus real)
 
 ### Matías Ledesma

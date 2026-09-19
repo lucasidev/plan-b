@@ -12,6 +12,7 @@ using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
 using Planb.Academic.Infrastructure.Georef;
+using Planb.Academic.Application.Abstractions.Georef;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.SharedKernel.Abstractions.Clock;
 
@@ -236,28 +237,37 @@ public sealed class AcademicSeeder
     }
 
     /// <summary>
-    /// Resuelve la localidad de cada unidad pendiente, una llamada a Georef por texto de localidad
-    /// distinto (nueve en la Guía SIU, no una por unidad): varias unidades comparten domicilio.
+    /// Resuelve la localidad de cada unidad pendiente, una llamada a Georef por par localidad y
+    /// provincia distinto (nueve en la Guía SIU, no una por unidad): varias unidades comparten
+    /// domicilio.
     /// Si Georef no responde para un grupo, esas unidades quedan sin localidad y el seed sigue.
     /// </summary>
     private async Task ResolveLocalitiesAsync(IReadOnlyList<AcademicUnit> units, CancellationToken ct)
     {
         if (units.Count == 0) return;
 
-        var byLocalityText = units
-            .Select(unit => (Unit: unit, LocalityText: GeorefAddressParsing.ExtractLocality(unit.Address)))
-            .Where(x => x.LocalityText is not null)
-            .GroupBy(x => x.LocalityText!, x => x.Unit, StringComparer.OrdinalIgnoreCase);
+        var byLocalityAndProvince = units
+            .Select(unit => (
+                Unit: unit,
+                LocalityText: GeorefAddressParsing.ExtractLocality(unit.Address),
+                Province: GeorefAddressParsing.ExtractProvince(unit.Address)))
+            .Where(x => x.LocalityText is not null && x.Province is not null)
+            .GroupBy(x => (x.LocalityText!, x.Province!));
 
         var resolved = 0;
-        foreach (var group in byLocalityText)
+        foreach (var group in byLocalityAndProvince)
         {
-            var found = await _georef.ResolveAsync(group.Key, ct);
+            foreach (var unit in group)
+            {
+                unit.Unit.SetProvince(group.Key.Item2, _clock);
+            }
+
+            var found = await _georef.ResolveAsync(group.Key.Item1, group.Key.Item2, ct);
             if (found is null) continue;
 
             foreach (var unit in group)
             {
-                unit.ResolveLocality(found.Id, found.Name, _clock);
+                unit.Unit.ResolveLocality(found.Id, found.Name, _clock);
                 resolved++;
             }
         }

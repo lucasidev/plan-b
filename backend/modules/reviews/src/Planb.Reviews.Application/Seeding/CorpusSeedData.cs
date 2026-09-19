@@ -36,9 +36,8 @@ namespace Planb.Reviews.Application.Seeding;
 ///
 /// <para>
 /// <b>Las cuentas son sintéticas</b>, guids del rango <c>00000020-…</c>. Una reseña referencia a su
-/// cuenta por id y sin FK (ADR-0017), así que el corpus no necesita usuarios de verdad y no le pide
-/// nada a identity. Ninguna de esas cuentas puede iniciar sesión, que es lo correcto: representan a
-/// los que ya reseñaron, no a nadie que vaya a entrar.
+/// cuenta por id y sin FK (ADR-0017). El host siembra esas cuentas en identity antes del corpus,
+/// verificadas, con perfil y sin acceso: representan a quienes ya reseñaron.
 /// </para>
 ///
 /// <para>
@@ -308,6 +307,12 @@ public static class CorpusSeedData
 
     /// <summary>Todas las cursadas del corpus, en orden estable.</summary>
     public static IReadOnlyList<SeededReview> Reviews { get; } = Build();
+
+    /// <summary>Incluye las cuentas del tramo posterior al corte, sin depender de su frase sucesora.</summary>
+    public static IEnumerable<(int AccountIndex, Guid SubjectId)> AccountSubjects =>
+        Reviews.Concat(PostSeriesCutReviews(SyllabusUpfront))
+            .Where(r => r.AccountIdOverride is null)
+            .Select(r => (r.AccountIndex, r.SubjectId)).Distinct();
 
     /// <summary>
     /// El id de la cursada número <paramref name="position"/> del manifiesto. Determinista como el

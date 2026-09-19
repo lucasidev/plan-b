@@ -1,5 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Planb.Academic.Domain.OfficialFacts;
+using Planb.Academic.Infrastructure.Persistence;
 using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
 using Shouldly;
@@ -191,6 +195,7 @@ public class OfficialFactsEndpointTests : IClassFixture<RegisterApiFixture>
         read.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
+    // US-234 E3: una corrección publica el dato vigente y conserva ambas afirmaciones en el historial.
     [Fact]
     public async Task Reading_returns_only_the_most_recently_relieved_fact_per_field()
     {
@@ -225,6 +230,11 @@ public class OfficialFactsEndpointTests : IClassFixture<RegisterApiFixture>
         // Con subjectId en la query, la respuesta sigue igual que antes de sumar el listado por
         // tipo: el subjectId que trae cada afirmación es el mismo que se pidió.
         current.SubjectId.ShouldBe(Unsta);
+
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AcademicDbContext>();
+        (await db.OfficialFacts.CountAsync(f =>
+            f.SubjectId == Unsta && f.Field == OfficialFactField.AdmissionRegime)).ShouldBe(2);
     }
 
     private sealed record CreatedDto(Guid Id);

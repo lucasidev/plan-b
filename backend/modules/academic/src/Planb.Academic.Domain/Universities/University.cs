@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+using System.Security.Cryptography;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Primitives;
 
@@ -27,6 +29,13 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
 
     public string Name { get; private set; } = null!;
     public string Slug { get; private set; } = null!;
+    public string? Website { get; private set; }
+    public string? Address { get; private set; }
+    public string? Province { get; private set; }
+    public string? LocalityId { get; private set; }
+    public string? LocalityName { get; private set; }
+    public byte[]? Logo { get; private set; }
+    public int LogoVersion { get; private set; }
 
     /// <summary>
     /// Dominios de email institucional de la universidad (ej. <c>unsta.edu.ar</c>), en lowercase.
@@ -131,6 +140,24 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
         return Result.Success();
     }
 
+    public void UpdateProfile(string? website, string? address, string? province, string? localityId, string? localityName, IDateTimeProvider clock)
+    {
+        Website = NormalizeOptional(website);
+        Address = NormalizeOptional(address);
+        Province = NormalizeOptional(province);
+        LocalityId = NormalizeOptional(localityId);
+        LocalityName = NormalizeOptional(localityName);
+        UpdatedAt = clock.UtcNow;
+    }
+
+    public void ReplaceLogo(byte[] logo, IDateTimeProvider clock)
+    {
+        Logo = logo;
+        var hash = SHA256.HashData(logo);
+        LogoVersion = (int)(BinaryPrimitives.ReadUInt32BigEndian(hash) % int.MaxValue) + 1;
+        UpdatedAt = clock.UtcNow;
+    }
+
     /// <summary>Soft delete (US-060). Idempotencia explícita: re-desactivar devuelve error.</summary>
     public Result Deactivate(IDateTimeProvider clock)
     {
@@ -173,4 +200,7 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
             .Distinct()
             .ToList();
     }
+
+    private static string? NormalizeOptional(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

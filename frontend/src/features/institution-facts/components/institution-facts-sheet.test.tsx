@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { OfficialFact } from '@/components/facts';
 import type { Career, CareerCoverage } from '@/features/browse-catalog';
+import type { InstitutionProfile } from '@/features/manage-universities/profile-types';
 import { InstitutionFactsSheet } from './institution-facts-sheet';
 
 function career(overrides: Partial<Career> & { id: string }): Career {
@@ -54,6 +55,7 @@ function renderSheet(
     careers?: Career[];
     officialFacts?: OfficialFact[];
     coverage?: CareerCoverage[];
+    profile?: InstitutionProfile | null;
   } = {},
 ) {
   return render(
@@ -62,6 +64,7 @@ function renderSheet(
       careers={overrides.careers ?? []}
       officialFacts={overrides.officialFacts ?? []}
       coverage={overrides.coverage ?? []}
+      profile={overrides.profile}
     />,
   );
 }
@@ -76,6 +79,35 @@ describe('InstitutionFactsSheet', () => {
         name: 'Universidad del Norte Santo Tomás de Aquino',
       }),
     ).toBeInTheDocument();
+  });
+
+  /** US-235 E1: la identidad institucional cargada en backoffice se publica sin sesión. */
+  it('muestra logo, sitio oficial y ubicación cuando el perfil los tiene', () => {
+    renderSheet({
+      profile: {
+        universityId: '160c39b2-cf9a-4da8-9cd4-9eac3d11f70e',
+        websiteUrl: 'https://universidad.edu.ar',
+        address: 'Av. Central 100',
+        province: 'Mendoza',
+        localityId: '50021010',
+        localityName: 'Godoy Cruz',
+        logoVersion: 2,
+        academicUnitCount: 1,
+        careerCount: 2,
+        planCount: 3,
+        units: [],
+      },
+    });
+
+    expect(screen.getByRole('presentation')).toHaveAttribute(
+      'src',
+      '/api/academic/universities/160c39b2-cf9a-4da8-9cd4-9eac3d11f70e/logo?v=2',
+    );
+    expect(screen.getByRole('link', { name: 'Sitio oficial' })).toHaveAttribute(
+      'href',
+      'https://universidad.edu.ar',
+    );
+    expect(screen.getByText('Av. Central 100 · Godoy Cruz · Mendoza')).toBeInTheDocument();
   });
 
   it('el eyebrow muestra el tipo de institución cuando está relevado', () => {

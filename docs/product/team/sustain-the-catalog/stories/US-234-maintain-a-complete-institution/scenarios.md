@@ -21,5 +21,5 @@
 ## Edge cases
 
 - Una institución sin unidades académicas puede guardarse, pero sus conteos derivados son cero y ninguna oferta queda vinculada por defecto.
-- Cambiar el slug no pierde el logo ni crea una segunda institución.
+**X1.** Cambiar el slug no pierde el logo ni crea una segunda institución.
 - Una afirmación con estado «no publicado» conserva fuente y fecha aunque no tenga valor.

@@ -50,6 +50,10 @@ internal sealed class AcademicUnitConfiguration : IEntityTypeConfiguration<Acade
             .HasColumnName("locality_name")
             .HasMaxLength(AcademicUnit.MaxLocalityLength);
 
+        builder.Property(u => u.Province)
+            .HasColumnName("province")
+            .HasMaxLength(100);
+
         // Slug único por universidad (dos universidades pueden tener cada una su "facultad-de-ingenieria").
         // Sin FK a universities (ADR-0017, cross-aggregate), mismo criterio que Career.
         builder.HasIndex(u => new { u.UniversityId, u.Slug })

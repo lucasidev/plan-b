@@ -239,6 +239,7 @@ builder.Services.AddHostedService<CatalogSeedHostedService>();
 // nivel 2 de ADR-0058 y va gateado también por PLANB_SEED_CORPUS. Después del catálogo, que es
 // contra cuyo instrumento se responden.
 builder.Services.AddScoped<Planb.Reviews.Application.Seeding.CorpusSeeder>();
+builder.Services.AddScoped<Planb.Identity.Infrastructure.Seeding.CorpusAccountSeeder>();
 builder.Services.AddHostedService<CorpusSeedHostedService>();
 
 // ------------------------------------------------------------------

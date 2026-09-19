@@ -48,12 +48,13 @@ public static class CanonicalCareerGroupings
             Cid("000000000031"), // UTN-FRT, Tecnicatura Universitaria en Programación
         }),
 
-        new Group("Abogacía", new[]
-        {
+        new Group("Abogacía",
+        [
             Cid("000000000100"), // UNSTA, Abogado
             Cid("00000000023e"), // UNT, Abogado
             Cid("000000000307"), // USPT, Abogado
-        }),
+            .. NationalCanonicalCareerGroupings.LawCareerIds,
+        ]),
 
         new Group("Contador Público", new[]
         {

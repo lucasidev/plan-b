@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Planb.Academic.Application.Abstractions.AgnAudits;
+using Planb.Academic.Application.Abstractions.Georef;
 using Planb.Academic.Application.Abstractions.Pdf;
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
@@ -13,6 +14,7 @@ using Planb.Academic.Application.Features.AdminCareers;
 using Planb.Academic.Application.Features.AdminSubjects;
 using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.AdminUniversities;
+using Planb.Academic.Application.Features.UniversityProfile;
 using Planb.Academic.Application.Features.CanonicalCareerComparison;
 using Planb.Academic.Application.Features.CareerPlanImportQueue;
 using Planb.Academic.Application.Features.OfficialFacts;
@@ -29,6 +31,7 @@ using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
 using Planb.Academic.Infrastructure.AgnAudits;
+using Planb.Academic.Infrastructure.CatalogImport;
 using Planb.Academic.Infrastructure.Georef;
 using Planb.Academic.Infrastructure.Pdf;
 using Planb.Academic.Infrastructure.Persistence;
@@ -53,6 +56,7 @@ public static class DependencyInjection
         services.AddScoped<ICatalogSearchReader, DapperCatalogSearchReader>();
         services.AddScoped<IAdminTeacherReader, DapperAdminTeacherReader>();
         services.AddScoped<IAdminUniversityReader, DapperAdminUniversityReader>();
+        services.AddScoped<IUniversityProfileReader, DapperUniversityProfileReader>();
 
         // US-061: admin CRUD de carreras + planes de estudio
         services.AddScoped<IAdminCareerReader, DapperAdminCareerReader>();
@@ -125,6 +129,7 @@ public static class DependencyInjection
             },
             sp.GetRequiredService<ILogger<AgnReportsApiClient>>()));
         services.AddScoped<IAgnAuditImporter, AgnAuditImporter>();
+        services.AddScoped<SiuCatalogImporter>();
 
         // El backoffice dispara el import (issue #506) y lee, por institución, cuándo se consultó
         // por última vez y qué encontró (Features/AdminAgnAudits).

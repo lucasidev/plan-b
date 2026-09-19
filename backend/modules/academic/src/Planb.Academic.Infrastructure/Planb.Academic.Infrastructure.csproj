@@ -13,6 +13,11 @@
     <PackageReference Include="UglyToad.PdfPig" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Spu/Data/*" />
+    <EmbeddedResource Include="CatalogImport/Data/siu-national.sha256" />
+    <None Update="CatalogImport/Data/siu-national.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Planb.Academic.Application\Planb.Academic.Application.csproj" />
   </ItemGroup>
   <ItemGroup>

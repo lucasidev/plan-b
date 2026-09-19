@@ -1,6 +1,7 @@
 using Dapper;
 using Planb.Identity.Application.Abstractions.Reading;
 using Planb.Identity.Application.Features.AdminUsers;
+using Planb.Identity.Domain.Users;
 using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Identity.Infrastructure.Reading;
@@ -15,6 +16,7 @@ internal sealed class DapperAdminUserReadService(IDbConnectionFactory connection
         const string filter = """
             FROM identity.users u
             WHERE u.role = 'member'::identity.user_role
+              AND u.password_hash <> @CorpusPassword
               AND u.deactivated_at IS NULL AND u.expired_at IS NULL
               AND (@Search = '' OR strpos(u.email, @Search) > 0)
               AND (@Status = 'all'
@@ -39,7 +41,14 @@ internal sealed class DapperAdminUserReadService(IDbConnectionFactory connection
             """;
         using var db = connections.Create();
         using var results = await db.QueryMultipleAsync(new CommandDefinition(sql,
-            new { Search = search, Status = status, PageSize = pageSize, Offset = (page - 1) * pageSize },
+            new
+            {
+                Search = search,
+                Status = status,
+                PageSize = pageSize,
+                Offset = (page - 1) * pageSize,
+                CorpusPassword = User.CorpusPasswordSentinel
+            },
             cancellationToken: ct));
         var total = await results.ReadSingleAsync<int>();
         var items = (await results.ReadAsync<AdminUserRow>()).AsList();

@@ -24,6 +24,8 @@ Vocabulario de la tesis vigente ([THESIS.md](../THESIS.md), "Qué recabamos" y "
 | **Cursada** | Lo que se reseña: la experiencia de haber cursado una materia con una cátedra en un período. Solo se reseña la cursada: todo lo demás se deriva ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)). |
 | **Capa** | Las tres partes de la reseña: el **contexto** (no se publica), **qué hizo la cátedra** (conducta observable) y **qué te pasó a vos** (vivencia). Las dos últimas se publican como conteos y nunca se suman entre sí. |
 | **Contexto** | La capa que no se publica y controla el sesgo de lectura: período, cátedra, modalidad, cómo terminó, cuántas veces la cursaste. |
+| **Modalidad** | Cómo cursó la persona esa materia: presencial, a distancia o mezcla. Es contexto opcional de la reseña y no se publica. |
+| **Veces que la cursaste** | Cantidad de cursadas de esa materia, contando la reseñada: una, dos, tres o más. Es contexto opcional y no se publica. |
 | **Pregunta** | La unidad del cuestionario, con su texto y sus opciones de respuesta. Tiene código estable: corregir la redacción conserva la serie; cambiar el significado crea una pregunta nueva y corta la comparación entre ambas. |
 | **Opción** | Cada respuesta posible de una pregunta ("Siempre / A veces / Casi nunca / Nadie preguntaba"). Cada una tiene su valencia; la negativa es la única que carga el rojo en la ficha. |
 | **Responder** | Elegir una opción de una pregunta. Saltear es explícito, legítimo, y no cuenta en el denominador de esa pregunta. |

@@ -39,6 +39,14 @@ internal sealed class UniversityConfiguration : IEntityTypeConfiguration<Univers
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.Property(u => u.Website).HasColumnName("website").HasMaxLength(500);
+        builder.Property(u => u.Address).HasColumnName("address").HasMaxLength(300);
+        builder.Property(u => u.Province).HasColumnName("province").HasMaxLength(100);
+        builder.Property(u => u.LocalityId).HasColumnName("locality_id").HasMaxLength(80);
+        builder.Property(u => u.LocalityName).HasColumnName("locality_name").HasMaxLength(80);
+        builder.Property(u => u.Logo).HasColumnName("logo").HasColumnType("bytea");
+        builder.Property(u => u.LogoVersion).HasColumnName("logo_version").HasDefaultValue(0).IsRequired();
+
         builder.HasIndex(u => u.Slug)
             .IsUnique()
             .HasDatabaseName("ux_universities_slug");

@@ -1,7 +1,10 @@
 import { notFound } from 'next/navigation';
+import { fetchOfficialFactsServer } from '@/components/facts';
 import { AdminPageHeader } from '@/components/layout/admin-page-header';
-import { UniversityForm } from '@/features/manage-universities';
+import { fetchCareersByUniversityServer } from '@/features/manage-careers/api.server';
+import { InstitutionProfileEditor, UniversityForm } from '@/features/manage-universities';
 import { fetchUniversityDetailServer } from '@/features/manage-universities/api.server';
+import { fetchInstitutionProfile } from '@/features/manage-universities/profile-api.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,9 +14,14 @@ export const dynamic = 'force-dynamic';
  */
 export default async function EditUniversityPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const university = await fetchUniversityDetailServer(id);
+  const [university, profile, facts, careers] = await Promise.all([
+    fetchUniversityDetailServer(id),
+    fetchInstitutionProfile(id),
+    fetchOfficialFactsServer('Institution', id),
+    fetchCareersByUniversityServer(id),
+  ]);
 
-  if (!university?.isActive) {
+  if (!university?.isActive || !profile) {
     notFound();
   }
 
@@ -25,6 +33,12 @@ export default async function EditUniversityPage({ params }: { params: Promise<{
         subtitle="Los cambios se reflejan en el catálogo público y en el onboarding."
       />
       <UniversityForm mode="edit" university={university} />
+      <InstitutionProfileEditor
+        profile={profile}
+        facts={facts}
+        careers={careers}
+        slug={university.slug}
+      />
     </div>
   );
 }

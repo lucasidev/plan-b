@@ -46,7 +46,7 @@ const INSTRUMENT: CurrentInstrument = {
       ],
     },
     {
-      code: 'attempts-count',
+      code: 'COURSE_ATTEMPTS',
       text: '¿Cuántas veces la cursaste, contando esta?',
       help: null,
       layer: 'Context',
@@ -55,6 +55,18 @@ const INSTRUMENT: CurrentInstrument = {
         { value: 1, label: 'Una' },
         { value: 2, label: 'Dos' },
         { value: 3, label: 'Tres o más' },
+      ],
+    },
+    {
+      code: 'COURSE_MODALITY',
+      text: '¿Cómo cursaste?',
+      help: null,
+      layer: 'Context',
+      origin: 'Seed',
+      options: [
+        { value: 1, label: 'Presencial' },
+        { value: 2, label: 'A distancia' },
+        { value: 3, label: 'Mezcla' },
       ],
     },
     // Qué hizo la cátedra (paso 4): conducta observable.
@@ -247,6 +259,45 @@ async function answerKeptPaceYes(user: ReturnType<typeof userEvent.setup>) {
 beforeEach(() => {
   vi.clearAllMocks();
   stubChairsFetch([]);
+});
+
+describe('US-233: modalidad y cantidad de cursadas son contexto opcional', () => {
+  /** US-233 E1, N1: enviar lo elegido o quitar las dos respuestas antes de enviar. */
+  it.each([
+    false,
+    true,
+  ])('conserva únicamente las respuestas elegidas (saltear: %s)', async (skip) => {
+    actionMock.mockResolvedValue({ status: 'idle' });
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await user.click(screen.getByRole('button', { name: '2026-C1' }));
+    await user.click(
+      within(screen.getByRole('group', { name: '¿Cómo terminó?' })).getByRole('button', {
+        name: 'La aprobé',
+      }),
+    );
+    const modality = within(screen.getByRole('group', { name: '¿Cómo cursaste?' }));
+    const attempts = within(
+      screen.getByRole('group', { name: '¿Cuántas veces la cursaste, contando esta?' }),
+    );
+    await user.click(modality.getByRole('button', { name: skip ? 'Mezcla' : 'A distancia' }));
+    await user.click(attempts.getByRole('button', { name: skip ? 'Tres o más' : 'Dos' }));
+    if (skip) {
+      await user.click(modality.getByRole('button', { name: 'borrar' }));
+      await user.click(attempts.getByRole('button', { name: 'borrar' }));
+    }
+    await user.click(screen.getByRole('button', { name: /enviar la reseña/i }));
+    expect(actionMock).toHaveBeenCalledTimes(1);
+    const [, data] = actionMock.mock.calls[0] as [unknown, FormData];
+    const { answers } = JSON.parse(data.get('payload') as string);
+    if (skip) {
+      expect(answers).not.toHaveProperty('COURSE_MODALITY');
+      expect(answers).not.toHaveProperty('COURSE_ATTEMPTS');
+    } else {
+      expect(answers).toMatchObject({ COURSE_MODALITY: 2, COURSE_ATTEMPTS: 2 });
+    }
+  });
 });
 
 describe('US-146: reseñar en menos de dos minutos', () => {
