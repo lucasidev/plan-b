@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,7 @@ using Wolverine;
 namespace Planb.Academic.Application.Features.AdminCareers;
 
 public sealed record AssignCareerAcademicUnitCommand(Guid CareerId, Guid? AcademicUnitId);
-public sealed record AssignCareerAcademicUnitRequest(Guid? AcademicUnitId);
+public sealed record AssignCareerAcademicUnitRequest([property: JsonRequired] Guid? AcademicUnitId);
 
 public sealed class AssignCareerAcademicUnitEndpoint : ICarterModule
 {
