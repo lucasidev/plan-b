@@ -50,4 +50,9 @@ public static class CareerErrors
         Error.NotFound(
             "academic.career.university_not_found",
             "The university for this career does not exist.");
+
+    public static readonly Error AcademicUnitUniversityMismatch =
+        Error.Validation(
+            "academic.career.academic_unit_university_mismatch",
+            "The academic unit must be active and belong to the same university as the career.");
 }

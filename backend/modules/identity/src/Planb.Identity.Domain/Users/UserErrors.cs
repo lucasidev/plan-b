@@ -4,6 +4,9 @@ namespace Planb.Identity.Domain.Users;
 
 public static class UserErrors
 {
+    public static readonly Error CorpusAccountCannotAuthenticate =
+        Error.Forbidden("identity.corpus.no_access", "Synthetic corpus accounts cannot be granted access.");
+
     public static readonly Error EmailRequired =
         Error.Validation("identity.email.required", "Email is required.");
 

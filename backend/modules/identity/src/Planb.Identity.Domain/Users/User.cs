@@ -46,6 +46,8 @@ public sealed class User : Entity<UserId>, IAggregateRoot
 
     public bool IsEmailVerified => EmailVerifiedAt is not null;
     public bool IsDisabled => DisabledAt is not null;
+    public bool IsCorpusAccount => PasswordHash == CorpusPasswordSentinel;
+    public const string CorpusPasswordSentinel = "CORPUS_NO_LOGIN";
     public bool IsExpired => ExpiredAt is not null;
     public bool IsDeactivated => DeactivatedAt is not null;
     public bool IsActive => !IsDisabled && !IsExpired && !IsDeactivated && IsEmailVerified;
@@ -526,6 +528,9 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public Result Restore(IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
+
+        // El corpus representa autores sintéticos y nunca adquiere acceso por una reactivación.
+        if (IsCorpusAccount) return UserErrors.CorpusAccountCannotAuthenticate;
 
         if (!IsDisabled)
         {

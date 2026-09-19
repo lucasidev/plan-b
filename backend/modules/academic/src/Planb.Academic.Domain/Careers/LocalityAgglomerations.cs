@@ -36,5 +36,13 @@ public static class LocalityAgglomerations
             "90084010", // San Miguel de Tucumán (capital)
             "90119030", // Yerba Buena
         }),
+        // INDEC, clasificación de aglomerados; IDs Georef contrastados el 2026-09-17.
+        // El resto de Mendoza conserva su localidad: la provincia entera no es un continuo urbano.
+        new Group("Gran Mendoza", new[]
+        {
+            "50007010", // Mendoza
+            "50021010", // Godoy Cruz
+            "50028020", // Guaymallén
+        }),
     };
 }

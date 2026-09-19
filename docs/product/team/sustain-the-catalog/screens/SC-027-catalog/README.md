@@ -30,7 +30,9 @@ Para una oferta que se está cargando por primera vez:
 4. **Atar la carrera canónica**: buscar una carrera canónica existente o declarar una nueva; la decisión queda con quién la tomó y cuándo (US-195). Es lo que permite que Dónde estudiarla compare esta oferta con las de otras instituciones.
 5. **Publicar**: bloqueado mientras falte un hueco bloqueante, aunque el resto esté cargado (US-191); resueltos los dos, el botón se habilita.
 
-**Hoy, en el código** (`/admin/chairs`, `/admin/teachers`): el ABM existe, sin el recorrido por huecos que describe arriba.
+**Hoy, en el código**: el ABM existe, sin el recorrido por huecos que describe arriba.
+
+- **Universidades** (`/admin/universities/[id]/edit`): mantiene nombre, slug y dominios; agrega sitio oficial, dirección, localidad resuelta por Georef y logo PNG según [ADR-0098](../../../../../decisions/0098-small-institution-logos-are-stored-with-the-catalog.md). Permite agregar y editar unidades académicas, vincular carreras de la misma universidad y registrar nuevas afirmaciones oficiales con fuente y fecha. Los conteos se derivan del catálogo. La ficha pública muestra la identidad relevada.
 
 - **Cátedras** (`/admin/chairs`): se entra desde una materia o buscándola. La cabecera resuelve universidad, carrera, plan y materia. Crear abre el detalle `/admin/chairs/[id]?subjectId=...`, que verifica la pertenencia a la materia y muestra el equipo vigente e histórico. Permite agregar docentes activos de esa universidad y cerrar sus tramos con períodos del mismo contexto; el último período queda incluido. El backend rechaza un cierre cuyo fin sea anterior al inicio. Si falta un docente, el alta vuelve al detalle conservando rol y período en esta pestaña. Las archivadas se identifican y su equipo se puede consultar. La unidad académica en esta cadena, la confirmación general de cambios sin guardar y el archivo con cierre efectivo siguen pendientes.
 

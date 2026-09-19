@@ -61,6 +61,61 @@ test.describe('Alta de universidades desde el backoffice (US-191, US-203)', () =
     createdUniversityIds = [];
   });
 
+  test('el perfil y el logo guardados se conservan al reabrir y se publican sin sesión', async ({
+    page,
+    browser,
+  }) => {
+    await signIn(page, ADMIN);
+    const slug = `e2e-profile-${randomSuffix().toLowerCase()}`;
+    const created = await page.request.post('/api/academic/universities', {
+      data: { name: `Universidad ${slug}`, slug, institutionalEmailDomains: [] },
+    });
+    expect(created.status()).toBe(201);
+    const { id } = (await created.json()) as { id: string };
+    createdUniversityIds.push(id);
+    await page.goto(`/admin/universities/${id}/edit`);
+
+    const location = page.getByRole('region', { name: 'Sitio y ubicación' });
+    await location.getByLabel('URL oficial').fill('https://example.edu.ar');
+    await location.getByLabel('Dirección', { exact: true }).fill('Av. Central 100');
+    await location.getByRole('button', { name: 'Guardar', exact: true }).click();
+    await expect(location.getByRole('status')).toHaveText('Guardado.');
+
+    const logo = page.getByRole('region', { name: 'Logo', exact: true });
+    await logo.getByLabel('Archivo PNG').setInputFiles({
+      name: 'logo.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+        'base64',
+      ),
+    });
+    await logo.getByRole('button', { name: 'Guardar', exact: true }).click();
+    await expect(logo.getByRole('status')).toHaveText('Guardado.');
+    await expect(logo.getByAltText('Logo actual')).toBeVisible();
+
+    await page.reload();
+    await expect(location.getByLabel('URL oficial')).toHaveValue('https://example.edu.ar');
+    await expect(location.getByLabel('Dirección', { exact: true })).toHaveValue('Av. Central 100');
+    const anonymous = await browser.newContext();
+    try {
+      const publicPage = await anonymous.newPage();
+      await publicPage.goto(new URL(`/universities/${slug}/careers`, page.url()).href);
+      await expect(publicPage.getByRole('link', { name: 'Sitio oficial' })).toHaveAttribute(
+        'href',
+        'https://example.edu.ar',
+      );
+      await expect(publicPage.getByText('Av. Central 100', { exact: true })).toBeVisible();
+      const image = publicPage.locator(`img[src*="${id}/logo"]`);
+      await expect(image).toBeVisible();
+      await expect
+        .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
+        .toBeGreaterThan(0);
+    } finally {
+      await anonymous.close();
+    }
+  });
+
   test('el admin agrega una universidad y aparece en el backoffice y en el catálogo público, en su lugar alfabético', async ({
     page,
   }) => {

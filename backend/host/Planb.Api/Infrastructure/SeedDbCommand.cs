@@ -50,6 +50,7 @@ public sealed class SeedDbCommand : JasperFxAsyncCommand<NetCoreInput>
         await sp.GetRequiredService<CatalogSeeder>().SeedAsync();
 
         Console.WriteLine("Reviews: sembrando corpus...");
+        await CorpusAccountsSeed.SeedAsync(sp);
         var luciaAccountId = await SeededPersonaAccountResolver.ResolveAsync(
             sp, SeededPersonaAccountResolver.LuciaEmail, CancellationToken.None);
         var matiasAccountId = await SeededPersonaAccountResolver.ResolveAsync(

@@ -37,6 +37,7 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
     /// localidad resuelta es válida, y se sabe que no se resolvió.
     /// </summary>
     public string? LocalityId { get; private set; }
+    public string? Province { get; private set; }
 
     /// <summary>Nombre canónico de Georef para <see cref="LocalityId"/> (ej. "San Miguel de Tucumán").</summary>
     public string? LocalityName { get; private set; }
@@ -86,7 +87,7 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
     }
 
     /// <summary>Edición del catálogo. Replace del form completo: re-valida Name/Slug.</summary>
-    public Result Update(string name, string slug, IDateTimeProvider clock)
+    public Result Update(string name, string slug, string address, IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -99,12 +100,20 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
         {
             return AcademicUnitErrors.SlugRequired;
         }
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return AcademicUnitErrors.AddressRequired;
+        }
 
         Name = name.Trim();
         Slug = slug.Trim().ToLowerInvariant();
+        Address = address.Trim();
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
+
+    public Result Update(string name, string slug, IDateTimeProvider clock) =>
+        Update(name, slug, Address, clock);
 
     /// <summary>
     /// Guarda la localidad que el resolvedor de Georef encontró para <see cref="Address"/> (tarea
@@ -124,6 +133,12 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
         LocalityName = localityName.Trim();
         UpdatedAt = clock.UtcNow;
         return Result.Success();
+    }
+
+    public void SetProvince(string province, IDateTimeProvider clock)
+    {
+        Province = province.Trim();
+        UpdatedAt = clock.UtcNow;
     }
 
     /// <summary>Soft delete. Idempotencia explícita: re-desactivar devuelve error.</summary>

@@ -11,6 +11,7 @@ import {
   hasReviews,
   institutionTypeLabel,
 } from '@/features/browse-catalog';
+import type { InstitutionProfile } from '@/features/manage-universities/profile-types';
 import {
   describeInstitutionCareers,
   describeMeasuredCareers,
@@ -32,9 +33,16 @@ type Props = {
   officialFacts: OfficialFact[];
   /** `catalogCoverage` ya filtrado a esta universidad. */
   coverage: CareerCoverage[];
+  profile?: InstitutionProfile | null;
 };
 
-export function InstitutionFactsSheet({ universityName, careers, officialFacts, coverage }: Props) {
+export function InstitutionFactsSheet({
+  universityName,
+  careers,
+  officialFacts,
+  coverage,
+  profile = null,
+}: Props) {
   const byField = new Map(officialFacts.map((fact) => [fact.field, fact]));
   const careersWithReviews = coverage.filter(hasReviews);
 
@@ -46,6 +54,7 @@ export function InstitutionFactsSheet({ universityName, careers, officialFacts, 
           careers={careers}
           identity={byField.get(OFFICIAL_FACT_FIELDS.institutionType)}
           careersWithReviews={careersWithReviews}
+          profile={profile}
         />
       }
       stats={institutionStats(byField, careers.length, careersWithReviews.length)}
@@ -66,11 +75,13 @@ function Head({
   careers,
   identity,
   careersWithReviews,
+  profile,
 }: {
   universityName: string;
   careers: Career[];
   identity: OfficialFact | undefined;
   careersWithReviews: CareerCoverage[];
+  profile: InstitutionProfile | null;
 }) {
   const kind = institutionTypeLabel(identity)?.toLowerCase() ?? null;
   const careersSentence = describeInstitutionCareers(careers);
@@ -81,7 +92,36 @@ function Head({
   return (
     <>
       <div className="pb-eyebrow">Universidad{kind ? ` · ${kind}` : ''}</div>
-      <h1 className="pb-serif">{universityName}</h1>
+      <div className="flex items-start gap-4">
+        {!!profile?.logoVersion && (
+          // biome-ignore lint/performance/noImgElement: el logo público se sirve same-origin y su tamaño ya está acotado al cargarlo.
+          <img
+            src={`/api/academic/universities/${profile.universityId}/logo?v=${profile.logoVersion}`}
+            alt=""
+            width={72}
+            height={72}
+            className="h-[72px] w-[72px] shrink-0 object-contain"
+          />
+        )}
+        <div>
+          <h1 className="pb-serif">{universityName}</h1>
+          {profile && !profile.logoVersion && <p className="pb-meta">Logo todavía no cargado</p>}
+          {(profile?.address || profile?.localityName || profile?.province) && (
+            <p className="pb-meta">
+              {[profile.address, profile.localityName, profile.province]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          )}
+          {profile?.websiteUrl && (
+            <p className="pb-meta">
+              <a href={profile.websiteUrl} rel="noreferrer" target="_blank">
+                Sitio oficial
+              </a>
+            </p>
+          )}
+        </div>
+      </div>
       {careersSentence && (
         <p className="pb-h-sub">
           {careersSentence}

@@ -191,6 +191,12 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         return Result.Success();
     }
 
+    public void AssignAcademicUnit(AcademicUnitId? academicUnitId, IDateTimeProvider clock)
+    {
+        AcademicUnitId = academicUnitId;
+        UpdatedAt = clock.UtcNow;
+    }
+
     /// <summary>Soft delete (US-061). Idempotencia explícita: re-desactivar devuelve error.</summary>
     public Result Deactivate(IDateTimeProvider clock)
     {

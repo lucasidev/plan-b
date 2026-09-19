@@ -2,6 +2,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
+using Planb.Academic.Application.Abstractions.Georef;
+
 namespace Planb.Academic.Infrastructure.Georef;
 
 /// <summary>
@@ -13,7 +15,6 @@ namespace Planb.Academic.Infrastructure.Georef;
 /// </summary>
 internal sealed class GeorefLocalityResolver : IGeorefLocalityResolver
 {
-    private const string Province = "Tucuman";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     private readonly HttpClient _http;
@@ -25,14 +26,18 @@ internal sealed class GeorefLocalityResolver : IGeorefLocalityResolver
         _logger = logger;
     }
 
-    public async Task<GeorefLocality?> ResolveAsync(string localityText, CancellationToken ct = default)
+    public async Task<GeorefLocality?> ResolveAsync(
+        string localityText,
+        string province,
+        CancellationToken ct = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(localityText);
+        ArgumentException.ThrowIfNullOrWhiteSpace(province);
 
         try
         {
-            var found = await QueryAsync("localidades", localityText, ct)
-                ?? await QueryAsync("asentamientos", localityText, ct);
+            var found = await QueryAsync("localidades", localityText, province, ct)
+                ?? await QueryAsync("asentamientos", localityText, province, ct);
 
             if (found is null)
             {
@@ -44,6 +49,10 @@ internal sealed class GeorefLocalityResolver : IGeorefLocalityResolver
 
             return found;
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
             _logger.LogWarning(
@@ -54,9 +63,13 @@ internal sealed class GeorefLocalityResolver : IGeorefLocalityResolver
         }
     }
 
-    private async Task<GeorefLocality?> QueryAsync(string endpoint, string localityText, CancellationToken ct)
+    private async Task<GeorefLocality?> QueryAsync(
+        string endpoint,
+        string localityText,
+        string province,
+        CancellationToken ct)
     {
-        var url = $"{endpoint}?nombre={Uri.EscapeDataString(localityText)}&provincia={Province}&campos=id,nombre";
+        var url = $"{endpoint}?nombre={Uri.EscapeDataString(localityText)}&provincia={Uri.EscapeDataString(province)}&campos=id,nombre";
         using var response = await _http.GetAsync(url, ct);
         response.EnsureSuccessStatusCode();
 
@@ -69,12 +82,19 @@ internal sealed class GeorefLocalityResolver : IGeorefLocalityResolver
             return null;
         }
 
-        // Yerba Buena y Aguilares (verificado el 2026-09-09) devuelven dos filas para el mismo
-        // nombre: una "Entidad" censal con id de 10 dígitos que agrupa varias localidades, y la
-        // localidad puntual con el id de 8 dígitos (el código INDEC estándar). Se elige el id más
-        // corto: es la localidad que el domicilio nombra, no la entidad que la contiene.
-        var best = items.OrderBy(item => item.Id.Length).First();
-        return new GeorefLocality(best.Id, best.Nombre);
+        if (items.Count == 1)
+        {
+            return new GeorefLocality(items[0].Id, items[0].Nombre);
+        }
+
+        // Yerba Buena y Aguilares devuelven una localidad de ocho dígitos y la entidad censal de
+        // diez que la contiene. Fuera de esa pareja, varias filas son una ambigüedad geográfica.
+        var locality = items.Where(item => item.Id.Length == 8).ToList();
+        var entity = items.Where(item => item.Id.Length == 10).ToList();
+        return locality.Count == 1 && entity.Count == 1 && items.Count == 2
+            && entity[0].Id.StartsWith(locality[0].Id, StringComparison.Ordinal)
+            ? new GeorefLocality(locality[0].Id, locality[0].Nombre)
+            : null;
     }
 
     private sealed record GeorefResponse(

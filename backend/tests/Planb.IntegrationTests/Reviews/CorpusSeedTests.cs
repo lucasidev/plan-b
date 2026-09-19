@@ -53,6 +53,7 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
     public async Task InitializeAsync()
     {
         using var scope = _fixture.Factory.Services.CreateScope();
+        await Planb.Api.Infrastructure.CorpusAccountsSeed.SeedAsync(scope.ServiceProvider);
         var seeder = scope.ServiceProvider.GetRequiredService<CorpusSeeder>();
         await seeder.SeedAsync();
     }

@@ -1,0 +1,752 @@
+[
+  {
+    "sector": "Privado",
+    "spuName": "Escuela Universitaria de Teología",
+    "institution": "Escuela Universitaria de Teología",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "institution": "Instituto Tecnológico de Buenos Aires",
+    "spuName": "ITBA",
+    "sector": "Privado",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "CEMIC",
+    "institution": "Instituto Universitario CEMIC",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Ciencias Biomédicas de Córdoba",
+    "institution": "Instituto Universitario de Ciencias Biomédicas de Córdoba",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "institution": "Instituto Universitario de Ciencias de la Salud de la Fundación Barceló",
+    "spuName": "Cs de la Salud de la Fundación Barceló",
+    "sector": "Privado",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "institution": "Instituto Universitario de Gendarmería Nacional",
+    "spuName": "Gendarmería",
+    "sector": "Estatal",
+    "group": "Total Institutos Universitarios Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Policía Federal Argentina",
+    "institution": "Instituto Universitario de la Policía Federal Argentina",
+    "group": "Total Institutos Universitarios Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Seguridad Marítima",
+    "institution": "Instituto Universitario de Seguridad Marítima",
+    "group": "Total Institutos Universitarios Nacionales"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Escuela Argentina de Negocios",
+    "institution": "Instituto Universitario Escuela Argentina de Negocios",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "institution": "Instituto Universitario Escuela Superior de Economía y Administración de Empresas",
+    "spuName": "ESEADE",
+    "sector": "Privado",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Italiano de Rosario",
+    "institution": "Instituto Universitario Italiano de Rosario",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "institution": "Instituto Universitario para el Desarrollo Productivo y Tecnológico Empresarial de la Argentina",
+    "spuName": "IUDPT",
+    "sector": "Privado",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Patagónico de las Artes",
+    "institution": "Instituto Universitario Patagónico de las Artes",
+    "group": "Total Institutos Universitarios Provinciales"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "River Plate",
+    "institution": "Instituto Universitario River Plate",
+    "group": "Total Institutos Universitarios Privados"
+  },
+  {
+    "institution": "Pontificia Universidad Católica Argentina Santa María de los Buenos Aires",
+    "spuName": "Católica Argentina",
+    "sector": "Privado",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Abierta Interamericana",
+    "institution": "Universidad Abierta Interamericana",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Adventista del Plata",
+    "institution": "Universidad Adventista del Plata",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Argentina de la Empresa",
+    "institution": "Universidad Argentina de la Empresa",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Argentina John F. Kennedy",
+    "institution": "Universidad Argentina John F. Kennedy",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Atlántida Argentina",
+    "institution": "Universidad Atlántida Argentina",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Austral",
+    "institution": "Universidad Austral",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Autónoma de Entre Ríos",
+    "institution": "Universidad Autónoma de Entre Ríos",
+    "group": "Total Universidades Provinciales"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Blás Pascal",
+    "institution": "Universidad Blas Pascal",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "CAECE",
+    "institution": "Universidad CAECE",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Católica de Córdoba",
+    "institution": "Universidad Católica de Córdoba",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Católica de Cuyo",
+    "institution": "Universidad Católica de Cuyo",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Católica de La Plata",
+    "institution": "Universidad Católica de La Plata",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Católica de las Misiones",
+    "institution": "Universidad Católica de las Misiones",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Católica de Salta",
+    "institution": "Universidad Católica de Salta",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Católica de Santa Fe",
+    "institution": "Universidad Católica de Santa Fe",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Católica de Santiago del Estero",
+    "institution": "Universidad Católica de Santiago del Estero",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Champagnat",
+    "institution": "Universidad Champagnat",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Belgrano",
+    "institution": "Universidad de Belgrano",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Buenos Aires",
+    "institution": "Universidad de Buenos Aires",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Ciencias Empresariales y Sociales",
+    "institution": "Universidad de Ciencias Empresariales y Sociales",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Concepción del Uruguay",
+    "institution": "Universidad de Concepción del Uruguay",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Congreso",
+    "institution": "Universidad de Congreso",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Flores",
+    "institution": "Universidad de Flores",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Cuenca del Plata",
+    "institution": "Universidad de la Cuenca del Plata",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "institution": "Universidad de la Defensa Nacional",
+    "spuName": "Defensa",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad de la Fraternidad de Agrupaciones Santo Tomás de Aquino",
+    "spuName": "FASTA",
+    "sector": "Privado",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Marina Mercante",
+    "institution": "Universidad de la Marina Mercante",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Mendoza",
+    "institution": "Universidad de Mendoza",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Morón",
+    "institution": "Universidad de Morón",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Palermo",
+    "institution": "Universidad de Palermo",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "San Andrés",
+    "institution": "Universidad de San Andrés",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "institution": "Universidad de San Isidro \"Dr. Plácido Marín\"",
+    "spuName": "San Isidro",
+    "sector": "Privado",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "San Pablo - T",
+    "institution": "Universidad de San Pablo - T",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Aconcagua",
+    "institution": "Universidad del Aconcagua",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "CEMA",
+    "institution": "Universidad del CEMA",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Centro Educativo Latinoamericano",
+    "institution": "Universidad del Centro Educativo Latinoamericano",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Chubut",
+    "institution": "Universidad del Chubut",
+    "group": "Total Universidades Provinciales"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Cine",
+    "institution": "Universidad del Cine",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Este",
+    "institution": "Universidad del Este",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "institution": "Universidad del Gran Rosario",
+    "spuName": "Gran Rosario",
+    "sector": "Privado",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Museo Social Argentino",
+    "institution": "Universidad del Museo Social Argentino",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Norte Santo Tomás de Aquino",
+    "institution": "Universidad del Norte Santo Tomás de Aquino",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Salvador",
+    "institution": "Universidad del Salvador",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Empresarial Siglo 21",
+    "institution": "Universidad Empresarial Siglo 21",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Favaloro",
+    "institution": "Universidad Favaloro",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Gastón Dachary",
+    "institution": "Universidad Gastón Dachary",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "ISALUD",
+    "institution": "Universidad ISALUD",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Juan Agustín Maza",
+    "institution": "Universidad Juan Agustín Maza",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Maimónides",
+    "institution": "Universidad Maimónides",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "institution": "Universidad Metropolitana para la Educación y el Trabajo",
+    "spuName": "Metropolitana",
+    "sector": "Privado",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Arturo Jauretche",
+    "institution": "Universidad Nacional Arturo Jauretche",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Avellaneda",
+    "institution": "Universidad Nacional de Avellaneda",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Catamarca",
+    "institution": "Universidad Nacional de Catamarca",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Chilecito",
+    "institution": "Universidad Nacional de Chilecito",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Córdoba",
+    "institution": "Universidad Nacional de Córdoba",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Cuyo",
+    "institution": "Universidad Nacional de Cuyo",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Entre Ríos",
+    "institution": "Universidad Nacional de Entre Ríos",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Formosa",
+    "institution": "Universidad Nacional de Formosa",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional de General Sarmiento",
+    "spuName": "Gral. Sarmiento",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Hurlingham",
+    "institution": "Universidad Nacional de Hurlingham",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Jujuy",
+    "institution": "Universidad Nacional de Jujuy",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional de La Matanza",
+    "spuName": "La Matanza",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional de La Pampa",
+    "spuName": "La Pampa",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Patagonia Austral",
+    "institution": "Universidad Nacional de la Patagonia Austral",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional de la Patagonia San Juan Bosco",
+    "spuName": "Patagonia S. J. Bosco",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional de La Plata",
+    "spuName": "La Plata",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional de La Rioja",
+    "spuName": "La Rioja",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Lanús",
+    "institution": "Universidad Nacional de Lanús",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Artes",
+    "institution": "Universidad Nacional de las Artes",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Lomas de Zamora",
+    "institution": "Universidad Nacional de Lomas de Zamora",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Comechingones",
+    "institution": "Universidad Nacional de los Comechingones",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Luján",
+    "institution": "Universidad Nacional de Luján",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Mar del Plata",
+    "institution": "Universidad Nacional de Mar del Plata",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Misiones",
+    "institution": "Universidad Nacional de Misiones",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Moreno",
+    "institution": "Universidad Nacional de Moreno",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Quilmes",
+    "institution": "Universidad Nacional de Quilmes",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Rafaela",
+    "institution": "Universidad Nacional de Rafaela",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Río Cuarto",
+    "institution": "Universidad Nacional de Río Cuarto",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Río Negro",
+    "institution": "Universidad Nacional de Río Negro",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Rosario",
+    "institution": "Universidad Nacional de Rosario",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Salta",
+    "institution": "Universidad Nacional de Salta",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "San Antonio de Areco",
+    "institution": "Universidad Nacional de San Antonio de Areco",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "San Juan",
+    "institution": "Universidad Nacional de San Juan",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "San Luis",
+    "institution": "Universidad Nacional de San Luis",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "San Martín",
+    "institution": "Universidad Nacional de San Martín",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Santiago del Estero",
+    "institution": "Universidad Nacional de Santiago del Estero",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional de Tierra del Fuego, Antártida e Islas del Atlántico Sur",
+    "spuName": "Tierra del Fuego",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Tres de Febrero",
+    "institution": "Universidad Nacional de Tres de Febrero",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Tucumán",
+    "institution": "Universidad Nacional de Tucumán",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Villa María",
+    "institution": "Universidad Nacional de Villa María",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Villa Mercedes",
+    "institution": "Universidad Nacional de Villa Mercedes",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Alto Uruguay",
+    "institution": "Universidad Nacional del Alto Uruguay",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional del Centro de la Provincia de Buenos Aires",
+    "spuName": "Centro de la PBA",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Chaco Austral",
+    "institution": "Universidad Nacional del Chaco Austral",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Comahue",
+    "institution": "Universidad Nacional del Comahue",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Litoral",
+    "institution": "Universidad Nacional del Litoral",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Nordeste",
+    "institution": "Universidad Nacional del Nordeste",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional del Noroeste de la Provincia de Buenos Aires",
+    "spuName": "Noroeste de la PBA",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Oeste",
+    "institution": "Universidad Nacional del Oeste",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Sur",
+    "institution": "Universidad Nacional del Sur",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Guillermo Brown",
+    "institution": "Universidad Nacional Guillermo Brown",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "José C. Paz",
+    "institution": "Universidad Nacional José C. Paz",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Nacional Raúl Scalabrini Ortiz",
+    "spuName": "Scalabrini Ortiz",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Pedagógica Nacional",
+    "spuName": "Pedagógica",
+    "sector": "Estatal",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "institution": "Universidad Provincial de Córdoba",
+    "spuName": "Provincial de Córdoba",
+    "sector": "Estatal",
+    "group": "Total Universidades Provinciales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Ezeiza",
+    "institution": "Universidad Provincial de Ezeiza",
+    "group": "Total Universidades Provinciales"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Sudoeste",
+    "institution": "Universidad Provincial del Sudoeste",
+    "group": "Total Universidades Provinciales"
+  },
+  {
+    "institution": "Universidad Salesiana Argentina",
+    "spuName": "Salesiana",
+    "sector": "Privado",
+    "group": "Total Universidades Privadas"
+  },
+  {
+    "sector": "Estatal",
+    "spuName": "Tecnológica Nacional",
+    "institution": "Universidad Tecnológica Nacional",
+    "group": "Total Universidades Nacionales"
+  },
+  {
+    "sector": "Privado",
+    "spuName": "Torcuato Di Tella",
+    "institution": "Universidad Torcuato Di Tella",
+    "group": "Total Universidades Privadas"
+  }
+]

@@ -21,11 +21,54 @@ public class GeorefLocalityResolverTests
         var sut = CreateSut(FakeHttpMessageHandler.Json(
             """{"cantidad":1,"localidades":[{"id":"90084010","nombre":"San Miguel de Tucumán"}],"total":1}"""));
 
-        var result = await sut.ResolveAsync("San Miguel De Tucuman");
+        var result = await sut.ResolveAsync("San Miguel De Tucuman", "Tucuman");
 
         result.ShouldNotBeNull();
         result.Id.ShouldBe("90084010");
         result.Name.ShouldBe("San Miguel de Tucumán");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_EscapesProvinceInTheRequestUrl()
+    {
+        string? requestedUrl = null;
+        var handler = new FakeHttpMessageHandler(request =>
+        {
+            requestedUrl = request.RequestUri!.OriginalString;
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            {
+                Content = new StringContent(
+                    """{"cantidad":1,"localidades":[{"id":"62056010","nombre":"San Martín"}],"total":1}"""),
+            };
+        });
+        var sut = CreateSut(handler);
+
+        var result = await sut.ResolveAsync("San Martín", "Río Negro");
+
+        result.ShouldNotBeNull();
+        requestedUrl!.ShouldContain("nombre=San%20Mart%C3%ADn");
+        requestedUrl!.ShouldContain("provincia=R%C3%ADo%20Negro");
+    }
+
+    [Fact]
+    public async Task ResolveAsync_SameLocalityTextInDifferentProvinces_UsesEachProvince()
+    {
+        var handler = new FakeHttpMessageHandler(request =>
+        {
+            var body = request.RequestUri!.OriginalString.Contains("provincia=Buenos%20Aires")
+                ? """{"cantidad":1,"localidades":[{"id":"60056010","nombre":"San Martín"}],"total":1}"""
+                : """{"cantidad":1,"localidades":[{"id":"54056010","nombre":"San Martín"}],"total":1}""";
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK) { Content = new StringContent(body) };
+        });
+        var sut = CreateSut(handler);
+
+        var buenosAires = await sut.ResolveAsync("San Martín", "Buenos Aires");
+        var misiones = await sut.ResolveAsync("San Martín", "Misiones");
+
+        buenosAires.ShouldNotBeNull();
+        misiones.ShouldNotBeNull();
+        buenosAires.Id.ShouldBe("60056010");
+        misiones.Id.ShouldBe("54056010");
     }
 
     [Fact]
@@ -44,7 +87,7 @@ public class GeorefLocalityResolverTests
         });
         var sut = CreateSut(handler);
 
-        var result = await sut.ResolveAsync("Amaicha Del Llano");
+        var result = await sut.ResolveAsync("Amaicha Del Llano", "Tucuman");
 
         result.ShouldNotBeNull();
         result.Id.ShouldBe("90056A03");
@@ -57,7 +100,7 @@ public class GeorefLocalityResolverTests
     {
         var sut = CreateSut(FakeHttpMessageHandler.Json("""{"cantidad":0,"localidades":[],"asentamientos":[],"total":0}"""));
 
-        var result = await sut.ResolveAsync("Una Localidad Que No Existe");
+        var result = await sut.ResolveAsync("Una Localidad Que No Existe", "Tucuman");
 
         result.ShouldBeNull();
     }
@@ -75,10 +118,26 @@ public class GeorefLocalityResolverTests
             ],"total":2}
             """));
 
-        var result = await sut.ResolveAsync("Yerba Buena");
+        var result = await sut.ResolveAsync("Yerba Buena", "Tucuman");
 
         result.ShouldNotBeNull();
         result.Id.ShouldBe("90119030"); // el id de 8 dígitos, no el de 10 (la "Entidad")
+    }
+
+    [Fact]
+    public async Task ResolveAsync_MultipleGeographicMatches_ReturnsNull()
+    {
+        var sut = CreateSut(FakeHttpMessageHandler.Json(
+            """
+            {"cantidad":2,"localidades":[
+                {"id":"06056010","nombre":"San Martín"},
+                {"id":"06056011","nombre":"San Martín"}
+            ],"total":2}
+            """));
+
+        var result = await sut.ResolveAsync("San Martín", "Buenos Aires");
+
+        result.ShouldBeNull();
     }
 
     [Fact]
@@ -86,7 +145,7 @@ public class GeorefLocalityResolverTests
     {
         var sut = CreateSut(FakeHttpMessageHandler.Throwing(new HttpRequestException("Georef caído")));
 
-        var result = await sut.ResolveAsync("San Miguel De Tucuman");
+        var result = await sut.ResolveAsync("San Miguel De Tucuman", "Tucuman");
 
         result.ShouldBeNull();
     }
@@ -96,9 +155,20 @@ public class GeorefLocalityResolverTests
     {
         var sut = CreateSut(FakeHttpMessageHandler.Throwing(new TaskCanceledException("timeout")));
 
-        var result = await sut.ResolveAsync("San Miguel De Tucuman");
+        var result = await sut.ResolveAsync("San Miguel De Tucuman", "Tucuman");
 
         result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ResolveAsync_CallerCancels_PropagatesCancellation()
+    {
+        var sut = CreateSut(FakeHttpMessageHandler.Throwing(new TaskCanceledException("caller cancelled")));
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+
+        await Should.ThrowAsync<TaskCanceledException>(() =>
+            sut.ResolveAsync("San Miguel De Tucuman", "Tucuman", cancellation.Token));
     }
 
     [Fact]
@@ -106,7 +176,7 @@ public class GeorefLocalityResolverTests
     {
         var sut = CreateSut(FakeHttpMessageHandler.Json("no es json"));
 
-        var result = await sut.ResolveAsync("San Miguel De Tucuman");
+        var result = await sut.ResolveAsync("San Miguel De Tucuman", "Tucuman");
 
         result.ShouldBeNull();
     }

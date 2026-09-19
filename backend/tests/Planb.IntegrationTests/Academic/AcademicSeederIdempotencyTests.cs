@@ -4,7 +4,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Universities;
-using Planb.Academic.Infrastructure.Georef;
+using Planb.Academic.Application.Abstractions.Georef;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.Academic.Infrastructure.Seeding;
 using Planb.IntegrationTests.Infrastructure;
@@ -249,7 +249,10 @@ public class AcademicSeederIdempotencyTests
     /// </summary>
     private sealed class NoGeoref : IGeorefLocalityResolver
     {
-        public Task<GeorefLocality?> ResolveAsync(string localityText, CancellationToken ct = default) =>
+        public Task<GeorefLocality?> ResolveAsync(
+            string localityText,
+            string province,
+            CancellationToken ct = default) =>
             Task.FromResult<GeorefLocality?>(null);
     }
 

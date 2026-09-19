@@ -4,6 +4,7 @@ namespace Planb.Academic.Domain.Universities;
 
 public static class UniversityErrors
 {
+    public static readonly Error LocalityNotFound = Error.Validation("academic.university.locality_not_found", "Locality could not be resolved in the selected province.");
     public static readonly Error NameRequired =
         Error.Validation("academic.university.name_required", "University name is required.");
 

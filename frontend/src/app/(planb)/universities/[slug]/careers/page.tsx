@@ -6,6 +6,7 @@ import {
   fetchUniversitiesServer,
 } from '@/features/browse-catalog/api.server';
 import { InstitutionFactsSheet } from '@/features/institution-facts';
+import { fetchInstitutionProfile } from '@/features/manage-universities/profile-api.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,10 +39,11 @@ export default async function UniversityCareersPage({ params }: { params: Params
     notFound();
   }
 
-  const [careers, officialFacts, catalogCoverage] = await Promise.all([
+  const [careers, officialFacts, catalogCoverage, profile] = await Promise.all([
     fetchCareersByUniversityServer(university.id),
     fetchOfficialFactsServer('Institution', university.id),
     fetchCatalogCoverageServer(),
+    fetchInstitutionProfile(university.id),
   ]);
 
   const universityCoverage = catalogCoverage.filter((c) => c.universityId === university.id);
@@ -52,6 +54,7 @@ export default async function UniversityCareersPage({ params }: { params: Params
       careers={careers}
       officialFacts={officialFacts}
       coverage={universityCoverage}
+      profile={profile}
     />
   );
 }
