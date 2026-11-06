@@ -1,200 +1,106 @@
 # Deploy
 
-Contrato operativo para publicar planb en Dokploy. El camino de una falla está en [`runbook.md`](runbook.md) y la reversión en [`rollback.md`](rollback.md).
+Contrato operativo para publicar planb mediante Services de Coolify 4.6.0 con Compose propio. El diagnóstico está en [runbook.md](runbook.md) y la reversión en [rollback.md](rollback.md).
 
-## Estado
+## Estado y alcance de la evidencia
 
-**Decidido:** development es local y descartable; los previews de PR son opcionales y efímeros; stage es persistente y sigue a `main`; producción será persistente y saldrá de un GitHub Release. Stage y producción usan Databases y Applications nativas de Dokploy, no Compose de deploy.
+Stage usa recursos migrados a Coolify. Producción todavía no existe. Development sigue siendo local y descartable, los previews son opcionales y efímeros, stage sigue a `main` y producción se promueve desde un Release de GitHub ([ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md)).
 
-**Verificado en Dokploy v0.26.3:** ingresar el prefijo `planb-stage-api` creó una Application cuyo `appName` fue `planb-stage-api-7mmcdb`. Dokploy agrega un sufijo aleatorio, por lo que el prefijo no es DNS interno estable.
+El contrato del cliente se contrastó con el código de Coolify 4.6.0, commit `0becfba9113063336b09860579627fd218cb3fc4`. Los tests locales usan una API doble: prueban validación, preservación, secuencia y fallos, pero no prueban una migración real ni una corrida de Actions contra el servidor. Las corridas exitosas del 2026-09-13 corresponden a la infraestructura anterior de Dokploy y no validan este cliente.
 
-**Verificado por incidente:** Mailpit cayó con filesystem read-only al intentar escribir en `/tmp`. Su Application necesita `/tmp` escribible mediante `tmpfs` o read-only desactivado.
+## Recursos y nombres
 
-**Verificado el 2026-09-13 sobre los recursos reales:** el cutover del stage (Databases, Migrate run-once con exit 0, API y web `healthy`, Mailpit, dominios sobre las Applications y la ruta pública respondiendo desde el stack nuevo). La base nueva se migró y se sembró a mano; no hubo restore.
+Cada recurso de despliegue contiene exactamente un servicio Compose y una application de Coolify, sin databases dentro del mismo recurso. PostgreSQL, Redis y Mailpit tienen ciclos de vida independientes y el workflow no los modifica.
 
-**Verificado el 2026-09-13 desde GitHub Actions:** la secuencia automatizada de Migrate, API y web corrió dos veces en verde sobre estas Applications (`292ad759` y `4e4aaee3`), con `ci-gate` reteniendo el despliegue mientras CI estaba en rojo y `/health` publicando el SHA nuevo al terminar.
+| Recurso de stage | Nombre del recurso Coolify | Nombre del servicio Compose |
+|---|---|---|
+| API | `planb-stage-api` | `planb-stage-api-7mmcdb` |
+| Web | `planb-stage-web` | `planb-stage-web-phqofv` |
+| Migrate | `planb-stage-migrate` | `planb-stage-migrate-by4rbu` |
 
-**No verificado todavía:** un restore sobre la Database nueva.
+El UUID identifica el recurso; el nombre Compose identifica su application, contenedor y consulta de logs. No se intercambian. Los alias internos anteriores se conservaron durante la migración: el build web de stage usa `http://planb-stage-api-7mmcdb:8080`. Si cambia el alias, actualizar la variable y reconstruir web.
 
-**No operativo:** producción todavía no existe.
+El script exige UUID distintos y verifica UUID, nombre del recurso, nombre del servicio y repositorio de imagen antes de mutar. Producción usa recursos propios con nombres `planb-production-api`, `planb-production-web` y `planb-production-migrate`, cuando se creen.
 
-## Ambientes
+## Configuración de GitHub
 
-| Ambiente | Persistencia | Fuente de código | Infraestructura |
-|---|---|---|---|
-| Development local | Descartable | Checkout local | [`docker-compose.yml`](../../docker-compose.yml), solo Postgres, Redis y Mailpit locales. |
-| Preview de PR | Efímera y opcional | SHA del PR | Recursos temporales. No nace de una rama de ambiente. |
-| Stage | Persistente | SHA mergeado en `main` | Databases y Applications de Dokploy. |
-| Production | Persistente | SHA de un GitHub Release | Databases y Applications propias, cuando se cree. |
+**Secretos:** `COOLIFY_API_TOKEN`, con permisos `read`, `read:sensitive`, `write` y `deploy` para los recursos del destino. El permiso sensible es necesario para leer Compose y logs; las respuestas también pueden incluir secretos anidados. El cliente nunca imprime esos cuerpos, el Compose, las variables ni los logs.
 
-No existe rama `development`. Tampoco hay rama de release.
+**Variables no sensibles:**
 
-## Recursos Dokploy
+| Variable | Uso |
+|---|---|
+| `COOLIFY_URL` | Origen HTTPS del panel, sin `/api/v1`, credenciales ni query. |
+| `COOLIFY_<TARGET>_MIGRATE_SERVICE_UUID` | UUID de Migrate. |
+| `COOLIFY_<TARGET>_API_SERVICE_UUID` | UUID de API. |
+| `COOLIFY_<TARGET>_WEB_SERVICE_UUID` | UUID de web. |
+| `COOLIFY_<TARGET>_MIGRATE_SERVICE_NAME` | Nombre Compose de Migrate, según la tabla de stage. |
+| `COOLIFY_<TARGET>_API_SERVICE_NAME` | Nombre Compose de API. |
+| `COOLIFY_<TARGET>_WEB_SERVICE_NAME` | Nombre Compose de web. |
+| `COOLIFY_<TARGET>_API_INTERNAL_URL` | URL interna de API que se hornea en web. |
+| `COOLIFY_PRODUCTION_HEALTH_URL`, `COOLIFY_PRODUCTION_WEB_URL` | Probes de producción. |
 
-Los nombres siguientes son prefijos solicitados. El `appName`, hostname interno, id y endpoint efectivos son los que genera Dokploy:
+`<TARGET>` es `STAGE` o `PRODUCTION`. Stage conserva las probes públicas `https://planb.olisar.com.ar/health` y `https://planb.olisar.com.ar` en el workflow. Faltar configuración del destino corta el job de resolución antes de publicar o mutar Coolify. El script vuelve a validar sus entradas antes de hacer requests; no existe fallback de producción a stage.
 
-| Ambiente | Recurso | Prefijo solicitado | Función |
-|---|---|---|---|
-| Stage | PostgreSQL Database | `planb-stage-postgres` | Datos persistentes. |
-| Stage | Redis Database | `planb-stage-redis` | Estado efímero de la aplicación, persistente entre deploys. |
-| Stage | API Application | `planb-stage-api` | API de larga vida. |
-| Stage | Web Application | `planb-stage-web` | Web de larga vida. |
-| Stage | Migrate Application | `planb-stage-migrate` | Run-once: Replicated de una réplica con Restart Policy `none`, una ejecución de `migrate-db` por deploy. |
-| Stage | Mailpit Application | `planb-stage-mailpit` | SMTP catcher y UI, solo stage. |
-| Production | PostgreSQL Database | `planb-production-postgres` | Datos persistentes, todavía no creada. |
-| Production | Redis Database | `planb-production-redis` | Estado efímero, todavía no creada. |
-| Production | API Application | `planb-production-api` | API, todavía no creada. |
-| Production | Web Application | `planb-production-web` | Web, todavía no creada. |
-| Production | Migrate Application | `planb-production-migrate` | Run-once, todavía no creada. |
+Las credenciales de PostgreSQL, Redis, JWT y SMTP siguen en Coolify. Las variables antiguas `DOKPLOY_*` no son consumidas por este workflow.
 
-No hay Mailpit en producción. El correo productivo usará un relay SMTP real.
+## Imágenes y Compose
 
-Toda Database lleva Update Config `{"Parallelism": 1, "Order": "stop-first"}` antes de su primer redeploy. El default de Dokploy es `start-first`: en un redeploy la instancia nueva arranca mientras la vieja sigue viva sobre el mismo volumen, y dos PostgreSQL sobre un solo directorio de datos dejan el clúster inconsistente (verificado en el stage el 2026-09-13; ver [`runbook.md`](runbook.md), caso 8).
+API y Migrate usan exactamente la misma referencia `ghcr.io/lucasidev/plan-b/planb-api:<SHA>@sha256:<digest>`. Web usa `ghcr.io/lucasidev/plan-b/planb-web:<SHA>-<target>@sha256:<digest>`. Los digests vienen de los outputs del build y son las mismas referencias que escanea Trivy. `main` y `latest` no son destinos válidos.
 
-### Identificadores generados
+El helper [coolify-service.ts](../../scripts/lib/coolify-service.ts) obtiene `GET /api/v1/services/{uuid}`, valida el Compose con Bun YAML y prepara un `PATCH` cuyo único campo es `docker_compose_raw`, codificado en base64 UTF-8. Cambia solamente `image` y `pull_policy: always`. Conserva environment, placeholders, volúmenes externos, redes, aliases, labels, límites y controles de seguridad; la serialización puede cambiar formato y comentarios. Rechaza builds, includes, extends y réplicas múltiples.
 
-No se arma un hostname agregando o quitando sufijos. Después de crear o recrear un recurso se copian desde Dokploy:
+Las imágenes migradas estaban fijadas por digest y varios servicios tenían `pull_policy: never`. Un restart solo no publica el build nuevo: hay que cambiar explícitamente la imagen y permitir su pull. Antes de cada cambio se vuelve a comparar el Compose para detectar ediciones concurrentes. El servidor no ofrece una actualización condicional atómica; durante el deploy no se edita el mismo recurso desde el panel.
 
-- el id de cada Application que usa GitHub Actions;
-- el `appName` o hostname interno real de API que necesita el build de web;
-- el hostname interno real de Mailpit que usa API en stage;
-- los endpoints reales de PostgreSQL y Redis.
+## Secuencia de despliegue
 
-El hostname interno real de API se guarda como variable no sensible en GitHub y en el Environment de Dokploy. Si la Application se recrea, se actualiza en ambos lugares antes del siguiente build. Los ids y hostnames no son secretos; las credenciales asociadas sí.
+1. Resolver SHA y destino. Validar configuración del destino completo.
+2. Construir y publicar API y web con tag del SHA y digest del build. Web es específico del destino.
+3. Escanear las referencias por digest y esperar CI verde del mismo SHA. Ambos gates son obligatorios.
+4. Leer y validar los tres recursos antes del primer cambio.
+5. Ejecutar Migrate con la imagen API nueva y exigir su marcador único con código 0 y estado `exited`.
+6. Restaurar el entrypoint y el perfil manual de Migrate, conservando el digest nuevo y `pull_policy: always`.
+7. Detener API, esperar `exited` o `stopped`, actualizar Compose, confirmar lo guardado, iniciar y esperar `running:healthy`.
+8. Repetir el mismo ciclo con web.
+9. Exigir HTTP 200 en `/health` con `version` exactamente igual al SHA y HTTP 200 en la ruta web. No seguir redirecciones ni reutilizar caché.
+10. Cualquier falla deja la corrida roja; no hay rollback automático de datos ni seed.
 
-## Configuración por Application
+Se permite una interrupción del servicio entre stop y start. La concurrencia se serializa por destino, incluso si dos corridas parten de refs diferentes. Un cambio exclusivamente documental no publica ni despliega.
 
-### API
-
-- Imagen `planb-api` identificada por SHA, nunca `main` ni `latest`.
-- `ASPNETCORE_ENVIRONMENT=Production`.
-- Conexiones a los endpoints generados de PostgreSQL y Redis.
-- Configuración de JWT, SMTP y bases de links cargada en Dokploy.
-- Health check contra `/health`.
-- Sin migración ni seed al arrancar.
-- Usuario no root, capacidades dropeadas, filesystem read-only y límites de recursos según [ADR-0092](../decisions/0092-containers-run-least-privilege-and-the-image-chain-is-pinned-and-gated.md).
+Los builds hacen checkout del SHA objetivo. Los jobs de deploy hacen checkout de [`github.workflow_sha`](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#github-context), el commit de la implementación del workflow que inició la corrida: así una corrida del workflow actual puede desplegar un artefacto anterior a este cliente sin buscar el script nuevo en aquel commit. Esto no cambia el SHA ni los digests que se construyen, escanean y verifican.
 
 ### Migrate
 
-- Misma referencia inmutable de imagen que API.
-- Command `dotnet Planb.Api.dll migrate-db`: en Dokploy el Command de una Application reemplaza el entrypoint de la imagen, así que lleva el ejecutable y el verbo.
-- Swarm Mode Replicated con 1 réplica y Restart Policy `{"Condition": "none"}`: la task corre una vez y no se reinicia; cada deploy dispara una ejecución nueva.
-- Mismas conexiones a PostgreSQL y Redis que API.
-- Sin dominio público y sin comportamiento de servicio de larga vida.
+El recurso conserva `restart: 'no'`, perfil `manual` y el entrypoint de tres elementos para `dotnet Planb.Api.dll migrate-db`. El Compose migrado puede expresar esos elementos con placeholders `M_*`, que se conservan al restaurarlo.
 
-Dokploy 0.26.3 no puede desplegar un `ReplicatedJob`: manda siempre un `UpdateConfig` y Swarm lo rechaza (`Jobs may not have an update config`). Mode, Restart Policy y Update Config viven en [Applications, Advanced](https://docs.dokploy.com/docs/core/applications/advanced).
+Durante la ejecución el cliente quita únicamente el perfil y reemplaza temporalmente el entrypoint por `/bin/sh -c`: invoca exactamente `dotnet Planb.Api.dll migrate-db`, captura su código, escribe `COOLIFY_CI_MIGRATION:<nonce>:<rc>` y sale con ese mismo código. Las variables del shell se escapan con `$$` para Compose. El nonce aleatorio se genera en cada corrida. Un marcador previo, un estado anterior o un mensaje de arranque no habilitan API ni web.
 
-### Web
+Los logs se leen en memoria con `GET /services/{uuid}/logs?sub_service_name=<nombre>&lines=1000`. Un código no cero, un timeout o una cancelación bloquean el resto. El cleanup intenta detener una ejecución incompleta y restaurar el entrypoint y el perfil, sin iniciar de nuevo. Si el runner desaparece abruptamente, la red falla o hubo una edición concurrente, esa restauración puede requerir intervención; seguir el runbook antes de reintentar.
 
-- Imagen identificada por SHA, nunca `main` ni `latest`.
-- Build específico del destino mientras `NEXT_PUBLIC_API_URL` siga horneado en el bundle.
-- `NEXT_PUBLIC_API_URL` usa el hostname interno real generado para API, no el prefijo solicitado.
-- Health check y dominio público configurados en su Application.
+### Límites de la API
 
-Dos builds web del mismo commit pueden diferir si apuntan a API internas distintas. Antes de producción, el pipeline tiene que garantizar referencias inmutables separadas por destino sin reemplazarlas por tags móviles. Este documento no fija la estructura de paquetes porque el workflow que la implementa está fuera de este alcance.
+`POST /services/{uuid}/start` encola trabajo y no devuelve un deployment ID. El cliente usa `POST /services/{uuid}/stop?docker_cleanup=false`: omitir esa query permitiría que Coolify programara limpieza de Docker. No usa delete, down con volúmenes ni prune.
 
-### Mailpit
+Los estados de applications son el último estado guardado por Coolify, no una inspección directa del contenedor desde CI. El source de StopService marca `exited` tras intentar stop/remove, incluso si esos comandos fallan; por eso la transición por sí sola no prueba la imagen que está ejecutándose. StartService usa force-recreate. La confirmación del digest guardado, la transición y el SHA público constituyen las verificaciones disponibles para API y web. No se afirma inspección del digest del contenedor ni exit code obtenido por inspect.
 
-- Solo stage.
-- Imagen de tercero pineada por digest.
-- Hostname SMTP y dominio de UI tomados del recurso real.
-- UI protegida.
-- `/tmp` escribible mediante `tmpfs`. Si Dokploy no permite ese `tmpfs`, read-only queda desactivado para Mailpit.
+## Operación, rollback y producción
 
-## Deploy automático de stage
+Un rollback vuelve API y web a los digests sanos del destino, sin volver a ejecutar Migrate ni usar `Down()`. La compatibilidad del schema se revisa antes. Ver [rollback.md](rollback.md).
 
-Un push a `main` despliega solo cuando cambia una superficie desplegable y la CI del mismo SHA termina verde. Un cambio exclusivamente documental termina sin build ni deploy. Una imagen publicada o escaneada con éxito no autoriza por sí sola a tocar Dokploy.
+Producción sigue bloqueada hasta contar con recursos propios, backup externo, retención, restore ensayado y notificación activa de deploy fallido. Los builds web ya separan identidad por destino, pero todavía falta verificar la configuración y una promoción real. No se afirma producción operativa.
 
-Secuencia:
+Los caches de BuildKit siguen separados por API y web/target. No se reducen límites ni se limpian imágenes o volúmenes desde este workflow. Los recursos persistentes se gestionan por fuera del despliegue.
 
-1. Resolver el SHA del commit.
-2. Construir y publicar API y web con referencias inmutables por SHA. Web usa el hostname interno real de la API de stage.
-3. Escanear las imágenes y esperar la corrida de CI del mismo SHA. Un gate crítico o una CI que no terminó verde corta antes de tocar Dokploy.
-4. Actualizar Migrate para usar exactamente la imagen API del SHA.
-5. Desplegar Migrate (run-once). Esperar un deployment nuevo de Dokploy y después su task nueva, leída con `docker.getConfig`: pertenece al `appName` de Migrate, corre la imagen del SHA, está en `exited` con `ExitCode` 0 y terminó después de iniciado el deploy. Un `done` anterior ni `applicationStatus=done` prueban esta ejecución.
-6. Si Migrate falla, terminar en rojo. No desplegar API ni web.
-7. Desplegar API. Esperar un deployment y una task nuevos; la task debe correr la imagen del SHA y quedar `running` y `healthy`.
-8. Desplegar web con la misma prueba. Su health interno debe alcanzar la API nueva.
-9. Verificar desde afuera `/health`, incluido el SHA servido a través de web, y una ruta pública de web.
-10. Si cualquier verificación falla, terminar en rojo y seguir [`runbook.md`](runbook.md).
+## Seed y reset
 
-El rojo del workflow es la señal operativa mínima del stage. No se interpreta una publicación exitosa de imágenes como un deploy exitoso.
+El deploy nunca ejecuta `seed-db`. Una persona puede ejecutarlo con ambiente, base y SHA explícitos, backup si hay datos que conservar y revisión de su resultado. El seed no reescribe ni renumera filas existentes.
 
-## Eficiencia y recursos
+Resetear stage requiere autorización explícita, detener escrituras y confirmar base y ambiente. No forma parte del deploy. Ver [runbook.md](runbook.md#7-reset-destructivo-de-stage).
 
-Las imágenes tienen caches de BuildKit separadas: `planb-api` y `planb-web-<target>`. El scope por default es compartido y cada build sobrescribe el anterior ([Docker, GitHub Actions cache](https://docs.docker.com/build/cache/backends/gha/#scope)). `.dockerignore` excluye historia Git, configuración de agentes, secretos locales y artefactos de tests del contexto.
-
-La corrida de publicación [35056218332](https://github.com/lucasidev/plan-b/actions/runs/35056218332), del 2026-09-16, tardó 1m52s en web, 2m27s en API, 48s en escaneo y 9m39s en esperar CI. Es una observación previa al ajuste, no una medición de ahorro. La espera conserva la gate sobre el SHA que se va a desplegar.
-
-Integración y E2E conservan servicios aislados; compartir sus bases para ahorrar contenedores introduce estado entre suites. E2E compila el host y sus referencias, sin compilar proyectos de tests que ese job no ejecuta. Las imágenes conservan su build propio de producción y los checks de seguridad.
-
-CPU, memoria, reservas, workers, pools y políticas de reinicio del despliegue viven en los recursos de Dokploy, no en el Compose local. Antes de ajustarlos se necesitan las métricas del host y de cada servicio: picos de memoria y OOM, CPU y throttling, latencia, conexiones y crecimiento de disco/logs. El repo no prueba sus valores actuales. No se baja retención ni se borran volúmenes/imágenes desplegadas sin identificar qué debe conservarse para datos y rollback.
-
-La revisión del repo encontró dos escaneos Trivy por imagen (reporte HIGH/CRITICAL y gate CRITICAL) y un restore Docker de la solución backend completa. Son candidatos a medir y simplificar conservando la cobertura; este ajuste no modifica esa gate ni el codegen de Wolverine. Los scripts locales de infraestructura revisados tienen consumidores en el Justfile o en otros scripts; no se eliminan por nombre o por antigüedad.
-
-## Promoción a producción
-
-Producción usa el mismo orden, pero el disparador es un GitHub Release y los recursos son los del ambiente productivo. No se promueve el tag móvil del stage porque no existe tal tag: se promueve un SHA.
-
-Antes de crear producción son requisitos bloqueantes:
-
-- backup externo de PostgreSQL, fuera del mismo host;
-- retención definida y documentada;
-- prueba de restore;
-- notificación activa de deploy fallido, no solo una corrida roja que alguien tenga que mirar;
-- resolución del versionado de los builds web específicos por destino sin colisión bajo un mismo SHA.
-
-Hasta cumplirlos no se afirma que producción está lista ni operativa.
-
-## Cutover del stage desde Compose
-
-El objetivo es conservar los datos y mantener reversible el cambio de tráfico. No se borra el Compose viejo durante la preparación.
-
-1. Identificar el Compose actual, su PostgreSQL y los dominios que sirve.
-2. Hacer un backup de PostgreSQL antes de tocar schema o tráfico.
-3. Crear las nuevas PostgreSQL y Redis Databases.
-4. Crear API, web, Migrate y Mailpit Applications con los prefijos de este documento.
-5. Registrar ids, `appName`, hostnames y endpoints generados. Guardar el hostname interno real de API como variable no sensible en GitHub y Dokploy.
-6. Configurar credenciales y variables en cada recurso sin copiarlas al repo.
-7. Restaurar el backup en la nueva PostgreSQL Database y verificar que el restore termine sin error.
-8. Ejecutar Migrate y verificar que su task termine con exit 0; en el panel, los logs de esa ejecución terminan en `Wolverine: listo.`.
-9. Desplegar API y comprobar `/health`, PostgreSQL, Redis y el SHA servido.
-10. Desplegar web y Mailpit. Comprobar la ruta pública, el flujo API, SMTP y la UI de Mailpit. Mailpit debe tener `/tmp` escribible.
-11. Verificar los dominios sobre las nuevas Applications antes de retirar el tráfico anterior.
-12. Cambiar los dominios y repetir `/health`, API, web y Mailpit desde afuera.
-13. Mantener el Compose anterior intacto hasta cerrar la verificación.
-14. Borrar el Compose anterior solo después de una decisión explícita. El cutover exitoso no autoriza ese borrado por sí solo.
-
-El backup previo al cutover es requisito aunque stage no tenga usuarios productivos: sus datos ahora persisten y el objetivo es conservarlos.
-
-## Seed manual
-
-El deploy nunca ejecuta `seed-db`. Una persona puede ejecutar ese verbo con la misma imagen API del SHA, dentro de la red del destino y contra recursos identificados explícitamente.
-
-Antes de correrlo:
-
-1. Confirmar ambiente, Database y SHA.
-2. Hacer backup si la Database contiene datos que importan.
-3. Saber que el seed reconoce lo existente por la clave natural protegida por cada índice único y no actualiza ni renumera filas existentes: una carga nueva contra una base acumulada suma lo que falta y avisa los ids que no puede alinear.
-4. Ejecutar `seed-db` como acción manual, no como Application persistente ni dependencia de API.
-5. Revisar el resultado. Una falla del seed no dispara rollback de aplicación.
-
-## Reset
-
-Resetear stage es destructivo y nunca forma parte de un deploy:
-
-1. Confirmar en el panel que el destino es la PostgreSQL Database de stage, no producción.
-2. Hacer y conservar un backup previo si hay datos que preservar. Una demo con datos de prueba recreables puede omitirlo cuando la autorización incluye descartarlos; registrar la decisión según el [runbook](runbook.md#7-reset-destructivo-de-stage).
-3. Detener o bloquear escrituras.
-4. Vaciar o recrear la Database mediante una acción explícita de Dokploy.
-5. Si cambió el endpoint, actualizar las conexiones de API y Migrate.
-6. Ejecutar Migrate y esperar éxito.
-7. Desplegar API y web y verificar health.
-8. Ejecutar `seed-db` solo si una persona decide volver a cargar datos.
-
-## Refs
+## Referencias
 
 - [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): ambientes y promoción.
 - [ADR-0092](../decisions/0092-containers-run-least-privilege-and-the-image-chain-is-pinned-and-gated.md): hardening e imágenes.
 - [ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md): migración y seed.
-- [ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): topología de recursos.
+- [ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): decisión histórica de la topología anterior.
+- [publish-images.yml](../../.github/workflows/publish-images.yml) y [deploy-coolify-services.ts](../../scripts/deploy-coolify-services.ts): implementación del contrato.

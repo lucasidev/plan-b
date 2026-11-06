@@ -66,7 +66,7 @@ Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de a
 | Forms | React 19 primitives + TanStack Form |
 | UI | shadcn/ui + Tailwind CSS 4 + lucide-react |
 | Tooling | Justfile, Lefthook, Bun, Biome, Docker/Podman |
-| Deploy | Dokploy sobre VPS con Traefik: self-hosted, sin dependencias cloud pagas |
+| Deploy | Coolify 4.6.0 sobre VPS con Traefik, Services con Compose propio e imágenes por digest |
 | Dependencia externa única | SMTP, para los emails de verificación |
 
 ## Fases del desarrollo

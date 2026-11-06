@@ -2,13 +2,13 @@
 
 - **Estado**: aceptado
 - **Fecha**: 2026-09-06
-- **Revisado**: 2026-09-12
+- **Revisado**: 2026-11-06
 
 ## Contexto
 
 El primer stage se desplegaba como un servicio Compose de Dokploy y consumía tags móviles. Ese mecanismo dejó dos fuentes de deriva: `main` podía avanzar sin que el stage cambiara, y un reinicio podía traer bytes distintos bajo el mismo tag. Además, usar ramas largas para representar ambientes mezclaría promoción con desarrollo.
 
-La decisión central sigue vigente: el stage muestra lo que llegó a `main` y producción representa una promoción deliberada. La topología y la identidad de las imágenes cambian por [ADR-0094](0094-dokploy-applications-are-the-deployment-lifecycle-unit.md).
+La decisión central sigue vigente: el stage muestra lo que llegó a `main` y producción representa una promoción deliberada. La topología anterior de [ADR-0094](0094-dokploy-applications-are-the-deployment-lifecycle-unit.md) fue migrada a Services de Coolify con Compose propio. El contrato vigente está en [deploy.md](../engineering/deploy.md).
 
 ## Decisión
 
@@ -23,15 +23,15 @@ Los ambientes son:
 | Stage | Persistente | Cada merge a `main` que cambia algo desplegable. |
 | Production | Persistente | El commit señalado por un GitHub Release. Producción todavía no existe. |
 
-Cada imagen desplegable se referencia por un tag derivado del SHA inmutable. `main` y `latest` no se publican ni se consumen como tags de deploy.
+Cada imagen desplegable se referencia por el digest del build, asociado a un tag derivado del SHA. Web agrega el destino al tag. `main` y `latest` no se publican ni se consumen como tags de deploy.
 
-Para stage, GitHub Actions construye y publica las imágenes del SHA, pero no toca Dokploy hasta que la corrida de CI de ese mismo SHA termina verde. Después ejecuta primero la Application de migración como one-shot y espera su éxito. Recién entonces despliega API y web, exige tasks nuevas y sanas y verifica `/health` más una ruta pública. Una corrida que solo cambia documentación no construye ni despliega.
+Para stage, GitHub Actions construye y publica las imágenes del SHA, pero no toca Coolify hasta que la corrida de CI de ese mismo SHA y el escaneo de las imágenes terminan verdes. Después ejecuta primero Migrate y exige el marcador único de esa corrida con código 0 y estado `exited`. Recién entonces actualiza API y web por digest, con stop previo, y exige health más el SHA exacto en `/health` y una ruta pública con HTTP 200. Una corrida que solo cambia documentación no construye ni despliega. Los límites de los estados cacheados de Coolify están documentados en deploy.md.
 
 Para producción, un GitHub Release dispara la misma secuencia contra recursos propios de producción. Hasta que producción exista, no se afirma que esa promoción esté operativa.
 
-El frontend sigue siendo específico del destino mientras `NEXT_PUBLIC_API_URL` se hornee durante el build. Stage y producción requieren builds web separados, cada uno con el hostname interno real de su API. Ese costo y el riesgo de colisión entre artefactos del mismo commit deben resolverse en el workflow antes del primer deploy a producción. No se reemplaza esa identidad con tags móviles.
+El frontend sigue siendo específico del destino mientras `NEXT_PUBLIC_API_URL` se hornee durante el build. Stage y producción usan tags separados por destino y digests del build, cada uno con la URL interna real de su API. La configuración productiva debe validarse antes de su primer deploy.
 
-Los nombres ingresados al crear Applications son prefijos humanos. Dokploy v0.26.3 agrega un sufijo aleatorio al `appName`, que es el hostname interno efectivo. El hostname generado se guarda como dato no sensible en GitHub y en el Environment de Dokploy, y se actualiza en ambos lugares si la Application se recrea. No se deriva DNS interno desde el prefijo.
+El UUID del recurso Coolify, el nombre Compose y el alias interno son identidades distintas. La migración conservó los nombres y aliases previos. Se guardan como datos no sensibles en GitHub y se actualizan si un recurso se recrea. No se deriva DNS interno desde el nombre humano del recurso.
 
 ## Alternativas consideradas
 
@@ -47,10 +47,10 @@ Los nombres ingresados al crear Applications son prefijos humanos. Dokploy v0.26
 
 ## Consecuencias
 
-- El SHA servido por `/health` y el SHA configurado en cada Application son la fuente de verdad de una versión desplegada.
-- La Application de migración usa la misma imagen inmutable que la API y su éxito es un gate del deploy, no del arranque del proceso web.
+- El SHA servido por `/health` y los digests configurados en cada Service identifican la versión desplegada dentro de los límites observables de la API.
+- Migrate usa exactamente la misma referencia inmutable que API y su éxito es un gate del deploy, no del arranque del proceso web.
 - Publicar y escanear imágenes no autoriza el deploy: el SHA también tiene que haber pasado CI.
-- El pipeline necesita los identificadores de las Applications y los hostnames internos generados por Dokploy. Los hostnames son variables no sensibles, pero mutables al recrear un recurso.
+- El pipeline necesita UUID y nombres Compose de cada Service, y la URL interna de API. Son variables no sensibles, pero pueden cambiar al recrear un recurso. Una producción sin configurar falla antes de publicar o mutar recursos.
 - El workflow rojo es la señal mínima de un deploy fallido en stage. Una notificación activa de ese rojo es requisito previo a producción.
 - Los tags narrativos sin prefijo `v` siguen permitidos como hitos. No son Releases ni disparan producción.
 - El primer Release usa SemVer. Mientras la versión sea `0.x`, `feat` sube MINOR, `fix` y `perf` suben PATCH, `BREAKING CHANGE` sube MINOR y los demás tipos no cambian la versión.
@@ -60,5 +60,5 @@ Los nombres ingresados al crear Applications son prefijos humanos. Dokploy v0.26
 - [ADR-0026](0026-git-workflow-github-flow-with-rebase.md): flujo Git y Conventional Commits.
 - [ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera para un Release.
 - [ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md): migrar es parte del deploy y sembrar no.
-- [ADR-0094](0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): recursos y unidad de ciclo de vida en Dokploy.
+- [ADR-0094](0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): topología histórica de Dokploy.
 - [`docs/engineering/deploy.md`](../engineering/deploy.md) y [`docs/engineering/rollback.md`](../engineering/rollback.md).

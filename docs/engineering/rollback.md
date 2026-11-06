@@ -8,31 +8,31 @@ Hay tres acciones distintas y no se intercambian:
 
 | Problema | Acción por default |
 |---|---|
-| API o web defectuosa | Volver la Application al último SHA sano. |
+| API o web defectuosa | Volver el Service al digest del último SHA sano. |
 | Schema incompatible, sin corrupción ni pérdida | Roll-forward con una migración correctiva. |
 | Datos corruptos o perdidos | Restore desde un backup verificado. |
 
 Un rollback de aplicación no retrocede automáticamente el schema. Un restore no se usa para deshacer un bug de código.
 
-## Rollback de Application por SHA
+## Rollback de Service por SHA y digest
 
-Stage y producción, cuando exista, consumen imágenes identificadas por SHA. `main` y `latest` no son targets válidos.
+Stage y producción, cuando exista, consumen imágenes identificadas por SHA y digest. `main` y `latest` no son targets válidos. El web debe ser el build de ese destino.
 
 ### Secuencia
 
-1. Identificar el último SHA sano desde `/health`, GitHub Actions y el historial de deploys de Dokploy.
-2. Confirmar que las imágenes API y web de ese SHA existen. El web tiene que ser el artefacto construido para ese destino.
+1. Identificar el último SHA sano desde `/health`, GitHub Actions y el historial de Coolify.
+2. Recuperar los digests de API y web de esa corrida y confirmar que existen. No resolver un tag móvil como sustituto del artefacto sano.
 3. Revisar si el schema actual sigue siendo compatible con la versión anterior. Las migraciones deben seguir expand/contract para que este paso sea posible.
-4. Actualizar la referencia de imagen de API al SHA sano.
-5. Actualizar la referencia de web al SHA sano del mismo destino.
+4. Validar UUID, nombre Compose y configuración de API y web. Conservar environment, volúmenes, redes, labels y seguridad.
+5. Detener API con `POST /services/{uuid}/stop?docker_cleanup=false`, esperar `exited` o `stopped`, actualizar solo imagen al digest sano y `pull_policy: always`, iniciar y esperar `running:healthy`. Repetir con web.
 6. No volver a ejecutar una migración vieja y no usar `Down()` por default.
-7. Desplegar API y web.
-8. Verificar `/health`, el SHA servido y una ruta pública.
+7. No ejecutar el script de deploy completo para un rollback de aplicación: ese script incluye Migrate. No usar delete, prune ni down con volúmenes.
+8. Verificar HTTP 200 en `/health`, el SHA exacto elegido y HTTP 200 en la ruta web. La API de Coolify no ofrece inspect del contenedor: el digest guardado y el estado cacheado no prueban por sí solos qué imagen corre.
 9. Abrir un PR de revert o de corrección para que `main` deje de apuntar al cambio roto.
 
-En stage, volver una Application por SHA restaura servicio, pero no cambia qué commit sigue `main`. Sin el PR correctivo, el próximo deploy intentará publicar otra vez el estado roto.
+En stage, volver un Service por SHA restaura servicio, pero no cambia qué commit sigue `main`. Sin el PR correctivo, el próximo deploy intentará publicar otra vez el estado roto.
 
-En producción, cuando exista, el rollback apunta las Applications al SHA del Release sano anterior. No se mueve ni se reescribe el Release roto para ocultar lo ocurrido.
+En producción, cuando exista, el rollback apunta los Services a los digests del Release sano anterior. No se mueve ni se reescribe el Release roto para ocultar lo ocurrido.
 
 ## Revert del código en Git
 
@@ -54,13 +54,13 @@ El commit usa Conventional Commits, por ejemplo `revert(scope): remove broken ch
 
 ## Schema: roll-forward por default
 
-Migrate corre antes de API como Application run-once: una task por deploy, sin reinicio. Si falla, el deploy se corta antes de mover API y web. La respuesta normal es una migración nueva que lleve el schema desde el estado observable al estado compatible.
+Migrate corre antes de API como Service con `restart: 'no'`: el cliente habilita temporalmente el perfil manual y exige el marcador nuevo con código 0 y estado `exited`. Si falla, el deploy se corta antes de mover API y web. La respuesta normal es una migración nueva que lleve el schema desde el estado observable al estado compatible.
 
 No correr `dotnet ef database update <migración-anterior>` ni un `Down()` sobre stage o producción por default. Aunque el `Down()` compile, puede borrar datos que la aplicación vieja y la nueva todavía necesitan.
 
 ### Secuencia de corrección
 
-1. Detener el deploy nuevo y conservar los logs de Migrate.
+1. Detener el deploy nuevo, conservar los logs de Migrate de forma privada y confirmar que su entrypoint original y perfil `manual` se restauraron. El cleanup conserva el digest nuevo, pero no vuelve a iniciar el job.
 2. Inspeccionar qué migraciones figuran aplicadas en cada módulo.
 3. Escribir una migración correctiva compatible con la versión que sigue sirviendo.
 4. Publicar una nueva imagen API por SHA.
@@ -71,7 +71,7 @@ Las migraciones deben diseñarse con expand/contract: primero agregar o tolerar,
 
 ## Restore de PostgreSQL
 
-Restore se reserva a corrupción o pérdida confirmada. No es el rollback normal de una migración ni de una Application.
+Restore se reserva a corrupción o pérdida confirmada. No es el rollback normal de una migración ni de un Service.
 
 ### Precondiciones
 
@@ -85,7 +85,7 @@ Restore se reserva a corrupción o pérdida confirmada. No es el rollback normal
 
 1. Mantener la Database dañada sin más escrituras.
 2. Restaurar preferentemente sobre una PostgreSQL Database nueva, no encima de la única copia.
-3. Verificar integridad y conteos antes de apuntar Applications.
+3. Verificar integridad y conteos antes de apuntar API y Migrate al recurso restaurado.
 4. Ejecutar Migrate con el SHA que se va a servir.
 5. Configurar API y Migrate con el endpoint restaurado.
 6. Desplegar API y web.
@@ -138,4 +138,5 @@ Ese comando no se usa contra stage ni producción.
 - [ADR-0059](../decisions/0059-production-startup-does-not-self-repair.md): Production no repara schema al arrancar.
 - [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): promoción por SHA y Release.
 - [ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md): migración antes del deploy y seed manual.
-- [ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): Applications como unidad de ciclo de vida.
+- [deploy.md](deploy.md): contrato actual de Services y límites de la API de Coolify.
+- [ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): topología histórica de Dokploy.
