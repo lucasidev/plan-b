@@ -21,7 +21,7 @@ jobs:
   # instalación de Bun no implica que scripts/ necesite compilar el producto.
   changes:
     name: Select verification
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # Misma imagen que los jobs que validan la evidencia.
     timeout-minutes: 3
     permissions:
       contents: read
@@ -72,7 +72,7 @@ jobs:
     name: Backend unit (.NET 10)
     needs: changes
     if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend_unit != 'false') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Evidence backend_unit ${{ needs.changes.outputs.backend_unit_fingerprint }}
@@ -155,7 +155,7 @@ jobs:
     # skipped como aprobado para un required check: el PR podía mergear sin
     # haber corrido format, build ni tests.
     if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend != 'false') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     services:
       postgres:
@@ -259,7 +259,7 @@ jobs:
     # skipped como aprobado para un required check: el PR podía mergear sin
     # haber corrido format, build ni tests.
     if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.frontend != 'false') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # install+lint+typecheck+build+test local ≈ 3-5 min. 10 min de headroom.
     timeout-minutes: 10
     steps:
@@ -303,7 +303,7 @@ jobs:
     name: Tooling checks
     needs: changes
     if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.tooling != 'false') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Evidence tooling ${{ needs.changes.outputs.tooling_fingerprint }}
@@ -355,7 +355,7 @@ jobs:
   # Si falla el detector se ejecuta; una cancelación no inicia trabajo nuevo.
   e2e:
     name: E2E (Playwright)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # Playwright 1.59.1 no soporta Ubuntu 26.04.
     # El check conserva su nombre requerido aunque no corresponda ejecutar el stack.
     needs: changes
     if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.e2e != 'false') }}
