@@ -281,7 +281,7 @@ test('probe exige SHA exacto, HTTP 200 y no envía el token ni sigue redireccion
   await assert.rejects(f.client.probe('https://site.test'), /Timed out/);
   f.state.publicStatus = 307;
   await assert.rejects(f.client.probe('https://site.test'), /Timed out/);
-  const probes = f.state.requests.filter(({ url }) => url.startsWith('https://site.test'));
+  const probes = f.state.requests.filter(({ url }) => new URL(url).origin === 'https://site.test');
   assert.ok(
     probes.every(
       ({ init }) => init?.redirect === 'error' && !init.headers && init.cache === 'no-store',
