@@ -1,7 +1,9 @@
 # ADR-0094: Dokploy applications are the deployment lifecycle unit
 
-- **Estado**: aceptado
+- **Estado**: superado en topología por la migración a Coolify; se conserva como registro histórico.
 - **Fecha**: 2026-09-12
+
+La operación vigente usa Services de Coolify 4.6.0 con Compose propio y recursos persistentes independientes. El contrato actual, el orden de Migrate, API y web y los límites de verificación están en [deploy.md](../engineering/deploy.md). La política de ambientes de [ADR-0089](0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md) sigue vigente.
 
 ## Contexto
 
