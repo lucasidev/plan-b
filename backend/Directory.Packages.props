@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Email">
-    <PackageVersion Include="MailKit" Version="4.17.0" />
+    <PackageVersion Include="MailKit" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="PDF parsing (US-014: historial import)">
